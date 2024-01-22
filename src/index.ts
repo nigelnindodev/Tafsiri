@@ -4,6 +4,7 @@ import { staticPlugin } from "@elysiajs/static";
 import { swagger } from "@elysiajs/swagger";
 
 import { indexPage } from "./html_components/index";
+import { nameResult } from "./html_components/name_result";
 
 const app = new Elysia()
   .use(staticPlugin())
@@ -11,6 +12,9 @@ const app = new Elysia()
   .use(swagger())
   .get("/html", () => {
     return indexPage;
+  })
+  .post("/name", () => {
+    return nameResult;
   })
   .get("/", () => "Hello Elysia").listen(3000);
 
