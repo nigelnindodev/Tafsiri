@@ -1,5 +1,13 @@
 {
   "compilerOptions": {
+    "jsx": "react",
+    "jsxFactory": "Html.createElement",
+    "jsxFragmentFactory": "Html.Fragment",
+    "plugins": [
+      {
+        "name": "@kitajs/ts-html-plugin"
+      }
+    ],
     /* Visit https://aka.ms/tsconfig to read more about this file */
     /* Projects */
     // "incremental": true,                              /* Save .tsbuildinfo files to allow for incremental compilation of projects. */
@@ -92,11 +100,6 @@
     // "allowUnreachableCode": true,                     /* Disable error reporting for unreachable code. */
     /* Completeness */
     // "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
-    "skipLibCheck": true, /* Skip type checking all .d.ts files. */
-    "compilerOptions": {
-      "jsx": "react",
-      "jsxFactory": "Html.createElement",
-      "jsxFragmentFactory": "Html.Fragment"
-    }
+    "skipLibCheck": true /* Skip type checking all .d.ts files. */
   }
 }

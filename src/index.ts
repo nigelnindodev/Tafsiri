@@ -1,17 +1,16 @@
 import { Elysia } from "elysia";
 import { html } from "@elysiajs/html";
+import { staticPlugin } from "@elysiajs/static";
+import { swagger } from "@elysiajs/swagger";
+
+import { indexPage } from "./html_components/index";
 
 const app = new Elysia()
+  .use(staticPlugin())
   .use(html())
+  .use(swagger())
   .get("/html", () => {
-    return `<html lang="en">
-            <head>
-                <title>Hello World</title>
-            </head>
-            <body>
-                <h1>Hello World</h1>
-            </body>
-        </html>`;
+    return indexPage;
   })
   .get("/", () => "Hello Elysia").listen(3000);
 
