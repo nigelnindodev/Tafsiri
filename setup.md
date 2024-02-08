@@ -29,7 +29,6 @@ In the portal, commonly used items should be at the top for better UX.
 Allows for creation of orders. This compromises of:
 
 - Order id
-- Quantity
 - Reference (Some payment reference if available, such as M-Pesa. Allows for easy searching of an order from M-Pesa messages)
 - Staff Id (References the staffer who created the order)
 - Created At. No Updated at.
