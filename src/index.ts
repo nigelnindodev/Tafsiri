@@ -1,3 +1,5 @@
+import "reflect-metadata";
+
 import { Elysia } from "elysia";
 import { html } from "@elysiajs/html";
 import { staticPlugin } from "@elysiajs/static";
@@ -5,6 +7,24 @@ import { swagger } from "@elysiajs/swagger";
 
 import { indexPage } from "./html_components/index";
 import { nameResult } from "./html_components/name_result";
+
+export interface Config {
+  postgresUser: string;
+  postgresPassword: string;
+  postgressHost: string;
+  postgresPort: string;
+  postgresDatabaseName: string;
+}
+
+export const getConfig = (): Config => {
+  return {
+    postgresUser: process.env.POSTGRES_USER || "",
+    postgresPassword: process.env.POSTGRES_PASSWORD || "",
+    postgressHost: process.env.POSTGRES_HOST || "",
+    postgresPort: process.env.POSTGRES_PORT || "",
+    postgresDatabaseName: process.env.POSTGRES_DATABSE_NAME || ""
+  }
+};
 
 const app = new Elysia()
   .use(staticPlugin())
