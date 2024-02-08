@@ -5,10 +5,13 @@ import { html } from "@elysiajs/html";
 import { staticPlugin } from "@elysiajs/static";
 import { swagger } from "@elysiajs/swagger";
 
-import { indexPage } from "./html_components/index";
+import { newIndexPage } from "./html_components/index_2";
 import { nameResult } from "./html_components/name_result";
 import { PostgresDataSourceSingleton } from "./postgres";
 import { picoPage } from "./html_components/pico_example";
+import { OrdersPage } from "./html_components/orders";
+import { PaymentsPage } from "./html_components/payments";
+import { InventoryPage } from "./html_components/inventory";
 
 export interface Config {
   postgresUser: string;
@@ -35,7 +38,7 @@ const app = new Elysia()
   .use(staticPlugin())
   .use(html())
   .get("/html", () => {
-    return indexPage;
+    return newIndexPage;
   })
   .post("/name", () => {
     return nameResult;
@@ -43,11 +46,20 @@ const app = new Elysia()
   .get("/pico", () => {
     return picoPage;
   })
+  .get("/orders", () => {
+    return OrdersPage;
+  })
+  .get("/payments", () => {
+    return PaymentsPage;
+  })
+  .get("/inventory", () => {
+    return InventoryPage;
+  })
   /*.get("/inventory", (ctx) => {
     console.log(ctx);
     return "Hello inventory";
   })*/
-  .get("/inventory", (ctx) => {
+  /*.get("/inventory", (ctx) => {
     console.log(ctx); 
     return JSON.stringify([
       {
@@ -55,7 +67,7 @@ const app = new Elysia()
         b: 2
       }
     ]);
-  })
+  })*/
   /*.get("/orders", ({params: {_start, _end}}) => {
     console.log(`Orders start: ${_start} | Orders end: ${_end}`);
     return JSON.stringify([

@@ -1,4 +1,4 @@
-export const indexPage = (
+export const newIndexPage = (
     <html data-theme="dark" lang="en">
         <head>
             <title>Hello World</title>
@@ -7,13 +7,17 @@ export const indexPage = (
         </head>
         <body>
             <main class="container">
-                <article>
-                    <h1>
-                        Hello Nigel
-                    </h1>
-                    <div id="htmx-result" />
-                </article>
-                <button hx-post="/name" hx-target="#htmx-result">Test HTMX</button>
+                <nav>
+                    <ul>
+                        <li>Epic Hideout</li>
+                    </ul>
+                    <ul>
+                        <li><a hx-get="/orders" hx-target="#main-view">Orders</a></li>
+                        <li><a hx-get="/payments" hx-target="#main-view">Payments</a></li>
+                        <li><a hx-get="/inventory" hx-target="#main-view">Inventory</a></li>
+                    </ul>
+                </nav>
+                <div id="main-view" />
             </main>
         </body>
     </html>
