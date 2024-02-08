@@ -30,16 +30,41 @@ export function getConfig(): Config {
 await PostgresDataSourceSingleton.getInstance();
 
 const app = new Elysia()
-  .use(swagger())
-  .use(staticPlugin())
+  //.use(swagger())
+  /*.use(staticPlugin())
   .use(html())
   .get("/html", () => {
     return indexPage;
   })
   .post("/name", () => {
     return nameResult;
+  })*/
+  /*.get("/inventory", (ctx) => {
+    console.log(ctx);
+    return "Hello inventory";
+  })*/
+  .get("/inventory", (ctx) => {
+    console.log(ctx); 
+    return JSON.stringify([
+      {
+        a: 1,
+        b: 2
+      }
+    ]);
   })
-  .get("/", () => "Hello Elysia").listen(3000);
+  /*.get("/orders", ({params: {_start, _end}}) => {
+    console.log(`Orders start: ${_start} | Orders end: ${_end}`);
+    return JSON.stringify([
+      {
+        a: 1,
+        b: 2
+      }
+    ]);
+  })*/
+  .get("/", () => {
+    return "Hello Elysia";
+  })
+  .listen(3000);
 
 console.log(
   `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
