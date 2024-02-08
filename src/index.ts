@@ -8,6 +8,7 @@ import { swagger } from "@elysiajs/swagger";
 import { indexPage } from "./html_components/index";
 import { nameResult } from "./html_components/name_result";
 import { PostgresDataSourceSingleton } from "./postgres";
+import { picoPage } from "./html_components/pico_example";
 
 export interface Config {
   postgresUser: string;
@@ -30,15 +31,18 @@ export function getConfig(): Config {
 await PostgresDataSourceSingleton.getInstance();
 
 const app = new Elysia()
-  //.use(swagger())
-  /*.use(staticPlugin())
+  .use(swagger())
+  .use(staticPlugin())
   .use(html())
   .get("/html", () => {
     return indexPage;
   })
   .post("/name", () => {
     return nameResult;
-  })*/
+  })
+  .get("/pico", () => {
+    return picoPage;
+  })
   /*.get("/inventory", (ctx) => {
     console.log(ctx);
     return "Hello inventory";
