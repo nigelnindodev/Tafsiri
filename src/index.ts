@@ -12,7 +12,7 @@ export interface Config {
   postgresUser: string;
   postgresPassword: string;
   postgressHost: string;
-  postgresPort: string;
+  postgresPort: number;
   postgresDatabaseName: string;
 }
 
@@ -21,7 +21,7 @@ export const getConfig = (): Config => {
     postgresUser: process.env.POSTGRES_USER || "",
     postgresPassword: process.env.POSTGRES_PASSWORD || "",
     postgressHost: process.env.POSTGRES_HOST || "",
-    postgresPort: process.env.POSTGRES_PORT || "",
+    postgresPort: Number(process.env.POSTGRES_PORT) || 5432,
     postgresDatabaseName: process.env.POSTGRES_DATABSE_NAME || ""
   }
 };
