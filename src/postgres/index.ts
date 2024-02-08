@@ -1,5 +1,6 @@
 import { DataSource } from "typeorm";
 import { getConfig } from "..";
+import { ScaffoldEntity } from "./entities";
 
 const config = getConfig();
 
@@ -22,7 +23,7 @@ export class PostgresDataSourceSingleton {
           ssl: false
         },
         entities: [
-
+          ScaffoldEntity
         ]
       });
 

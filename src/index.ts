@@ -7,6 +7,7 @@ import { swagger } from "@elysiajs/swagger";
 
 import { indexPage } from "./html_components/index";
 import { nameResult } from "./html_components/name_result";
+import { PostgresDataSourceSingleton } from "./postgres";
 
 export interface Config {
   postgresUser: string;
@@ -16,20 +17,22 @@ export interface Config {
   postgresDatabaseName: string;
 }
 
-export const getConfig = (): Config => {
+export function getConfig(): Config {
   return {
     postgresUser: process.env.POSTGRES_USER || "",
     postgresPassword: process.env.POSTGRES_PASSWORD || "",
     postgressHost: process.env.POSTGRES_HOST || "",
     postgresPort: Number(process.env.POSTGRES_PORT) || 5432,
-    postgresDatabaseName: process.env.POSTGRES_DATABSE_NAME || ""
+    postgresDatabaseName: process.env.POSTGRES_DATABASE_NAME || ""
   }
 };
 
+await PostgresDataSourceSingleton.getInstance();
+
 const app = new Elysia()
+  .use(swagger())
   .use(staticPlugin())
   .use(html())
-  .use(swagger())
   .get("/html", () => {
     return indexPage;
   })
