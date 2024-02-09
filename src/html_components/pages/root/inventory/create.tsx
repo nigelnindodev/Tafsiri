@@ -3,14 +3,14 @@ export const CreateInventorySection = (
         <h6>Create Inventory</h6>
         <div class="grid">
             <div>
-                <button role="button" class="outline" hx-get="/inventory/list" hx-target="#inventory-section">Cancel</button>
+                <button role="button" class="outline" hx-get="/inventory/list" hx-target="#inventory-section">Back</button>
             </div>
             <div />
             <div />
             <div />
         </div>
         <form>
-            <div class="grid">
+            <div class="grid" >
                 <label for="firstname">
                     Name
                     <input type="text" id="name" name="name" placeholder="Product Name" required />
@@ -21,7 +21,7 @@ export const CreateInventorySection = (
                     <input type="number" id="price" name="price" placeholder="Price" required />
                 </label>
             </div>
-            <button type="submit">Submit</button>
+            <button id="inventory-submit" type="submit" hx-post="/inventory/create" hx-swap="outerHTML" hx-target="#inventory-submit">Submit</button>
         </form>
     </div>
 );

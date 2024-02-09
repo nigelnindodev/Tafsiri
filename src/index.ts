@@ -14,6 +14,7 @@ import { PaymentsPage } from "./html_components/pages/root/payments";
 import { InventoryPage } from "./html_components/pages/root/inventory";
 import { CreateInventorySection } from "./html_components/pages/root/inventory/create";
 import { ViewInventorySection } from "./html_components/pages/root/inventory/inventory";
+import { createInventoryItem } from "./services/inventory";
 
 export interface Config {
   postgresUser: string;
@@ -33,7 +34,7 @@ export function getConfig(): Config {
   }
 };
 
-await PostgresDataSourceSingleton.getInstance();
+const dataSource = await PostgresDataSourceSingleton.getInstance();
 
 const app = new Elysia()
   .use(swagger())
@@ -45,8 +46,19 @@ const app = new Elysia()
   .post("/name", () => {
     return nameResult;
   })
-  .get("/pico", () => {
-    return picoPage;
+  .get("/inventory", () => {
+    return InventoryPage;
+  })
+  .get("inventory/create", () => {
+    return CreateInventorySection;
+  })
+  .get("inventory/list", () => {
+    return ViewInventorySection("Some Item");
+  })
+  .post("/inventory/create", async (ctx) => {
+    console.log(ctx);
+    const result = await createInventoryItem(dataSource, ctx.body.name, Number(ctx.body.price));
+    return result;
   })
   .get("/orders", () => {
     return OrdersPage;
@@ -54,41 +66,9 @@ const app = new Elysia()
   .get("/payments", () => {
     return PaymentsPage;
   })
-  .get("/inventory", () => {
-    return InventoryPage;
+  .get("/pico", () => {
+    return picoPage;
   })
-  .get("inventory/list", () => {
-    return ViewInventorySection("Some Item");
-  })
-  .get("inventory/create", () => {
-    return CreateInventorySection;
-  })
-  .post("/inventory/create", (ctx) => {
-    console.log(ctx);
-    //TODO: Add proper response
-  })
-  /*.get("/inventory", (ctx) => {
-    console.log(ctx);
-    return "Hello inventory";
-  })*/
-  /*.get("/inventory", (ctx) => {
-    console.log(ctx); 
-    return JSON.stringify([
-      {
-        a: 1,
-        b: 2
-      }
-    ]);
-  })*/
-  /*.get("/orders", ({params: {_start, _end}}) => {
-    console.log(`Orders start: ${_start} | Orders end: ${_end}`);
-    return JSON.stringify([
-      {
-        a: 1,
-        b: 2
-      }
-    ]);
-  })*/
   .get("/", () => {
     return "Hello Elysia";
   })
