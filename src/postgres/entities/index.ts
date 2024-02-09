@@ -21,11 +21,11 @@ export class InventoryEntity {
   @Column("varchar", { length: 100, nullable: false })
   name: string
 
-  @Column("varchar", { length: 256, nullable: true })
-  description: string
-
   @Column("decimal", { nullable: false })
   price: number
+
+  @Column("boolean", { nullable: false })
+  active: boolean
 
   @OneToMany(() => OrderItemEntity, (orderItem) => orderItem.invetory)
   orderItems: OrderItemEntity[]
@@ -83,12 +83,12 @@ export class OrderItemEntity {
   created_at: Date
 }
 
-@Entity({ name: TableNames.PAYMENT})
+@Entity({ name: TableNames.PAYMENT })
 export class PaymentEntity {
   @PrimaryGeneratedColumn()
   id: number
 
-  @Column("decimal", {nullable: false})
+  @Column("decimal", { nullable: false })
   amount: number
 
   // A reference that can be added for payment of the order, such as an Mpesa reference message
@@ -102,7 +102,7 @@ export class PaymentEntity {
   @ManyToOne(() => PaymentTypeEntity, (paymentType) => paymentType.payments)
   paymentType: PaymentTypeEntity
 
-  @Column("timestamptz", {nullable: false, default: () => "CURRENT_TIMESTAMP"})
+  @Column("timestamptz", { nullable: false, default: () => "CURRENT_TIMESTAMP" })
   created_at: Date
 }
 
@@ -110,17 +110,17 @@ export class PaymentEntity {
  * Possible payment methods that can be used to pay an order.
  * Current possible values are cash and M-Pesa.
  */
-@Entity({name: TableNames.PAYMENT_TYPE})
+@Entity({ name: TableNames.PAYMENT_TYPE })
 export class PaymentTypeEntity {
   @PrimaryGeneratedColumn()
   id: number
 
-  @Column("enum", {enum: PaymentTypes, nullable: false})
+  @Column("enum", { enum: PaymentTypes, nullable: false })
   type: PaymentTypes
 
   @OneToMany(() => PaymentEntity, (payment) => payment.paymentType)
   payments: PaymentEntity[]
 
-  @Column("timestamptz", {nullable: false, default: () => "CURRENT_TIMESTAMP"})
+  @Column("timestamptz", { nullable: false, default: () => "CURRENT_TIMESTAMP" })
   created_at: Date
 }

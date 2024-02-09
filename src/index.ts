@@ -12,6 +12,8 @@ import { picoPage } from "./html_components/pico_example";
 import { OrdersPage } from "./html_components/pages/root/orders";
 import { PaymentsPage } from "./html_components/pages/root/payments";
 import { InventoryPage } from "./html_components/pages/root/inventory";
+import { CreateInventorySection } from "./html_components/pages/root/inventory/create";
+import { ViewInventorySection } from "./html_components/pages/root/inventory/inventory";
 
 export interface Config {
   postgresUser: string;
@@ -54,6 +56,16 @@ const app = new Elysia()
   })
   .get("/inventory", () => {
     return InventoryPage;
+  })
+  .get("inventory/list", () => {
+    return ViewInventorySection("Some Item");
+  })
+  .get("inventory/create", () => {
+    return CreateInventorySection;
+  })
+  .post("/inventory/create", (ctx) => {
+    console.log(ctx);
+    //TODO: Add proper response
   })
   /*.get("/inventory", (ctx) => {
     console.log(ctx);
