@@ -3,7 +3,7 @@ export const ViewInventorySection = () => {
         <div>
             <div class="grid">
                 <div>
-                    <input type="search" id="search" name="search" placeholder="Search Inventory" />
+                    <input type="search" id="search" name="search" placeholder="Search Inventory" hx-get="/inventory/list/search" hx-trigger="keyup changed delay:500ms" hx-target="#inventory-data"/>
                 </div>
                 <div>
                     <div class="grid">
