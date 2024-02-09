@@ -1,7 +1,7 @@
 export const newIndexPage = (
     <html data-theme="dark" lang="en">
         <head>
-            <title>Hello World</title>
+            <title>Epic Hideout</title>
             <link rel="stylesheet" href="http://localhost:3000/public/pico.min.css" />
             <script src="http://localhost:3000/public/htmx.min.js"></script>
         </head>
@@ -17,7 +17,7 @@ export const newIndexPage = (
                         <li><a hx-get="/inventory" hx-target="#main-view">Inventory</a></li>
                     </ul>
                 </nav>
-                <div id="main-view" />
+                <div id="main-view" hx-get="/inventory" hx-trigger="load" />
             </main>
         </body>
     </html>

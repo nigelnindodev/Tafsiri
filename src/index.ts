@@ -5,13 +5,13 @@ import { html } from "@elysiajs/html";
 import { staticPlugin } from "@elysiajs/static";
 import { swagger } from "@elysiajs/swagger";
 
-import { newIndexPage } from "./html_components/index_2";
+import { newIndexPage } from "./html_components/pages/root/index_2";
 import { nameResult } from "./html_components/name_result";
 import { PostgresDataSourceSingleton } from "./postgres";
 import { picoPage } from "./html_components/pico_example";
-import { OrdersPage } from "./html_components/orders";
-import { PaymentsPage } from "./html_components/payments";
-import { InventoryPage } from "./html_components/inventory";
+import { OrdersPage } from "./html_components/pages/root/orders";
+import { PaymentsPage } from "./html_components/pages/root/payments";
+import { InventoryPage } from "./html_components/pages/root/inventory";
 
 export interface Config {
   postgresUser: string;
