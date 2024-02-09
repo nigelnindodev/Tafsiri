@@ -14,7 +14,7 @@ import { PaymentsPage } from "./html_components/pages/root/payments";
 import { InventoryPage } from "./html_components/pages/root/inventory";
 import { CreateInventorySection } from "./html_components/pages/root/inventory/create";
 import { ViewInventorySection } from "./html_components/pages/root/inventory/inventory";
-import { createInventoryItem } from "./services/inventory";
+import { createInventoryItem, listInventoryItems } from "./services/inventory";
 
 export interface Config {
   postgresUser: string;
@@ -53,7 +53,10 @@ const app = new Elysia()
     return CreateInventorySection;
   })
   .get("inventory/list", () => {
-    return ViewInventorySection("Some Item");
+    return ViewInventorySection;
+  })
+  .get("inventory/list/all", async () => {
+    return await listInventoryItems(dataSource);
   })
   .post("/inventory/create", async (ctx) => {
     console.log(ctx);
