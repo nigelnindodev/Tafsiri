@@ -15,6 +15,9 @@ import { InventoryPage } from "./html_components/pages/root/inventory";
 import { CreateInventorySection } from "./html_components/pages/root/inventory/create";
 import { ViewInventorySection } from "./html_components/pages/root/inventory/inventory";
 import { createInventoryItem, listInventoryItems, searchInventoryItems } from "./services/inventory";
+import { ViewOrdersSection } from "./html_components/pages/root/orders/orders";
+import { listOrders } from "./services/orders";
+import { CreateOrderSection } from "./html_components/pages/root/orders/create";
 
 export interface Config {
   postgresUser: string;
@@ -59,7 +62,6 @@ const app = new Elysia()
     return await listInventoryItems(dataSource);
   })
   .get("inventory/list/search", async (ctx) => {
-    console.log(ctx);
     const searchTerm = ctx.query.search;
     if (searchTerm === "") {
       return await listInventoryItems(dataSource);
@@ -68,12 +70,20 @@ const app = new Elysia()
     }
   })
   .post("/inventory/create", async (ctx) => {
-    console.log(ctx);
     const result = await createInventoryItem(dataSource, ctx.body.name, Number(ctx.body.price));
     return result;
   })
   .get("/orders", () => {
     return OrdersPage;
+  })
+  .get("/orders/create", () => {
+    return CreateOrderSection;
+  })
+  .get("/orders/list", () => {
+    return ViewOrdersSection;
+  })
+  .get("/orders/list/all", () => {
+    return listOrders(dataSource);
   })
   .get("/payments", () => {
     return PaymentsPage;

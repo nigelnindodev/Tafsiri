@@ -5,12 +5,12 @@ import { inventoryList } from "../../html_components/pages/root/inventory/invent
 export const createInventoryItem = async (dataSource: DataSource, name: string, price: number) => {
 	const result = await insertInventoryItem(dataSource, { name, price });
 	console.log(result);
-	return `<div class="container"><small>Added ${name} to inventory list</small></div>`;
+	return `<div class="container">small>Added ${name} to inventory list</small></div>`;
 };
 
 export const listInventoryItems = async (dataSource: DataSource) => {
 	const result = await getInventoryItems(dataSource);
-if (result.length === 0) {
+	if (result.length === 0) {
 		return `<div class="container"><small>No items currently in inventory. Click the add button to get started.</small></div>`;
 	} else {
 		return inventoryList(result);

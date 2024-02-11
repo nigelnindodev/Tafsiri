@@ -6,7 +6,7 @@ export const InventoryPage = (
             </h1>
         </header>
         <body>
-            <div id="inventory-section" hx-get="/inventory/list" hx-trigger="load"/>
+            <div id="inventory-section" hx-get="/inventory/list" hx-trigger="load" />
         </body>
     </article>
 );
