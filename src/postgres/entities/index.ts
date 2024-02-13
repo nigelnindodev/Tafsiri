@@ -73,11 +73,14 @@ export class OrderItemEntity {
   @PrimaryGeneratedColumn()
   id: number
 
+  @Column("boolean", { nullable: false })
+  active: boolean
+
   @Column("int", { nullable: false })
   quantity: number
 
   @ManyToOne(() => InventoryEntity, (inventory) => inventory.orderItems, { nullable: false })
-  invetory: InventoryEntity
+  inventory: InventoryEntity
 
   @ManyToOne(() => OrderEntity, (order) => order.orderItems, { nullable: false })
   order: OrderEntity

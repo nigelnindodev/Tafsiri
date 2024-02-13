@@ -1,4 +1,4 @@
-import { DataSource, InsertResult, InsertResult } from "typeorm"
+import { DataSource, InsertResult, InsertResult, UpdateResult } from "typeorm"
 import { InventoryEntity, OrderEntity, OrderItemEntity } from "../entities";
 import { OrderStatus, TableNames } from "../common/constants";
 
@@ -123,18 +123,61 @@ export const getOrderItemsInOrder = async (
     .getMany();
 }
 
+export const getOrderItem = async (
+  dataSource: DataSource,
+  orderId: number,
+  inventoryId: number
+): Promise<OrderItemEntity | null> => {
+  return await dataSource.createQueryBuilder()
+    .select(TableNames.ORDER_ITEM)
+    .from(OrderItemEntity, TableNames.ORDER_ITEM)
+    .where("order_item.orderId = :orderId", { orderId: orderId })
+    .andWhere("order_item.inventoryId = :inventoryId", { inventoryId: inventoryId })
+    .getOne();
+};
+
+/**
+ * Toggles active state of an order item.
+ */
+export const toggleOrderItem = async(
+  dataSource: DataSource,
+  itemId: number,
+  active: boolean
+): Promise<UpdateResult> => {
+  return await dataSource.createQueryBuilder()
+    .update(OrderItemEntity)
+    .set({
+      active: active
+    })
+    .where("order_item.id = :id", {id: itemId})
+    .execute();
+}
+
+/**
+ * Adds a new inventory item to an order.
+ * Query is initialized in the UI by selecting the inventory item from the list
+ * during order creation.
+ * Initialized the quantity to 1, and also makes the inventory item active.
+ */
 export const insertOrderitem = async (
   dataSource: DataSource,
   orderId: number,
   inventoryId: number
 ): Promise<InsertResult> => {
-  return await dataSource.createQueryBuilder()
-    .insert()
-    .into(TableNames.ORDER_ITEM)
-    .values({
-      orderId: orderId,
-      inventoryId: inventoryId,
-      quantity: 1, // initialize all inventory items in an order with a qantity of one
-    })
-    .execute();
+  console.log(`orderId = ${orderId} | inventoryId: ${inventoryId}`);
+  try {
+    return await dataSource.createQueryBuilder()
+      .insert()
+      .into(TableNames.ORDER_ITEM)
+      .values({
+        order: orderId,
+        inventory: inventoryId,
+        quantity: 1,
+        active: true
+      })
+      .execute();
+  } catch (e) {
+    console.error(e);
+    throw (e);
+  }
 };

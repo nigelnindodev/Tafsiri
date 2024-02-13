@@ -85,7 +85,6 @@ const app = new Elysia()
     return listOrders(dataSource);
   })
   .post("/orders/item/change/:orderId/:inventoryId", (ctx) => {
-    console.log(ctx);
     return updateOrderItem(dataSource, Number(ctx.params.orderId), Number(ctx.params.inventoryId));
   })
   .get("/payments", () => {

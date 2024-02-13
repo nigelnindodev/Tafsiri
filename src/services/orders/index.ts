@@ -1,5 +1,5 @@
 import { DataSource } from "typeorm";
-import { getInventoryItemsOrderByName, getOrderItemsInOrder, getOrders, initializeOrder, insertOrderitem } from "../../postgres/queries";
+import { getInventoryItemsOrderByName, getOrderItem, getOrderItemsInOrder, getOrders, initializeOrder, insertOrderitem, toggleOrderItem } from "../../postgres/queries";
 import { InfoWrapper } from "../../html_components/common/info_wrapper";
 import { CreateOrderSection } from "../../html_components/pages/root/orders/create";
 
@@ -28,13 +28,19 @@ export const listOrders = async (dataSource: DataSource) => {
 };
 
 export const updateOrderItem = async (dataSource: DataSource, orderId: number, inventoryId: number) => {
-	const orderItemsInOrder = await getOrderItemsInOrder(dataSource, orderId);
-	const orderItem = orderItemsInOrder.filter(item => item.invetory.id === inventoryId);
+	try {
+		const orderItem = await getOrderItem(dataSource, orderId, inventoryId);
+		console.log(orderItem);
 
-	if (orderItem.length === 0) {
-		console.log("Item doesn't exist in order, creating it.");
-		await insertOrderitem(dataSource, orderId, inventoryId);
-	} else {
-		console.log("Item already exists in order");
+		if (orderItem === null) {
+			console.log("Item doesn't exist in order, creating it.");
+			await insertOrderitem(dataSource, orderId, inventoryId);
+		} else {
+			console.log("Item already exists in order. Toggling active state");
+			await toggleOrderItem(dataSource, orderItem.id, !orderItem.active);
+		}
+	} catch (e) {
+		console.error(e);
+		throw (e);
 	}
 }
