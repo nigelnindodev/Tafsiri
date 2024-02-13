@@ -1,5 +1,5 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm"
-import { TableNames, PaymentTypes, OrderStatus } from "../common/constants"
+import { TableNames, OrderStatus, PaymentStatus, PaymentTypes } from "../common/constants"
 
 @Entity({ name: TableNames.SCAFFOLD })
 export class ScaffoldEntity {
@@ -27,7 +27,7 @@ export class InventoryEntity {
   @Column("boolean", { nullable: false })
   active: boolean
 
-  @OneToMany(() => OrderItemEntity, (orderItem) => orderItem.invetory)
+  @OneToMany(() => OrderItemEntity, (orderItem) => orderItem.inventory)
   orderItems: OrderItemEntity[]
 
   @Column("timestamptz", { nullable: false, default: () => "CURRENT_TIMESTAMP" })
@@ -48,10 +48,10 @@ export class OrderEntity {
   @PrimaryGeneratedColumn()
   id: number
 
-  @OneToOne(() => PaymentEntity, (payment) => payment.order)
+  @OneToOne(() => PaymentEntity, (payment) => payment.orderRef)
   payment: PaymentEntity
 
-  @OneToMany(() => OrderItemEntity, (orderItem) => orderItem.order)
+  @OneToMany(() => OrderItemEntity, (orderItem) => orderItem.orders)
   orderItems: OrderItemEntity[]
 
   @Column("enum", { enum: OrderStatus, nullable: false })
@@ -103,10 +103,13 @@ export class PaymentEntity {
 
   @OneToOne(() => OrderEntity, (order) => order.payment, { nullable: false })
   @JoinColumn()
-  order: OrderEntity
+  orderRef: OrderEntity
 
-  @ManyToOne(() => PaymentTypeEntity, (paymentType) => paymentType.payments, { nullable: false })
-  paymentType: PaymentTypeEntity
+  @Column("enum", {enum: PaymentStatus, nullable: false})
+  paymentStatus: PaymentStatus
+
+  @Column("enum", {enum: PaymentTypes, nullable: false})
+  paymentType: PaymentTypes
 
   @Column("timestamptz", { nullable: false, default: () => "CURRENT_TIMESTAMP" })
   created_at: Date
@@ -116,7 +119,7 @@ export class PaymentEntity {
  * Possible payment methods that can be used to pay an order.
  * Current possible values are cash and M-Pesa.
  */
-@Entity({ name: TableNames.PAYMENT_TYPE })
+/*@Entity({ name: TableNames.PAYMENT_TYPE })
 export class PaymentTypeEntity {
   @PrimaryGeneratedColumn()
   id: number
@@ -129,4 +132,4 @@ export class PaymentTypeEntity {
 
   @Column("timestamptz", { nullable: false, default: () => "CURRENT_TIMESTAMP" })
   created_at: Date
-}
+}*/

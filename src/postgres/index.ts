@@ -1,6 +1,6 @@
 import { DataSource } from "typeorm";
 import { getConfig } from "..";
-import { InventoryEntity, OrderEntity, OrderItemEntity, PaymentEntity, PaymentTypeEntity, ScaffoldEntity } from "./entities";
+import { InventoryEntity, OrderEntity, OrderItemEntity, PaymentEntity, ScaffoldEntity } from "./entities";
 
 const config = getConfig();
 
@@ -27,8 +27,7 @@ export class PostgresDataSourceSingleton {
           InventoryEntity,
           OrderEntity,
           OrderItemEntity,
-          PaymentEntity,
-          PaymentTypeEntity
+          PaymentEntity
         ]
       });
 

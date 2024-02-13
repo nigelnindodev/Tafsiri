@@ -1,7 +1,8 @@
-import { InventoryEntity, OrderItemEntity } from "../../../../postgres/entities";
+import { PaymentTypes } from "../../../../postgres/common/constants";
+import { OrderItemEntity, PaymentEntity } from "../../../../postgres/entities";
 import { getTotalOrderCost } from "../../../../services/common";
 
-export const ActiveOrderItems = (orderId: number, orderItems: OrderItemEntity[]) => {
+export const ActiveOrderItems = (orderId: number, orderItems: OrderItemEntity[], paymentEntity: PaymentEntity) => {
     return (
         <details open>
             <summary>
@@ -47,6 +48,31 @@ export const ActiveOrderItems = (orderId: number, orderItems: OrderItemEntity[])
                     <div />
                     <div />
                 </div>
+            </blockquote>
+            <blockquote>
+                <fieldset>
+                    <legend>
+                        Payment Type
+                    </legend>
+                    <label>
+                        {
+                            /**
+                             * TODO: Should replace this ugly ternary here.
+                            */
+                            paymentEntity.paymentType === PaymentTypes.CASH ?
+                                <input type="radio" id="mpesa" name="mpesa" value="mpesa" checked /> :
+                                <input type="radio" id="mpesa" name="mpesa" value="mpesa" />
+                        }
+                        CASH</label>
+                    <label>
+                        {
+                            paymentEntity.paymentType === PaymentTypes.MPESA ?
+                                <input type="radio" id="mpesa" name="mpesa" value="mpesa" checked /> :
+                                <input type="radio" id="mpesa" name="mpesa" value="mpesa" />
+                        }
+                        MPESA
+                    </label>
+                </fieldset>
             </blockquote>
         </details>
     );

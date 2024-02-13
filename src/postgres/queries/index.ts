@@ -1,6 +1,6 @@
-import { DataSource, InsertResult, InsertResult, UpdateResult } from "typeorm"
-import { InventoryEntity, OrderEntity, OrderItemEntity } from "../entities";
-import { OrderStatus, TableNames } from "../common/constants";
+import { DataSource, InsertResult, InsertResult, InsertResult, UpdateResult } from "typeorm"
+import { InventoryEntity, OrderEntity, OrderItemEntity, PaymentEntity } from "../entities";
+import { OrderStatus, PaymentStatus, PaymentTypes, TableNames } from "../common/constants";
 
 export const insertInventoryItem = async (
   dataSource: DataSource,
@@ -35,6 +35,9 @@ export const getInventoryItems = async (
 };
 
 /**
+ * Query is used to populate the dropdown of inventory items in the create order section of
+ * the UI.
+ *
  * We could refactor order by as a parameter, but not doing that as of now, still not sure
  * if we will be too common of a pattern.
  */
@@ -221,3 +224,29 @@ export const insertOrderitem = async (
     throw (e);
   }
 };
+
+export const initializePayment = async(
+  dataSource: DataSource,
+  orderId: number
+): Promise<InsertResult> => {
+  return await dataSource.createQueryBuilder()
+    .insert()
+    .into(TableNames.PAYMENT)
+    .values({
+      amount: 0,
+      orderRef: orderId,
+      paymentType: PaymentTypes.CASH, // initialize payemnts with cash
+      paymentStatus: PaymentStatus.INITIALIZED
+    }).execute();
+};
+
+export const getPaymentByOrderId = async(
+  dataSource: DataSource,
+  orderId: number
+): Promise<PaymentEntity | null> => {
+  return await dataSource.createQueryBuilder()
+    .select(TableNames.PAYMENT)
+    .from(PaymentEntity, TableNames.PAYMENT)
+    .where("payment.orderRefId = :orderId", {orderId: orderId})
+    .getOne();
+}

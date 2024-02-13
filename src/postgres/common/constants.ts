@@ -13,8 +13,14 @@ export enum PaymentTypes {
 };
 
 export enum OrderStatus {
-  INITIALIZED = "INITIALIZED",
-  FINALIZED = "FINALIZED:", // After order items have been added
-  PAYMENT_IN_PROGRESS = "PAYMENT_IN_PROGRESS", // After some (partial) payments have been made on the order
+  INITIALIZED = "INITIALIZED", // Goes into this state on creation of an order
+  FINALIZED = "FINALIZED:", // After order items have been added and confirmed
   COMPLETED = "COMPLETED", // After an order has been fully paid
+}
+
+export enum PaymentStatus {
+  INITIALIZED = "INITIALIZED", // Goes into this state on creation of an order
+  PAYMENT_PENDING = "PAYMENT_PENDING", // Not currently in use, but may be in the future for defer payments
+  PARTIAL_PAYMENT = "PARTIAL_PAYMENT", // Also not in use at the moment, but for orders with partial payments
+  COMPLETED = "COMPLETED" // Full payment made
 }

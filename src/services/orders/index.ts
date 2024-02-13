@@ -1,5 +1,5 @@
 import { DataSource } from "typeorm";
-import { getInventoryItemsOrderByName, getOrderItem, getOrderItemWithInventoryDetails, getOrderItemsInOrder, getOrders, initializeOrder, insertOrderitem, toggleOrderItem, updateOrderItemCount } from "../../postgres/queries";
+import { getInventoryItemsOrderByName, getOrderItem, getOrderItemWithInventoryDetails, getOrderItemsInOrder, getOrders, getPaymentByOrderId, initializeOrder, initializePayment, insertOrderitem, toggleOrderItem, updateOrderItemCount } from "../../postgres/queries";
 import { InfoWrapper } from "../../html_components/common/info_wrapper";
 import { CreateOrderSection } from "../../html_components/pages/root/orders/create";
 import { ActiveOrderItems } from "../../html_components/pages/root/orders/active_order_items";
@@ -7,6 +7,7 @@ import { ActiveOrderItems } from "../../html_components/pages/root/orders/active
 export const createOrder = async (dataSource: DataSource) => {
 	try {
 		const initializeOrderResult = await initializeOrder(dataSource);
+		await initializePayment(dataSource, initializeOrderResult.identifiers[0].id);
 		const inventoryItems = await getInventoryItemsOrderByName(dataSource);
 		// We should always have identifiers.id
 		return CreateOrderSection(initializeOrderResult.identifiers[0].id, inventoryItems);
@@ -20,7 +21,13 @@ export const createOrder = async (dataSource: DataSource) => {
 export const activeOrders = async(dataSource: DataSource, orderId: number) => {
 	try {
 		const orderItems = await getOrderItemsInOrder(dataSource, orderId);
-		return ActiveOrderItems(orderId, orderItems.filter(item => item.active === true));
+		const getPaymentResult = await getPaymentByOrderId(dataSource, orderId);
+		if (getPaymentResult === null) {
+			const message = `Failed to get payment for order with id: ${orderId}`;
+			console.error(message);
+			throw new Error(message);
+		}
+		return ActiveOrderItems(orderId, orderItems.filter(item => item.active === true), getPaymentResult);
 	} catch(e) {
 		console.error(e);
 		throw (e);
