@@ -1,6 +1,6 @@
 import { InventoryEntity, OrderItemEntity } from "../../../../postgres/entities";
 
-export const ActiveOrderItems = (orderId: number, orderItems: OrderItemEntity[], inventoryItems: InventoryEntity[]) => {
+export const ActiveOrderItems = (orderId: number, orderItems: OrderItemEntity[]) => {
     return (
         <details open>
             <summary>Details</summary>
@@ -12,21 +12,21 @@ export const ActiveOrderItems = (orderId: number, orderItems: OrderItemEntity[],
                         <blockquote>
                             <div class="grid">
                                 <div>
-                                    <h4>Inventory Item Description</h4>
+                                    <h4>{item.inventory.name}</h4>
                                 </div>
                                 <div class="grid">
                                     <button>
                                         -
                                     </button>
                                     <div class='center'>
-                                        <h5>1 item(s)</h5>
+                                        <h5>{item.quantity} item(s)</h5>
                                     </div>
                                     <button>
                                         +
                                     </button>
                                 </div>
                                 <div class='center'>
-                                    <h2><mark>{item.id}.00 KES</mark></h2>
+                                    <h2><mark>{item.inventory.price * item.quantity}.00 KES</mark></h2>
                                 </div>
                             </div>
                         </blockquote>

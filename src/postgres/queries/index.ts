@@ -114,7 +114,7 @@ export const getOrders = async (
 export const getOrderItemsInOrder = async (
   dataSource: DataSource,
   orderId: number
-): Promise<any[]> => {
+): Promise<OrderItemEntity[]> => {
   /*return await dataSource.getRepository(OrderItemEntity).find({
     where: {
       order: number
