@@ -2,6 +2,7 @@ import { DataSource } from "typeorm";
 import { getInventoryItemsOrderByName, getOrderItem, getOrderItemsInOrder, getOrders, initializeOrder, insertOrderitem, toggleOrderItem } from "../../postgres/queries";
 import { InfoWrapper } from "../../html_components/common/info_wrapper";
 import { CreateOrderSection } from "../../html_components/pages/root/orders/create";
+import { ActiveOrderItems } from "../../html_components/pages/root/orders/active_order_items";
 
 export const createOrder = async (dataSource: DataSource) => {
 	try {
@@ -13,6 +14,18 @@ export const createOrder = async (dataSource: DataSource) => {
 	} catch (e) {
 		console.log(e);
 		return "error";
+	}
+};
+
+export const activeOrders = async(dataSource: DataSource, orderId: number) => {
+	try {
+		const orderItems = await getOrderItemsInOrder(dataSource, orderId);
+		console.log(orderItems);
+		const orderItemsIds = orderItems.map(item => item.id);
+		return ActiveOrderItems(orderId, orderItems, []);
+	} catch(e) {
+		console.error(e);
+		throw (e);
 	}
 };
 

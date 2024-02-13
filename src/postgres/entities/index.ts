@@ -83,7 +83,7 @@ export class OrderItemEntity {
   inventory: InventoryEntity
 
   @ManyToOne(() => OrderEntity, (order) => order.orderItems, { nullable: false })
-  order: OrderEntity
+  orders: OrderEntity
 
   @Column("timestamptz", { nullable: false, default: () => "CURRENT_TIMESTAMP" })
   created_at: Date

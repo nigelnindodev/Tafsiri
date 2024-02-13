@@ -14,9 +14,8 @@ export const CreateOrderSection = (orderId: number, inventoryData: InventoryEnti
                 <div />
             </div>
             <div>
-                <form>
                     {InventoryItemSelectDuringOrder(orderId, inventoryData)}
-                </form>
+                    <div id="active-items" hx-get={`/orders/active/${orderId}`} hx-trigger="every 1s"/>
             </div>
         </div>
     );

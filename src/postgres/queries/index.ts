@@ -74,7 +74,6 @@ export const getInventoryItemsByName = async (
     console.error(e);
     return [];
   }
-
 };
 
 export const initializeOrder = async (
@@ -115,11 +114,18 @@ export const getOrders = async (
 export const getOrderItemsInOrder = async (
   dataSource: DataSource,
   orderId: number
-): Promise<OrderItemEntity[]> => {
-  return await dataSource.createQueryBuilder()
-    .select(TableNames.ORDER_ITEM)
-    .from(OrderItemEntity, TableNames.ORDER_ITEM)
-    .where("order_item.orderId = :orderId", { orderId })
+): Promise<any[]> => {
+  /*return await dataSource.getRepository(OrderItemEntity).find({
+    where: {
+      order: number
+    },
+    relations: {
+      inventory: true
+    }
+  });*/
+  return await dataSource.getRepository(OrderItemEntity).createQueryBuilder(TableNames.ORDER_ITEM)
+    .innerJoinAndSelect("order_item.inventory", TableNames.INVENTORY)
+    .where("order_item.ordersId = :orderId", { orderId })
     .getMany();
 }
 
@@ -131,7 +137,7 @@ export const getOrderItem = async (
   return await dataSource.createQueryBuilder()
     .select(TableNames.ORDER_ITEM)
     .from(OrderItemEntity, TableNames.ORDER_ITEM)
-    .where("order_item.orderId = :orderId", { orderId: orderId })
+    .where("order_item.ordersId = :orderId", { orderId: orderId })
     .andWhere("order_item.inventoryId = :inventoryId", { inventoryId: inventoryId })
     .getOne();
 };
@@ -170,7 +176,7 @@ export const insertOrderitem = async (
       .insert()
       .into(TableNames.ORDER_ITEM)
       .values({
-        order: orderId,
+        orders: orderId,
         inventory: inventoryId,
         quantity: 1,
         active: true
