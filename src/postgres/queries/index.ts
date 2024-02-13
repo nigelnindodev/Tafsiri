@@ -1,4 +1,4 @@
-import { DataSource, InsertResult, InsertResult, InsertResult, UpdateResult } from "typeorm"
+import { DataSource, InsertResult, InsertResult, InsertResult, UpdateResult, UpdateResult } from "typeorm"
 import { InventoryEntity, OrderEntity, OrderItemEntity, PaymentEntity } from "../entities";
 import { OrderStatus, PaymentStatus, PaymentTypes, TableNames } from "../common/constants";
 
@@ -129,7 +129,7 @@ export const getOrderItemsInOrder = async (
   return await dataSource.getRepository(OrderItemEntity).createQueryBuilder(TableNames.ORDER_ITEM)
     .innerJoinAndSelect("order_item.inventory", TableNames.INVENTORY)
     .where("order_item.ordersId = :orderId", { orderId })
-    .orderBy({"order_item.id" : "DESC"})
+    .orderBy({ "order_item.id": "DESC" })
     .getMany();
 }
 
@@ -137,14 +137,14 @@ export const getOrderItemsInOrder = async (
  * Get order item using its auto incrementing id.
  * Careful with this method, as corresponding relations will be null.
  */
-export const getOrderItem = async(
+export const getOrderItem = async (
   dataSource: DataSource,
   itemId: number
 ): Promise<OrderItemEntity | null> => {
   return await dataSource.createQueryBuilder()
     .select(TableNames.ORDER_ITEM)
     .from(OrderItemEntity, TableNames.ORDER_ITEM)
-    .where("order_item.id = :id", {id: itemId})
+    .where("order_item.id = :id", { id: itemId })
     .getOne();
 };
 
@@ -168,7 +168,7 @@ export const getOrderItemWithInventoryDetails = async (
 /**
  * Toggles active state of an order item.
  */
-export const toggleOrderItem = async(
+export const toggleOrderItem = async (
   dataSource: DataSource,
   itemId: number,
   active: boolean
@@ -178,11 +178,11 @@ export const toggleOrderItem = async(
     .set({
       active: active
     })
-    .where("order_item.id = :id", {id: itemId})
+    .where("order_item.id = :id", { id: itemId })
     .execute();
 }
 
-export const updateOrderItemCount = async(
+export const updateOrderItemCount = async (
   dataSource: DataSource,
   itemId: number,
   quantity: number
@@ -192,7 +192,7 @@ export const updateOrderItemCount = async(
     .set({
       quantity: quantity
     })
-    .where("order_item.id = :id", {id: itemId})
+    .where("order_item.id = :id", { id: itemId })
     .execute();
 };
 
@@ -225,7 +225,7 @@ export const insertOrderitem = async (
   }
 };
 
-export const initializePayment = async(
+export const initializePayment = async (
   dataSource: DataSource,
   orderId: number
 ): Promise<InsertResult> => {
@@ -240,13 +240,36 @@ export const initializePayment = async(
     }).execute();
 };
 
-export const getPaymentByOrderId = async(
+export const getPaymentById = async (
+  dataSource: DataSource,
+  id: number
+): Promise<PaymentEntity | null> => {
+  return await dataSource.createQueryBuilder()
+    .select(TableNames.PAYMENT)
+    .from(PaymentEntity, TableNames.PAYMENT)
+    .where("payment.id = id", { id: id })
+    .getOne();
+};
+
+export const getPaymentByOrderId = async (
   dataSource: DataSource,
   orderId: number
 ): Promise<PaymentEntity | null> => {
   return await dataSource.createQueryBuilder()
     .select(TableNames.PAYMENT)
     .from(PaymentEntity, TableNames.PAYMENT)
-    .where("payment.orderRefId = :orderId", {orderId: orderId})
+    .where("payment.orderRefId = :orderId", { orderId: orderId })
     .getOne();
 }
+
+export const updatePaymentType = async (
+  dataSource: DataSource,
+  id: number,
+  paymentType: PaymentTypes
+): Promise<UpdateResult> => {
+  return await dataSource.createQueryBuilder()
+    .update(PaymentEntity)
+    .set({ paymentType: paymentType })
+    .where("payment.id = id", { id: id })
+    .execute();
+};

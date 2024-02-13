@@ -60,20 +60,21 @@ export const ActiveOrderItems = (orderId: number, orderItems: OrderItemEntity[],
                              * TODO: Should replace this ugly ternary here.
                             */
                             paymentEntity.paymentType === PaymentTypes.CASH ?
-                                <input type="radio" id="mpesa" name="mpesa" value="mpesa" checked /> :
-                                <input type="radio" id="mpesa" name="mpesa" value="mpesa" />
+                                <input type="radio" id="cash" name="paymentType" value="cash" hx-post={`/orders/payment/updateType/${paymentEntity.id}`} checked /> :
+                                <input type="radio" id="cash" name="paymentType" value="cash" hx-post={`/orders/payment/updateType/${paymentEntity.id}`} />
                         }
                         CASH</label>
                     <label>
                         {
                             paymentEntity.paymentType === PaymentTypes.MPESA ?
-                                <input type="radio" id="mpesa" name="mpesa" value="mpesa" checked /> :
-                                <input type="radio" id="mpesa" name="mpesa" value="mpesa" />
+                                <input type="radio" id="mpesa" name="paymentType" value="mpesa" hx-post={`/orders/payment/updateType/${paymentEntity.id}`} checked /> :
+                                <input type="radio" id="mpesa" name="paymentType" value="mpesa" hx-post={`/orders/payment/updateType/${paymentEntity.id}`} />
                         }
                         MPESA
                     </label>
                 </fieldset>
             </blockquote>
+            {orderItems.length === 0 ? "" : <button class="contrast outline">CONFIRM ORDER</button>}
         </details>
     );
 };

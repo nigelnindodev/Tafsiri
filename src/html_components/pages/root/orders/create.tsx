@@ -5,17 +5,14 @@ export const CreateOrderSection = (orderId: number, inventoryData: InventoryEnti
     return (
         <div>
             <h6>Create Order</h6>
-            <div class="grid">
-                <div>
-                    <button role="button" class="outline" hx-get="/orders/list" hx-target="#orders-section">Back</button>
-                </div>
-                <div />
-                <div />
-                <div />
-            </div>
+            <nav>
+                <ul>
+                    <li><a hx-get="/orders/list" hx-target="#orders-section">&lt Back</a></li>
+                </ul>
+            </nav>
             <div>
-                    {InventoryItemSelectDuringOrder(orderId, inventoryData)}
-                    <div id="active-items" hx-get={`/orders/active/${orderId}`} hx-trigger="every 1s"/>
+                {InventoryItemSelectDuringOrder(orderId, inventoryData)}
+                <div id="active-items" hx-get={`/orders/active/${orderId}`} hx-trigger="every 1s" />
             </div>
         </div>
     );

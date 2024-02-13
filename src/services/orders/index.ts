@@ -1,8 +1,9 @@
 import { DataSource } from "typeorm";
-import { getInventoryItemsOrderByName, getOrderItem, getOrderItemWithInventoryDetails, getOrderItemsInOrder, getOrders, getPaymentByOrderId, initializeOrder, initializePayment, insertOrderitem, toggleOrderItem, updateOrderItemCount } from "../../postgres/queries";
+import { getInventoryItemsOrderByName, getOrderItem, getOrderItemWithInventoryDetails, getOrderItemsInOrder, getOrders, getPaymentById, getPaymentByOrderId, initializeOrder, initializePayment, insertOrderitem, toggleOrderItem, updateOrderItemCount, updatePaymentType } from "../../postgres/queries";
 import { InfoWrapper } from "../../html_components/common/info_wrapper";
 import { CreateOrderSection } from "../../html_components/pages/root/orders/create";
 import { ActiveOrderItems } from "../../html_components/pages/root/orders/active_order_items";
+import { PaymentTypes } from "../../postgres/common/constants";
 
 export const createOrder = async (dataSource: DataSource) => {
 	try {
@@ -18,7 +19,7 @@ export const createOrder = async (dataSource: DataSource) => {
 	}
 };
 
-export const activeOrders = async(dataSource: DataSource, orderId: number) => {
+export const activeOrders = async (dataSource: DataSource, orderId: number) => {
 	try {
 		const orderItems = await getOrderItemsInOrder(dataSource, orderId);
 		const getPaymentResult = await getPaymentByOrderId(dataSource, orderId);
@@ -28,13 +29,13 @@ export const activeOrders = async(dataSource: DataSource, orderId: number) => {
 			throw new Error(message);
 		}
 		return ActiveOrderItems(orderId, orderItems.filter(item => item.active === true), getPaymentResult);
-	} catch(e) {
+	} catch (e) {
 		console.error(e);
 		throw (e);
 	}
 };
 
-export const updateItemCounter = async(dataSource: DataSource, itemId: number, updateType: string) => {
+export const updateItemCounter = async (dataSource: DataSource, itemId: number, updateType: string) => {
 	try {
 		// ignore unknon actions
 		if (updateType !== "INC" && updateType !== "DEC") {
@@ -56,8 +57,8 @@ export const updateItemCounter = async(dataSource: DataSource, itemId: number, u
 			return;
 		}
 
-		await updateOrderItemCount(dataSource, itemId, updateType === "DEC" ? orderItem.quantity-1 : orderItem.quantity +1);
-		
+		await updateOrderItemCount(dataSource, itemId, updateType === "DEC" ? orderItem.quantity - 1 : orderItem.quantity + 1);
+
 	} catch (e) {
 		console.error(e);
 		throw (e);
@@ -92,3 +93,20 @@ export const updateOrderItem = async (dataSource: DataSource, orderId: number, i
 		throw (e);
 	}
 }
+
+export const updatePaymentTypeForOrder = async (dataSource: DataSource, paymentId: number, paymentType: PaymentTypes) => {
+	try {
+		const getPaymentResult = await getPaymentById(dataSource, paymentId);
+
+		if (getPaymentResult === null) {
+			const message = `Cannot update payment type as payment with id: ${paymentId} not found`;
+			console.error(message);
+			throw new Error(message);
+		}
+
+		await updatePaymentType(dataSource, paymentId, paymentType);
+	} catch (e) {
+		console.error(e);
+		throw (e);
+	}
+};
