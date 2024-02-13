@@ -1,4 +1,7 @@
-export const CreateOrderSection = () => {
+import { InventoryEntity } from "../../../../postgres/entities";
+import { InventoryItemSelectDuringOrder } from "./inventory_item_select_during_order";
+
+export const CreateOrderSection = (orderId: number, inventoryData: InventoryEntity[]) => {
     return (
         <div>
             <h6>Create Order</h6>
@@ -9,6 +12,11 @@ export const CreateOrderSection = () => {
                 <div />
                 <div />
                 <div />
+            </div>
+            <div>
+                <form>
+                    {InventoryItemSelectDuringOrder(orderId, inventoryData)}
+                </form>
             </div>
         </div>
     );

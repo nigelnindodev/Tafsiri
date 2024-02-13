@@ -16,8 +16,7 @@ import { CreateInventorySection } from "./html_components/pages/root/inventory/c
 import { ViewInventorySection } from "./html_components/pages/root/inventory/inventory";
 import { createInventoryItem, listInventoryItems, searchInventoryItems } from "./services/inventory";
 import { ViewOrdersSection } from "./html_components/pages/root/orders/orders";
-import { listOrders } from "./services/orders";
-import { CreateOrderSection } from "./html_components/pages/root/orders/create";
+import { createOrder, listOrders, updateOrderItem } from "./services/orders";
 
 export interface Config {
   postgresUser: string;
@@ -77,13 +76,17 @@ const app = new Elysia()
     return OrdersPage;
   })
   .get("/orders/create", () => {
-    return CreateOrderSection;
+    return createOrder(dataSource);
   })
   .get("/orders/list", () => {
     return ViewOrdersSection;
   })
   .get("/orders/list/all", () => {
     return listOrders(dataSource);
+  })
+  .post("/orders/item/change/:orderId/:inventoryId", (ctx) => {
+    console.log(ctx);
+    return updateOrderItem(dataSource, Number(ctx.params.orderId), Number(ctx.params.inventoryId));
   })
   .get("/payments", () => {
     return PaymentsPage;

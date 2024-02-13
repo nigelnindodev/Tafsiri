@@ -1,5 +1,5 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm"
-import { TableNames, PaymentTypes } from "../common/constants"
+import { TableNames, PaymentTypes, OrderStatus } from "../common/constants"
 
 @Entity({ name: TableNames.SCAFFOLD })
 export class ScaffoldEntity {
@@ -43,7 +43,7 @@ export class InventoryEntity {
  *
  * TODO: How do we handle changing of an order after it has been created?
  */
-@Entity({ name: TableNames.ORDER })
+@Entity({ name: TableNames.ORDERS })
 export class OrderEntity {
   @PrimaryGeneratedColumn()
   id: number
@@ -53,6 +53,9 @@ export class OrderEntity {
 
   @OneToMany(() => OrderItemEntity, (orderItem) => orderItem.order)
   orderItems: OrderItemEntity[]
+
+  @Column("enum", { enum: OrderStatus, nullable: false })
+  status: OrderStatus
 
   @Column("timestamptz", { nullable: false, default: () => "CURRENT_TIMESTAMP" })
   created_at: Date
@@ -73,10 +76,10 @@ export class OrderItemEntity {
   @Column("int", { nullable: false })
   quantity: number
 
-  @ManyToOne(() => InventoryEntity, (inventory) => inventory.orderItems)
+  @ManyToOne(() => InventoryEntity, (inventory) => inventory.orderItems, { nullable: false })
   invetory: InventoryEntity
 
-  @ManyToOne(() => OrderEntity, (order) => order.orderItems)
+  @ManyToOne(() => OrderEntity, (order) => order.orderItems, { nullable: false })
   order: OrderEntity
 
   @Column("timestamptz", { nullable: false, default: () => "CURRENT_TIMESTAMP" })
@@ -95,11 +98,11 @@ export class PaymentEntity {
   @Column("varchar", { length: 100, nullable: true })
   reference: string
 
-  @OneToOne(() => OrderEntity, (order) => order.payment)
+  @OneToOne(() => OrderEntity, (order) => order.payment, { nullable: false })
   @JoinColumn()
   order: OrderEntity
 
-  @ManyToOne(() => PaymentTypeEntity, (paymentType) => paymentType.payments)
+  @ManyToOne(() => PaymentTypeEntity, (paymentType) => paymentType.payments, { nullable: false })
   paymentType: PaymentTypeEntity
 
   @Column("timestamptz", { nullable: false, default: () => "CURRENT_TIMESTAMP" })
@@ -118,7 +121,7 @@ export class PaymentTypeEntity {
   @Column("enum", { enum: PaymentTypes, nullable: false })
   type: PaymentTypes
 
-  @OneToMany(() => PaymentEntity, (payment) => payment.paymentType)
+  @OneToMany(() => PaymentEntity, (payment) => payment.paymentType, { nullable: false })
   payments: PaymentEntity[]
 
   @Column("timestamptz", { nullable: false, default: () => "CURRENT_TIMESTAMP" })
