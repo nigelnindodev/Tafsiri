@@ -1,5 +1,5 @@
 import { DataSource } from "typeorm";
-import { getInventoryItemsOrderByName, getOrderItem, getOrderItemsInOrder, getOrders, initializeOrder, insertOrderitem, toggleOrderItem } from "../../postgres/queries";
+import { getInventoryItemsOrderByName, getOrderItem, getOrderItemWithInventoryDetails, getOrderItemsInOrder, getOrders, initializeOrder, insertOrderitem, toggleOrderItem, updateOrderItemCount } from "../../postgres/queries";
 import { InfoWrapper } from "../../html_components/common/info_wrapper";
 import { CreateOrderSection } from "../../html_components/pages/root/orders/create";
 import { ActiveOrderItems } from "../../html_components/pages/root/orders/active_order_items";
@@ -20,10 +20,38 @@ export const createOrder = async (dataSource: DataSource) => {
 export const activeOrders = async(dataSource: DataSource, orderId: number) => {
 	try {
 		const orderItems = await getOrderItemsInOrder(dataSource, orderId);
-		console.log(orderItems);
-		const orderItemsIds = orderItems.map(item => item.id);
-		return ActiveOrderItems(orderId, orderItems, []);
+		return ActiveOrderItems(orderId, orderItems.filter(item => item.active === true));
 	} catch(e) {
+		console.error(e);
+		throw (e);
+	}
+};
+
+export const updateItemCounter = async(dataSource: DataSource, itemId: number, updateType: string) => {
+	try {
+		// ignore unknon actions
+		if (updateType !== "INC" && updateType !== "DEC") {
+			console.warn(`Unkown updateType of ${updateType} passed to updateItemCounter function`);
+			return;
+		}
+
+		const orderItem = await getOrderItem(dataSource, itemId);
+
+		// ignore if order item is null
+		if (orderItem === null) {
+			console.warn(`Order item with id ${itemId} not found`);
+			return;
+		}
+
+		// ignore if counter already at 1 and decrement action passed in 
+		if (orderItem.quantity === 1 && updateType === "DEC") {
+			console.warn(`Order item with id ${itemId} is already at lowest value`);
+			return;
+		}
+
+		await updateOrderItemCount(dataSource, itemId, updateType === "DEC" ? orderItem.quantity-1 : orderItem.quantity +1);
+		
+	} catch (e) {
 		console.error(e);
 		throw (e);
 	}
@@ -42,7 +70,7 @@ export const listOrders = async (dataSource: DataSource) => {
 
 export const updateOrderItem = async (dataSource: DataSource, orderId: number, inventoryId: number) => {
 	try {
-		const orderItem = await getOrderItem(dataSource, orderId, inventoryId);
+		const orderItem = await getOrderItemWithInventoryDetails(dataSource, orderId, inventoryId);
 		console.log(orderItem);
 
 		if (orderItem === null) {

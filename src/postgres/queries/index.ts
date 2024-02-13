@@ -126,10 +126,30 @@ export const getOrderItemsInOrder = async (
   return await dataSource.getRepository(OrderItemEntity).createQueryBuilder(TableNames.ORDER_ITEM)
     .innerJoinAndSelect("order_item.inventory", TableNames.INVENTORY)
     .where("order_item.ordersId = :orderId", { orderId })
+    .orderBy({"order_item.id" : "DESC"})
     .getMany();
 }
 
-export const getOrderItem = async (
+/**
+ * Get order item using its auto incrementing id.
+ * Careful with this method, as corresponding relations will be null.
+ */
+export const getOrderItem = async(
+  dataSource: DataSource,
+  itemId: number
+): Promise<OrderItemEntity | null> => {
+  return await dataSource.createQueryBuilder()
+    .select(TableNames.ORDER_ITEM)
+    .from(OrderItemEntity, TableNames.ORDER_ITEM)
+    .where("order_item.id = :id", {id: itemId})
+    .getOne();
+};
+
+/**
+ * Fetches an inventory item for a specific order.
+ * TODO: Method name may be misleading as it shows inventory details are also sent.
+ */
+export const getOrderItemWithInventoryDetails = async (
   dataSource: DataSource,
   orderId: number,
   inventoryId: number
@@ -158,6 +178,20 @@ export const toggleOrderItem = async(
     .where("order_item.id = :id", {id: itemId})
     .execute();
 }
+
+export const updateOrderItemCount = async(
+  dataSource: DataSource,
+  itemId: number,
+  quantity: number
+): Promise<UpdateResult> => {
+  return await dataSource.createQueryBuilder()
+    .update(OrderItemEntity)
+    .set({
+      quantity: quantity
+    })
+    .where("order_item.id = :id", {id: itemId})
+    .execute();
+};
 
 /**
  * Adds a new inventory item to an order.
