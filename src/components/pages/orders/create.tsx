@@ -9,7 +9,7 @@ export const CreateOrUpdateOrderSection = (orderId: number, inventoryData: Inven
                     <li><strong>Create Order</strong></li>
                 </ul>
                 <ul>
-                    <li><a hx-get="/orders/list" hx-target="#orders-section">&lt Back</a></li>
+                    <li><a class="contrast" hx-get="/orders/list" hx-target="#orders-section">&lt Back</a></li>
                 </ul>
             </nav>
             <div id="create-order-section">

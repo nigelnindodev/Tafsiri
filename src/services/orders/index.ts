@@ -4,7 +4,7 @@ import { InfoWrapper } from "../../components/common/info_wrapper";
 import { CreateOrUpdateOrderSection } from "../../components/pages/orders/create";
 import { ActiveOrderItems } from "../../components/pages/orders/active_order_items";
 import { OrderStatus, PaymentTypes } from "../../postgres/common/constants";
-import { filterForOrdersWithActiveOrders, getTotalOrderCost } from "../common";
+import { filterForOrdersWithActiveOrders, filterOrderItemsForActiveItems, getTotalOrderCost } from "../common";
 import { orderCreateSuccess } from "../../components/pages/orders/order_create_success";
 import { UnfinishedOrdersComponent } from "../../components/pages/orders/unfinished_orders";
 
@@ -84,7 +84,7 @@ export const confirmOrder = async (dataSource: DataSource, orderId: number, paye
 		const orderItems = await getOrderItemsInOrder(dataSource, orderId);
 
 		await completeOrder(dataSource, orderId);
-		await completePayment(dataSource, payemntId, getTotalOrderCost(orderItems.filter(item => item.active === true)));
+		await completePayment(dataSource, payemntId, getTotalOrderCost(filterOrderItemsForActiveItems(orderItems)));
 		return orderCreateSuccess;
 	} catch (e) {
 		console.log(e);
@@ -101,7 +101,7 @@ export const activeOrders = async (dataSource: DataSource, orderId: number) => {
 			console.error(message);
 			throw new Error(message);
 		}
-		return ActiveOrderItems(orderId, orderItems.filter(item => item.active === true), getPaymentResult);
+		return ActiveOrderItems(orderId, filterOrderItemsForActiveItems(orderItems), getPaymentResult);
 	} catch (e) {
 		console.error(e);
 		throw (e);

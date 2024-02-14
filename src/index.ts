@@ -90,6 +90,7 @@ const app = new Elysia()
     return ViewOrdersSection;
   })
   .get("/orders/list/all", () => {
+    //TODO: Change "all" to "unfinished"
     return listUnfinishedOrders(dataSource);
   })
   .post("/orders/confirm/:orderId/:paymentId", (ctx) => {

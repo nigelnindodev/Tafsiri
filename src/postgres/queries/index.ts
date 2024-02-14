@@ -146,6 +146,7 @@ export const getUnfinishedOrderItems = async (
   return await dataSource.getRepository(OrderEntity)
     .createQueryBuilder(TableNames.ORDERS)
     .innerJoinAndSelect("orders.orderItems", TableNames.ORDER_ITEM)
+    .innerJoinAndSelect("order_item.inventory", TableNames.INVENTORY)
     .where("orders.status != :orderStatus", { orderStatus: OrderStatus.COMPLETED })
     .orderBy({ "orders.id": "DESC" })
     .limit(10)
