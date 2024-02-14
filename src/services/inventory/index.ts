@@ -1,6 +1,6 @@
 import { DataSource } from "typeorm";
 import { getInventoryItems, getInventoryItemsByName, insertInventoryItem } from "../../postgres/queries";
-import { inventoryList } from "../../html_components/pages/root/inventory/inventory_list";
+import { inventoryList } from "../../components/pages/root/inventory/inventory_list";
 
 export const createInventoryItem = async (dataSource: DataSource, name: string, price: number) => {
 	const result = await insertInventoryItem(dataSource, { name, price });

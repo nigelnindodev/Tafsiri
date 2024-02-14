@@ -5,17 +5,17 @@ import { html } from "@elysiajs/html";
 import { staticPlugin } from "@elysiajs/static";
 import { swagger } from "@elysiajs/swagger";
 
-import { newIndexPage } from "./html_components/pages/root/index_2";
-import { nameResult } from "./html_components/name_result";
+import { newIndexPage } from "./components/pages/root/index_2";
+import { nameResult } from "./components/name_result";
 import { PostgresDataSourceSingleton } from "./postgres";
-import { picoPage } from "./html_components/pico_example";
-import { OrdersPage } from "./html_components/pages/root/orders";
-import { PaymentsPage } from "./html_components/pages/root/payments";
-import { InventoryPage } from "./html_components/pages/root/inventory";
-import { CreateInventorySection } from "./html_components/pages/root/inventory/create";
-import { ViewInventorySection } from "./html_components/pages/root/inventory/inventory";
+import { picoPage } from "./components/pico_example";
+import { OrdersPage } from "./components/pages/root/orders";
+import { PaymentsPage } from "./components/pages/root/payments";
+import { InventoryPage } from "./components/pages/root/inventory";
+import { CreateInventorySection } from "./components/pages/root/inventory/create";
+import { ViewInventorySection } from "./components/pages/root/inventory/inventory";
 import { createInventoryItem, listInventoryItems, searchInventoryItems } from "./services/inventory";
-import { ViewOrdersSection } from "./html_components/pages/root/orders/orders";
+import { ViewOrdersSection } from "./components/pages/root/orders/orders";
 import { activeOrders, createOrder, listOrders, updateItemCounter, updateOrderItem, updatePaymentTypeForOrder } from "./services/orders";
 import { PaymentTypes } from "./postgres/common/constants";
 
@@ -87,6 +87,9 @@ const app = new Elysia()
   })
   .get("/orders/list/all", () => {
     return listOrders(dataSource);
+  })
+  .post("/orders/confirm/orderId", () => {
+
   })
   .post("/orders/item/updateQuantity/:itemId/:updateType", (ctx) => {
     return updateItemCounter(dataSource, Number(ctx.params.itemId), ctx.params.updateType);
