@@ -74,7 +74,7 @@ export const ActiveOrderItems = (orderId: number, orderItems: OrderItemEntity[],
                     </label>
                 </fieldset>
             </blockquote>
-            {orderItems.length === 0 ? "" : <button class="contrast outline" hx-post={`/orders/confirm/${orderId}/${paymentEntity.id}`}>CONFIRM ORDER</button>}
+            {orderItems.length === 0 ? "" : <button class="contrast outline" hx-target="#create-order-section" hx-post={`/orders/confirm/${orderId}/${paymentEntity.id}`}>CONFIRM ORDER</button>}
         </details>
     );
 };

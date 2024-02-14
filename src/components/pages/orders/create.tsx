@@ -1,4 +1,4 @@
-import { InventoryEntity } from "../../../../postgres/entities";
+import { InventoryEntity } from "../../../postgres/entities";
 import { InventoryItemSelectDuringOrder } from "./inventory_item_select_during_order";
 
 export const CreateOrderSection = (orderId: number, inventoryData: InventoryEntity[]) => {
@@ -12,7 +12,7 @@ export const CreateOrderSection = (orderId: number, inventoryData: InventoryEnti
                     <li><a hx-get="/orders/list" hx-target="#orders-section">&lt Back</a></li>
                 </ul>
             </nav>
-            <div>
+            <div id="create-order-section">
                 {InventoryItemSelectDuringOrder(orderId, inventoryData)}
                 <div id="active-items" hx-get={`/orders/active/${orderId}`} hx-trigger="every 1s" />
             </div>

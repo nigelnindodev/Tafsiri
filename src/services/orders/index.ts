@@ -5,6 +5,7 @@ import { CreateOrderSection } from "../../components/pages/orders/create";
 import { ActiveOrderItems } from "../../components/pages/orders/active_order_items";
 import { OrderStatus, PaymentTypes } from "../../postgres/common/constants";
 import { getTotalOrderCost } from "../common";
+import { orderCreateSuccess } from "../../components/pages/orders/order_create_success";
 
 /**
  * Triggered by clicking create new order button in the UI.
@@ -66,7 +67,7 @@ export const confirmOrder = async (dataSource: DataSource, orderId: number, paye
 
 		await completeOrder(dataSource, orderId);
 		await completePayment(dataSource, payemntId, getTotalOrderCost(orderItems.filter(item => item.active === true)));
-
+		return orderCreateSuccess;
 	} catch (e) {
 		console.log(e);
 		throw (e);
