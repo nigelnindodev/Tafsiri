@@ -1,6 +1,6 @@
-import { PaymentTypes } from "../../../../postgres/common/constants";
-import { OrderItemEntity, PaymentEntity } from "../../../../postgres/entities";
-import { getTotalOrderCost } from "../../../../services/common";
+import { PaymentTypes } from "../../../postgres/common/constants";
+import { OrderItemEntity, PaymentEntity } from "../../../postgres/entities";
+import { getTotalOrderCost } from "../../../services/common";
 
 export const ActiveOrderItems = (orderId: number, orderItems: OrderItemEntity[], paymentEntity: PaymentEntity) => {
     return (

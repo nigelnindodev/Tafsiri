@@ -1,4 +1,4 @@
-import { InventoryEntity } from "../../../../postgres/entities";
+import { InventoryEntity } from "../../../postgres/entities";
 
 export const inventoryList = (data: InventoryEntity[]) => {
     return (

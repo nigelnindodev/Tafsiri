@@ -1,8 +1,8 @@
 import { DataSource } from "typeorm";
 import { getInventoryItemsOrderByName, getOrderItem, getOrderItemWithInventoryDetails, getOrderItemsInOrder, getOrders, getPaymentById, getPaymentByOrderId, initializeOrder, initializePayment, insertOrderitem, toggleOrderItem, updateOrderItemCount, updatePaymentType } from "../../postgres/queries";
 import { InfoWrapper } from "../../components/common/info_wrapper";
-import { CreateOrderSection } from "../../components/pages/root/orders/create";
-import { ActiveOrderItems } from "../../components/pages/root/orders/active_order_items";
+import { CreateOrderSection } from "../../components/pages/orders/create";
+import { ActiveOrderItems } from "../../components/pages/orders/active_order_items";
 import { PaymentTypes } from "../../postgres/common/constants";
 
 export const createOrder = async (dataSource: DataSource) => {

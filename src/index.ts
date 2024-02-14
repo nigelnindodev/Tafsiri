@@ -5,17 +5,17 @@ import { html } from "@elysiajs/html";
 import { staticPlugin } from "@elysiajs/static";
 import { swagger } from "@elysiajs/swagger";
 
-import { newIndexPage } from "./components/pages/root/index_2";
+import { newIndexPage } from "./components/pages/index_2";
 import { nameResult } from "./components/name_result";
 import { PostgresDataSourceSingleton } from "./postgres";
 import { picoPage } from "./components/pico_example";
-import { OrdersPage } from "./components/pages/root/orders";
-import { PaymentsPage } from "./components/pages/root/payments";
-import { InventoryPage } from "./components/pages/root/inventory";
-import { CreateInventorySection } from "./components/pages/root/inventory/create";
-import { ViewInventorySection } from "./components/pages/root/inventory/inventory";
+import { OrdersPage } from "./components/pages/orders";
+import { PaymentsPage } from "./components/pages/payments";
+import { InventoryPage } from "./components/pages/inventory";
+import { CreateInventorySection } from "./components/pages/inventory/create";
+import { ViewInventorySection } from "./components/pages/inventory/inventory";
 import { createInventoryItem, listInventoryItems, searchInventoryItems } from "./services/inventory";
-import { ViewOrdersSection } from "./components/pages/root/orders/orders";
+import { ViewOrdersSection } from "./components/pages/orders/orders";
 import { activeOrders, createOrder, listOrders, updateItemCounter, updateOrderItem, updatePaymentTypeForOrder } from "./services/orders";
 import { PaymentTypes } from "./postgres/common/constants";
 
