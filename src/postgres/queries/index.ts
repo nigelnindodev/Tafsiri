@@ -91,13 +91,25 @@ export const initializeOrder = async (
     .execute();
 };
 
+export const completeOrder = async (
+  dataSource: DataSource,
+  orderId: number
+): Promise<UpdateResult> => {
+  return await dataSource.createQueryBuilder()
+    .update(OrderEntity)
+    .set({ status: OrderStatus.COMPLETED })
+    .where("orders.id = :id", { id: orderId })
+    .execute();
+};
+
 export const getOrderById = async (
   dataSource: DataSource,
   id: number
-): Promise<OrderEntity> => {
+): Promise<OrderEntity | null> => {
   return await dataSource.createQueryBuilder()
     .select(TableNames.ORDERS)
-    .where("id = :id", { id: id })
+    .from(OrderEntity, TableNames.ORDERS)
+    .where("orders.id = :id", { id: id })
     .getOne();
 };
 
@@ -137,7 +149,7 @@ export const getOrderItemsInOrder = async (
  * Get order item using its auto incrementing id.
  * Careful with this method, as corresponding relations will be null.
  */
-export const getOrderItem = async (
+export const getOrderItemById = async (
   dataSource: DataSource,
   itemId: number
 ): Promise<OrderItemEntity | null> => {
@@ -249,6 +261,20 @@ export const getPaymentById = async (
     .from(PaymentEntity, TableNames.PAYMENT)
     .where("payment.id = id", { id: id })
     .getOne();
+};
+
+export const completePayment = async (
+  dataSource: DataSource,
+  paymentId: number,
+  amount: number
+): Promise<UpdateResult> => {
+  return await dataSource.createQueryBuilder()
+    .update(PaymentEntity)
+    .set({
+      amount: amount,
+      paymentStatus: PaymentStatus.COMPLETED
+    }).where("payment.id = :id", { id: paymentId })
+    .execute();
 };
 
 export const getPaymentByOrderId = async (

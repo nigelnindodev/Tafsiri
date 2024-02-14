@@ -59,12 +59,14 @@ export class OrderEntity {
 
   @Column("timestamptz", { nullable: false, default: () => "CURRENT_TIMESTAMP" })
   created_at: Date
+
+  //TODO: Add updated_at
 }
 
 /**
  * Workflow.
  * - Create order items.
- * - Bassed on order items and quantity, use data from the inventory table to calculate the total payment.
+ * - Based on order items and quantity, use data from the inventory table to calculate the total payment.
  * - Create a new payment from the above data
  * - Save the order items, payment and order.
  */
@@ -105,31 +107,14 @@ export class PaymentEntity {
   @JoinColumn()
   orderRef: OrderEntity
 
-  @Column("enum", {enum: PaymentStatus, nullable: false})
+  @Column("enum", { enum: PaymentStatus, nullable: false })
   paymentStatus: PaymentStatus
 
-  @Column("enum", {enum: PaymentTypes, nullable: false})
+  @Column("enum", { enum: PaymentTypes, nullable: false })
   paymentType: PaymentTypes
 
   @Column("timestamptz", { nullable: false, default: () => "CURRENT_TIMESTAMP" })
   created_at: Date
+
+  //TODO: Add updated_at
 }
-
-/**
- * Possible payment methods that can be used to pay an order.
- * Current possible values are cash and M-Pesa.
- */
-/*@Entity({ name: TableNames.PAYMENT_TYPE })
-export class PaymentTypeEntity {
-  @PrimaryGeneratedColumn()
-  id: number
-
-  @Column("enum", { enum: PaymentTypes, nullable: false })
-  type: PaymentTypes
-
-  @OneToMany(() => PaymentEntity, (payment) => payment.paymentType, { nullable: false })
-  payments: PaymentEntity[]
-
-  @Column("timestamptz", { nullable: false, default: () => "CURRENT_TIMESTAMP" })
-  created_at: Date
-}*/

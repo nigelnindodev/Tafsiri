@@ -16,7 +16,7 @@ import { CreateInventorySection } from "./components/pages/inventory/create";
 import { ViewInventorySection } from "./components/pages/inventory/inventory";
 import { createInventoryItem, listInventoryItems, searchInventoryItems } from "./services/inventory";
 import { ViewOrdersSection } from "./components/pages/orders/orders";
-import { activeOrders, addOrRemoveOrderItem, createOrder, listOrders, updateItemCounter, updatePaymentTypeForOrder } from "./services/orders";
+import { activeOrders, addOrRemoveOrderItem, confirmOrder, createOrder, listOrders, updateItemCounter, updatePaymentTypeForOrder } from "./services/orders";
 import { PaymentTypes } from "./postgres/common/constants";
 
 export interface Config {
@@ -88,8 +88,9 @@ const app = new Elysia()
   .get("/orders/list/all", () => {
     return listOrders(dataSource);
   })
-  .post("/orders/confirm/:orderId", () => {
-
+  .post("/orders/confirm/:orderId/:paymentId", (ctx) => {
+    console.log(ctx);
+    return confirmOrder(dataSource, Number(ctx.params.orderId), Number(ctx.params.paymentId));
   })
   .post("/orders/item/updateQuantity/:itemId/:updateType", (ctx) => {
     return updateItemCounter(dataSource, Number(ctx.params.itemId), ctx.params.updateType);

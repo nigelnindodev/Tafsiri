@@ -18,3 +18,5 @@ Open http://localhost:3000/ with your browser to see the result.
 - [] Timezone awareness
 - [] State machines for model statuses
 - [] Proper handling of amounts with decimals
+- [] Add Zod for handlig validations
+- [] Add DB indexes

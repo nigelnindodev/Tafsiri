@@ -1,9 +1,10 @@
 import { DataSource } from "typeorm";
-import { getInventoryItemsOrderByName, getOrderItem, getOrderItemWithInventoryDetails, getOrderItemsInOrder, getOrders, getPaymentById, getPaymentByOrderId, initializeOrder, initializePayment, insertOrderitem, toggleOrderItem, updateOrderItemCount, updatePaymentType } from "../../postgres/queries";
+import { completeOrder, completePayment, getInventoryItemsOrderByName, getOrderById, getOrderItemById, getOrderItemWithInventoryDetails, getOrderItemsInOrder, getOrders, getPaymentById, getPaymentByOrderId, initializeOrder, initializePayment, insertOrderitem, toggleOrderItem, updateOrderItemCount, updatePaymentType } from "../../postgres/queries";
 import { InfoWrapper } from "../../components/common/info_wrapper";
 import { CreateOrderSection } from "../../components/pages/orders/create";
 import { ActiveOrderItems } from "../../components/pages/orders/active_order_items";
-import { PaymentTypes } from "../../postgres/common/constants";
+import { OrderStatus, PaymentTypes } from "../../postgres/common/constants";
+import { getTotalOrderCost } from "../common";
 
 /**
  * Triggered by clicking create new order button in the UI.
@@ -32,8 +33,44 @@ export const createOrder = async (dataSource: DataSource) => {
  *
  * We will assume that all payments have been completed once an order is confirmed.
  */
-export const confirmOrder = async (dataSource: DataSource) => {
+export const confirmOrder = async (dataSource: DataSource, orderId: number, payemntId: number) => {
+	try {
+		const getOrderResult = await getOrderById(dataSource, orderId);
+		const getPaymentResult = await getPaymentByOrderId(dataSource, orderId);
 
+		// ensure that both values are not null
+		if (getOrderResult === null || getPaymentResult === null) {
+			const message = `Missing order or payment. orderId: ${orderId} | paymentId: ${payemntId}`;
+			console.error(message);
+			throw new Error(message);
+		}
+
+		// ensure that payment passed in matches its order
+		if (getPaymentResult.id !== payemntId) {
+			const message = `Payment id in request [${payemntId}] did not match id [${getPaymentResult.id}] for order with identifier: ${orderId}`
+			console.error(message);
+			throw new Error(message);
+		}
+
+		// ensure that order is already not in a completed state
+		if (getOrderResult.status === OrderStatus.COMPLETED) {
+			const message = `Order with id [${orderId}] is already in a completed state`;
+			console.error(message);
+			throw new Error(message);
+		}
+
+		// get all the items in the order
+		// if confirm button is shown in the UI, there should be active items in the order
+		// We can go ahead and complete the order and payment as well
+		const orderItems = await getOrderItemsInOrder(dataSource, orderId);
+
+		await completeOrder(dataSource, orderId);
+		await completePayment(dataSource, payemntId, getTotalOrderCost(orderItems.filter(item => item.active === true)));
+
+	} catch (e) {
+		console.log(e);
+		throw (e);
+	}
 };
 
 export const activeOrders = async (dataSource: DataSource, orderId: number) => {
@@ -72,7 +109,7 @@ export const updateItemCounter = async (dataSource: DataSource, itemId: number, 
 			return;
 		}
 
-		const orderItem = await getOrderItem(dataSource, itemId);
+		const orderItem = await getOrderItemById(dataSource, itemId);
 
 		// ignore if order item is null
 		if (orderItem === null) {
