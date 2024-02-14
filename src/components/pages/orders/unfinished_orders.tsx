@@ -1,5 +1,5 @@
 import { OrderEntity, OrderItemEntity } from "../../../postgres/entities";
-import { filterOrderItemsForActiveItems } from "../../../services/common";
+import { filterOrderItemsForActiveItems, getTotalOrderCost } from "../../../services/common";
 
 const unfinishedItemRowDescription = (orderItems: OrderItemEntity[]): string => {
     // We should have some active items due to 'getUnfinishedOrderItems' query
@@ -30,7 +30,7 @@ export const UnfinishedOrdersComponent = (unfinishedOrderitems: OrderEntity[]) =
                         return (
                             <tr>
                                 <td>{unfinishedItemRowDescription(item.orderItems)}</td>
-                                <td>Add total bill here</td>
+                                <td><strong>{getTotalOrderCost(filterOrderItemsForActiveItems(item.orderItems))}.00 KES</strong></td>
                                 <td><button role="button" class="secondary outline" hx-get={`/orders/resume/${item.id}`} hx-target="#orders-section">Resume</button></td>
                             </tr>
                         )

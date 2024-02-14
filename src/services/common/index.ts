@@ -5,6 +5,7 @@ import { OrderEntity, OrderItemEntity } from "../../postgres/entities";
  * also join with the inventory table, else will lead to undefined errors.
  *
  * TODO: Maybe come up with a way to type with requirement?
+ * TODO: What if an order is unfinshed and the price changes in the inventory list? We need to handle that as well.
  */
 export const getTotalOrderCost = (orderItems: OrderItemEntity[]): number => {
 	if (orderItems.length === 0) {
