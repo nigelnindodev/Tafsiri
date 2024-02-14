@@ -4,8 +4,10 @@ import { InventoryItemSelectDuringOrder } from "./inventory_item_select_during_o
 export const CreateOrderSection = (orderId: number, inventoryData: InventoryEntity[]) => {
     return (
         <div>
-            <h6>Create Order</h6>
             <nav>
+                <ul>
+                    <li><strong>Create Order</strong></li>
+                </ul>
                 <ul>
                     <li><a hx-get="/orders/list" hx-target="#orders-section">&lt Back</a></li>
                 </ul>

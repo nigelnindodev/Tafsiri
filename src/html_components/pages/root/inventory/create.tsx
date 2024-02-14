@@ -1,14 +1,13 @@
 export const CreateInventorySection = (
     <div>
-        <h6>Create Inventory</h6>
-        <div class="grid">
-            <div>
-                <button role="button" class="outline" hx-get="/inventory/list" hx-target="#inventory-section">Back</button>
-            </div>
-            <div />
-            <div />
-            <div />
-        </div>
+        <nav>
+            <ul>
+                <li><strong>Create Inventory</strong></li>
+            </ul>
+            <ul>
+                <li><a hx-get="/inventory/list" hx-target="#inventory-section" >&lt Back</a></li>
+            </ul>
+        </nav>
         <form>
             <div class="grid" >
                 <label for="firstname">

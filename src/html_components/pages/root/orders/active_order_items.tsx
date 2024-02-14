@@ -15,21 +15,21 @@ export const ActiveOrderItems = (orderId: number, orderItems: OrderItemEntity[],
                     return (
                         <blockquote>
                             <div class="grid">
-                                <div>
+                                <div class="center">
                                     <h4>{item.inventory.name}</h4>
                                 </div>
                                 <div class="grid">
                                     <button hx-post={`/orders/item/updateQuantity/${item.id}/DEC`}>
                                         -
                                     </button>
-                                    <div class='center'>
+                                    <div class="center">
                                         <h5>{item.quantity} item(s)</h5>
                                     </div>
                                     <button hx-post={`/orders/item/updateQuantity/${item.id}/INC`}>
                                         +
                                     </button>
                                 </div>
-                                <div class='center'>
+                                <div class="center">
                                     <h3><mark>{item.inventory.price * item.quantity}.00 KES</mark></h3>
                                 </div>
                             </div>
