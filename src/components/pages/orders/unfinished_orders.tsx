@@ -15,7 +15,7 @@ export const UnfinishedOrdersComponent = (unfinishedOrderitems: OrderEntity[]) =
                             <tr>
                                 <td>Update Item Description Here</td>
                                 <td>Add total bill here</td>
-                                <td><button role="button" class="secondary" hx-get={`/orders/resume/${item.id}`}>Resume</button></td>
+                                <td><button role="button" class="secondary" hx-get={`/orders/resume/${item.id}`} hx-target="#orders-section">Resume</button></td>
                             </tr>
                         )
                     })}

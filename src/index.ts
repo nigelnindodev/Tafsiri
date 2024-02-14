@@ -16,7 +16,7 @@ import { CreateInventorySection } from "./components/pages/inventory/create";
 import { ViewInventorySection } from "./components/pages/inventory/inventory";
 import { createInventoryItem, listInventoryItems, searchInventoryItems } from "./services/inventory";
 import { ViewOrdersSection } from "./components/pages/orders/orders";
-import { activeOrders, addOrRemoveOrderItem, confirmOrder, createOrder, listUnfinishedOrders, updateItemCounter, updatePaymentTypeForOrder } from "./services/orders";
+import { activeOrders, addOrRemoveOrderItem, confirmOrder, createOrder, listUnfinishedOrders, resumeOrder, updateItemCounter, updatePaymentTypeForOrder } from "./services/orders";
 import { PaymentTypes } from "./postgres/common/constants";
 
 export interface Config {
@@ -79,8 +79,9 @@ const app = new Elysia()
   .get("/orders/create", () => {
     return createOrder(dataSource);
   })
-  .get("/orders/resume/:orderid", (ctx) => {
+  .get("/orders/resume/:orderId", (ctx) => {
     console.log(ctx);
+    return resumeOrder(dataSource, Number(ctx.params.orderId));
   })
   .get("/orders/active/:orderId", (ctx) => {
     return activeOrders(dataSource, Number(ctx.params.orderId));
