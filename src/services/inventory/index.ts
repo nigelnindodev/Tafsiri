@@ -25,5 +25,4 @@ export const searchInventoryItems = async (dataSource: DataSource, name: string)
 	} else {
 		return inventoryList(result);
 	}
-
 };

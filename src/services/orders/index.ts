@@ -5,6 +5,11 @@ import { CreateOrderSection } from "../../components/pages/orders/create";
 import { ActiveOrderItems } from "../../components/pages/orders/active_order_items";
 import { PaymentTypes } from "../../postgres/common/constants";
 
+/**
+ * Triggered by clicking create new order button in the UI.
+ *
+ * Initializes a new order and payment in so that we can keep track of the order even after exiting.
+ */
 export const createOrder = async (dataSource: DataSource) => {
 	try {
 		const initializeOrderResult = await initializeOrder(dataSource);
@@ -17,6 +22,18 @@ export const createOrder = async (dataSource: DataSource) => {
 		console.log(e);
 		return "error";
 	}
+};
+
+/**
+ * Triggered in the UI when the inventory items have been finalized, and its to save the order
+ * and payment.
+ * 
+ * There are provision for pending payments, but we won't focus on that at the moment. 
+ *
+ * We will assume that all payments have been completed once an order is confirmed.
+ */
+export const confirmOrder = async (dataSource: DataSource) => {
+
 };
 
 export const activeOrders = async (dataSource: DataSource, orderId: number) => {
@@ -35,9 +52,21 @@ export const activeOrders = async (dataSource: DataSource, orderId: number) => {
 	}
 };
 
+/**
+ * Updates the number of inventory items for a specific item in an order.
+ *
+ * Currently the UI has a '-' and '+' button that allows for unit size changes.
+ *
+ * This was decided to prevent users having to actually input the values themselves, which
+ * can be tiresome and also error prone.
+ *
+ * Maybe in the future we might expand this to just, or also, accept a number to update the inventory items to. 
+ *
+ * But for now, the backend will update the number through the "INC" and "DEC" commands as appropriate.
+ */
 export const updateItemCounter = async (dataSource: DataSource, itemId: number, updateType: string) => {
 	try {
-		// ignore unknon actions
+		// ignore unknown actions
 		if (updateType !== "INC" && updateType !== "DEC") {
 			console.warn(`Unkown updateType of ${updateType} passed to updateItemCounter function`);
 			return;
@@ -65,8 +94,13 @@ export const updateItemCounter = async (dataSource: DataSource, itemId: number, 
 	}
 };
 
-export const processCreatedOrder = async (dataSource: DataSource) => { };
-
+/**
+ * This returns a list of orders that have not been completed for one reason or another.
+ *
+ * An example is a user clicking the back button by mistake.
+ *
+ * This endpoint returns a list of all unfinished orders, so that it can be resumed.
+ */
 export const listOrders = async (dataSource: DataSource) => {
 	const result = await getOrders(dataSource);
 	if (result.length === 0) {
@@ -76,7 +110,14 @@ export const listOrders = async (dataSource: DataSource) => {
 	}
 };
 
-export const updateOrderItem = async (dataSource: DataSource, orderId: number, inventoryId: number) => {
+/**
+ * Triggered by a user selecting/deselecting an inventory item in the create order section.
+ *
+ * Adds an item to the order if doesn't already exist, or toggles its active state to "remove" it from the order.
+ *
+ * "Remove" in quotes because the backend doesn't actually remove it, just deactivates it. This enables easier addition back if removed errorneously, and also will still contain it's previous context.
+ */
+export const addOrRemoveOrderItem = async (dataSource: DataSource, orderId: number, inventoryId: number) => {
 	try {
 		const orderItem = await getOrderItemWithInventoryDetails(dataSource, orderId, inventoryId);
 		console.log(orderItem);
@@ -94,6 +135,9 @@ export const updateOrderItem = async (dataSource: DataSource, orderId: number, i
 	}
 }
 
+/**
+ * Updates the payment type radio buttons to show which payment type (currently CASH & M-Pesa) is to be associated with this transaction.
+ */
 export const updatePaymentTypeForOrder = async (dataSource: DataSource, paymentId: number, paymentType: PaymentTypes) => {
 	try {
 		const getPaymentResult = await getPaymentById(dataSource, paymentId);

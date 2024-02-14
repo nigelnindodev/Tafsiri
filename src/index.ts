@@ -16,7 +16,7 @@ import { CreateInventorySection } from "./components/pages/inventory/create";
 import { ViewInventorySection } from "./components/pages/inventory/inventory";
 import { createInventoryItem, listInventoryItems, searchInventoryItems } from "./services/inventory";
 import { ViewOrdersSection } from "./components/pages/orders/orders";
-import { activeOrders, createOrder, listOrders, updateItemCounter, updateOrderItem, updatePaymentTypeForOrder } from "./services/orders";
+import { activeOrders, addOrRemoveOrderItem, createOrder, listOrders, updateItemCounter, updatePaymentTypeForOrder } from "./services/orders";
 import { PaymentTypes } from "./postgres/common/constants";
 
 export interface Config {
@@ -88,14 +88,14 @@ const app = new Elysia()
   .get("/orders/list/all", () => {
     return listOrders(dataSource);
   })
-  .post("/orders/confirm/orderId", () => {
+  .post("/orders/confirm/:orderId", () => {
 
   })
   .post("/orders/item/updateQuantity/:itemId/:updateType", (ctx) => {
     return updateItemCounter(dataSource, Number(ctx.params.itemId), ctx.params.updateType);
   })
   .post("/orders/item/change/:orderId/:inventoryId", (ctx) => {
-    return updateOrderItem(dataSource, Number(ctx.params.orderId), Number(ctx.params.inventoryId));
+    return addOrRemoveOrderItem(dataSource, Number(ctx.params.orderId), Number(ctx.params.inventoryId));
   })
   .post("/orders/payment/updateType/:paymentId", (ctx) => {
     const paymentTypeString = ctx.body.paymentType as string;
