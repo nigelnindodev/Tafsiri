@@ -1,4 +1,4 @@
-import { DataSource, InsertResult, InsertResult, InsertResult, UpdateResult, UpdateResult } from "typeorm"
+import { DataSource, InsertResult, UpdateResult } from "typeorm"
 import { InventoryEntity, OrderEntity, OrderItemEntity, PaymentEntity } from "../entities";
 import { OrderStatus, PaymentStatus, PaymentTypes, TableNames } from "../common/constants";
 
@@ -130,20 +130,27 @@ export const getOrderItemsInOrder = async (
   dataSource: DataSource,
   orderId: number
 ): Promise<OrderItemEntity[]> => {
-  /*return await dataSource.getRepository(OrderItemEntity).find({
-    where: {
-      order: number
-    },
-    relations: {
-      inventory: true
-    }
-  });*/
   return await dataSource.getRepository(OrderItemEntity).createQueryBuilder(TableNames.ORDER_ITEM)
     .innerJoinAndSelect("order_item.inventory", TableNames.INVENTORY)
     .where("order_item.ordersId = :orderId", { orderId })
     .orderBy({ "order_item.id": "DESC" })
     .getMany();
 }
+
+/**
+ * Fetches latest unfinished orders togerther with its order items, limiting to the last 10 items. 
+ */
+export const getUnfinishedOrderItems = async (
+  dataSource: DataSource
+): Promise<OrderEntity[]> => {
+  return await dataSource.getRepository(OrderEntity)
+    .createQueryBuilder(TableNames.ORDERS)
+    .innerJoinAndSelect("orders.orderItems", TableNames.ORDER_ITEM)
+    .where("orders.status != :orderStatus", { orderStatus: OrderStatus.COMPLETED })
+    .orderBy({ "orders.id": "DESC" })
+    .limit(10)
+    .getMany();
+};
 
 /**
  * Get order item using its auto incrementing id.

@@ -1,11 +1,12 @@
 import { DataSource } from "typeorm";
-import { completeOrder, completePayment, getInventoryItemsOrderByName, getOrderById, getOrderItemById, getOrderItemWithInventoryDetails, getOrderItemsInOrder, getOrders, getPaymentById, getPaymentByOrderId, initializeOrder, initializePayment, insertOrderitem, toggleOrderItem, updateOrderItemCount, updatePaymentType } from "../../postgres/queries";
+import { completeOrder, completePayment, getInventoryItemsOrderByName, getOrderById, getOrderItemById, getOrderItemWithInventoryDetails, getOrderItemsInOrder, getOrders, getPaymentById, getPaymentByOrderId, getUnfinishedOrderItems, initializeOrder, initializePayment, insertOrderitem, toggleOrderItem, updateOrderItemCount, updatePaymentType } from "../../postgres/queries";
 import { InfoWrapper } from "../../components/common/info_wrapper";
-import { CreateOrderSection } from "../../components/pages/orders/create";
+import { CreateOrUpdateOrderSection } from "../../components/pages/orders/create";
 import { ActiveOrderItems } from "../../components/pages/orders/active_order_items";
 import { OrderStatus, PaymentTypes } from "../../postgres/common/constants";
-import { getTotalOrderCost } from "../common";
+import { filterForOrdersWithActiveOrders, getTotalOrderCost } from "../common";
 import { orderCreateSuccess } from "../../components/pages/orders/order_create_success";
+import { UnfinishedOrdersComponent } from "../../components/pages/orders/unfinished_orders";
 
 /**
  * Triggered by clicking create new order button in the UI.
@@ -15,14 +16,31 @@ import { orderCreateSuccess } from "../../components/pages/orders/order_create_s
 export const createOrder = async (dataSource: DataSource) => {
 	try {
 		const initializeOrderResult = await initializeOrder(dataSource);
+		// We should always have identifiers[0].id from TypeORM
 		await initializePayment(dataSource, initializeOrderResult.identifiers[0].id);
 		const inventoryItems = await getInventoryItemsOrderByName(dataSource);
-		// We should always have identifiers.id
-		return CreateOrderSection(initializeOrderResult.identifiers[0].id, inventoryItems);
+		return CreateOrUpdateOrderSection(initializeOrderResult.identifiers[0].id, inventoryItems);
 
 	} catch (e) {
 		console.log(e);
-		return "error";
+		throw (e);
+	}
+};
+
+/**
+ * Almost the same as creation of an order, but allows for the resumption of an unfinished
+ * order.
+ *
+ * Order and payment have already been initialized, so we we just need to load the order
+ * items form the database.
+ */
+export const resumeOrder = async (dataSource: DataSource, orderId: number) => {
+	try {
+		const inventoryItems = await getInventoryItemsOrderByName(dataSource);
+		return CreateOrUpdateOrderSection(orderId, inventoryItems);
+	} catch (e) {
+		console.log(e);
+		throw (e);
 	}
 };
 
@@ -135,17 +153,32 @@ export const updateItemCounter = async (dataSource: DataSource, itemId: number, 
 /**
  * This returns a list of orders that have not been completed for one reason or another.
  *
+ * Criteria above has been updated; the order needs to be unfinished and also have active order items as well.
+ *
  * An example is a user clicking the back button by mistake.
  *
  * This endpoint returns a list of all unfinished orders, so that it can be resumed.
  */
-export const listOrders = async (dataSource: DataSource) => {
-	const result = await getOrders(dataSource);
-	if (result.length === 0) {
-		return InfoWrapper("No orders made yet. Create first order");
-	} else {
-		return "<div>Not implemented</div>";
+export const listUnfinishedOrders = async (dataSource: DataSource) => {
+	try {
+		const result = await getOrders(dataSource);
+		if (result.length === 0) {
+			return InfoWrapper("No orders made yet. Create first order");
+		} else {
+			const unfinishedOrders = await getUnfinishedOrderItems(dataSource);
+			const filteredOrders = filterForOrdersWithActiveOrders(unfinishedOrders);
+			if (filteredOrders.length === 0) {
+				return InfoWrapper("No recent unfinished orders.");
+			}
+			else {
+				return UnfinishedOrdersComponent(filteredOrders);
+			}
+		}
+	} catch (e) {
+		console.error(e);
+		throw (e);
 	}
+
 };
 
 /**

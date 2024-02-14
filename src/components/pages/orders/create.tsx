@@ -1,7 +1,7 @@
 import { InventoryEntity } from "../../../postgres/entities";
 import { InventoryItemSelectDuringOrder } from "./inventory_item_select_during_order";
 
-export const CreateOrderSection = (orderId: number, inventoryData: InventoryEntity[]) => {
+export const CreateOrUpdateOrderSection = (orderId: number, inventoryData: InventoryEntity[]) => {
     return (
         <div>
             <nav>
