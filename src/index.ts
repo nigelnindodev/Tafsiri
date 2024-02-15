@@ -1,5 +1,4 @@
 import "reflect-metadata";
-import { setTimeout } from "timers/promises";
 
 import { Elysia } from "elysia";
 import { html } from "@elysiajs/html";
@@ -95,7 +94,6 @@ const app = new Elysia()
     return listUnfinishedOrders(dataSource);
   })
   .post("/orders/confirm/:orderId/:paymentId", (ctx) => {
-    console.log("request received");
     return confirmOrder(dataSource, Number(ctx.params.orderId), Number(ctx.params.paymentId));
   })
   .post("/orders/item/updateQuantity/:itemId/:updateType", (ctx) => {

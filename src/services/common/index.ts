@@ -1,3 +1,11 @@
+/**
+ * setTimeout calls here are only used to slow down requests to simulate network latency, so that progress
+ * indicators in the UI can be confrimed to be working.
+ *
+ * TODO; Add catch all setTimeout middleware when environemnt is dev/local, and disable when prod
+ */
+import { setTimeout } from "timers/promises";
+
 import { OrderEntity, OrderItemEntity } from "../../postgres/entities";
 
 /**
@@ -60,4 +68,8 @@ export const createOrderItemsDescription = (orderItems: OrderItemEntity[]): stri
 		}
 	});
 	return returnString;
+};
+
+export const simulateNetworkLatency = async (latencyMilliseconds: number): Promise<void> => {
+	await setTimeout(latencyMilliseconds);
 };
