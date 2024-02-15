@@ -1,5 +1,5 @@
 import { DataSource, InsertResult, UpdateResult } from "typeorm"
-import { InventoryEntity, OrderEntity, OrderItemEntity, PaymentEntity, PaymentEntity } from "../entities";
+import { InventoryEntity, OrderEntity, OrderItemEntity, PaymentEntity } from "../entities";
 import { OrderStatus, PaymentStatus, PaymentTypes, TableNames } from "../common/constants";
 
 export const insertInventoryItem = async (
@@ -113,6 +113,10 @@ export const getOrderById = async (
     .getOne();
 };
 
+/**
+ * TODO: Might we need some limit on this. Definitely in the futre we'll also require offsets
+ * for pagination
+ */
 export const getOrders = async (
   dataSource: DataSource
 ): Promise<OrderEntity[]> => {
@@ -165,7 +169,7 @@ export const getCompletedOrders = async (
     .innerJoinAndSelect("order_item.inventory", TableNames.INVENTORY)
     .innerJoinAndSelect("orders.payment", TableNames.PAYMENT)
     .where("orders.status = :orderStatus", { orderStatus: OrderStatus.COMPLETED })
-    .orderBy({ "orders.id": "DESC" })
+    .orderBy({ "orders.id": "DESC" }) // TODO: maybe change order criteria i.e when payment was completed?
     .limit(50)
     .getMany();
 }
@@ -318,7 +322,6 @@ export const updatePaymentType = async (
   paymentId: number,
   paymentType: PaymentTypes
 ): Promise<UpdateResult> => {
-  console.log(`Updating payment type for payment with id [${paymentId}]`);
   return await dataSource.createQueryBuilder()
     .update(PaymentEntity)
     .set({ paymentType: paymentType })

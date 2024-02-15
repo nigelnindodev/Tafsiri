@@ -1,4 +1,12 @@
 import { DataSource } from "typeorm";
+/**
+ * setTimeout calls here are only used to slow down requests to simulate network latency, so that progress
+ * indicators in the UI can be confrimed to be working.
+ *
+ * TODO; Add catch all setTimeout middleware when environemnt is dev/local, and disable when prod
+ */
+import { setTimeout } from "timers/promises";
+
 import { completeOrder, completePayment, getInventoryItemsOrderByName, getOrderById, getOrderItemById, getOrderItemWithInventoryDetails, getOrderItemsInOrder, getOrders, getPaymentById, getPaymentByOrderId, getUnfinishedOrderItems, initializeOrder, initializePayment, insertOrderitem, toggleOrderItem, updateOrderItemCount, updatePaymentType } from "../../postgres/queries";
 import { InfoWrapper } from "../../components/common/info_wrapper";
 import { CreateOrUpdateOrderSection } from "../../components/pages/orders/create";
@@ -54,6 +62,7 @@ export const resumeOrder = async (dataSource: DataSource, orderId: number) => {
  */
 export const confirmOrder = async (dataSource: DataSource, orderId: number, payemntId: number) => {
 	try {
+		await setTimeout(2000);
 		const getOrderResult = await getOrderById(dataSource, orderId);
 		const getPaymentResult = await getPaymentByOrderId(dataSource, orderId);
 

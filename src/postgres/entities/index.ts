@@ -32,6 +32,8 @@ export class InventoryEntity {
 
   @Column("timestamptz", { nullable: false, default: () => "CURRENT_TIMESTAMP" })
   created_at: Date
+
+  //TODO: Add updated at (skipped for now as we don't want to lose our inventory items in the DB)
 }
 
 /**
@@ -60,7 +62,8 @@ export class OrderEntity {
   @Column("timestamptz", { nullable: false, default: () => "CURRENT_TIMESTAMP" })
   created_at: Date
 
-  //TODO: Add updated_at
+  @Column("timestamptz", { nullable: false, default: () => "CURRENT_TIMESTAMP", onUpdate: "CURRENT_TIMESTAMP" })
+  updated_at: Date
 }
 
 /**
@@ -116,5 +119,6 @@ export class PaymentEntity {
   @Column("timestamptz", { nullable: false, default: () => "CURRENT_TIMESTAMP" })
   created_at: Date
 
-  //TODO: Add updated_at
+  @Column("timestamptz", { nullable: false, default: () => "CURRENT_TIMESTAMP", onUpdate: "CURRENT_TIMESTAMP" })
+  updated_at: Date
 }
