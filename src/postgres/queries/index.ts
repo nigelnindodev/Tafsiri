@@ -180,7 +180,7 @@ export const getCompletedOrders = async (
     .innerJoinAndSelect("order_item.inventory", TableNames.INVENTORY)
     .innerJoinAndSelect("orders.payment", TableNames.PAYMENT)
     .where("orders.status = :orderStatus", { orderStatus: OrderStatus.COMPLETED })
-    .orderBy({ "orders.id": "DESC" }) // TODO: maybe change order criteria i.e when payment was completed?
+    .orderBy({ "payment.updated_at": "DESC" }) // TODO: maybe change order criteria i.e when payment was completed?
     //.limit(50)
     .getMany();
 }
@@ -202,7 +202,7 @@ export const getCompleteOrdersWithInventoryItems = async(
     .innerJoinAndSelect("orders.payment", TableNames.PAYMENT)
     .where("orders.status = :orderStatus", { orderStatus: OrderStatus.COMPLETED })
     .andWhere("inventory.id IN(:...ids)", {ids: inventoryIds})
-    .orderBy({ "orders.id": "DESC" }) // TODO: maybe change order criteria i.e when payment was completed?
+    .orderBy({ "payment.updated_at": "DESC" }) // TODO: maybe change order criteria i.e when payment was completed?
     //.limit(50)
     .getMany();
 };

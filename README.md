@@ -26,3 +26,4 @@ Open http://localhost:3000/ with your browser to see the result.
 - [] For HTMX sections where we replace all content(hx-target="outerHTML"), would be a good practice to place these sections in constants sine they are referenced in multiple locations. Should we then choose to rename them, we'll then just need to change once reference (DRY)
 - [] Use snake_case for all DB columns
 - [] Remove long polling in creation of an order
+- [] Fix bug with updatedAt not correctly propagating on DB level

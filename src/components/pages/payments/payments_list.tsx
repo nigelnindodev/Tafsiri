@@ -25,7 +25,7 @@ export const PaymentsListComponent = (orders: OrderEntity[]) => {
                                 <td>{createOrderItemsDescription(order.orderItems)}</td>
                                 <td><strong>{getTotalOrderCost(order.orderItems)}.00 KES</strong></td>
                                 <td>{order.payment.paymentType}</td>
-                                <td>{order.payment.created_at}</td>
+                                <td>{order.payment.updated_at}</td>
                             </tr>
                         )
                     })}
