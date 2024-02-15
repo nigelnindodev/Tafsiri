@@ -186,6 +186,28 @@ export const getCompletedOrders = async (
 }
 
 /**
+ * Fetches completed orders containing inventory items within the specified ids.
+ *
+ * Currently used to only fetch one inventory item, but using a select in for future proofing
+ * in case we'll need to fetch for multiple inventory items.
+ */
+export const getCompleteOrdersWithInventoryItems = async(
+  dataSource: DataSource,
+  inventoryIds: number[]
+): Promise<OrderEntity[]> => {
+  return await dataSource.getRepository(OrderEntity)
+    .createQueryBuilder(TableNames.ORDERS)
+    .innerJoinAndSelect("orders.orderItems", TableNames.ORDER_ITEM)
+    .innerJoinAndSelect("order_item.inventory", TableNames.INVENTORY)
+    .innerJoinAndSelect("orders.payment", TableNames.PAYMENT)
+    .where("orders.status = :orderStatus", { orderStatus: OrderStatus.COMPLETED })
+    .andWhere("inventory.id IN(:...ids)", {ids: inventoryIds})
+    .orderBy({ "orders.id": "DESC" }) // TODO: maybe change order criteria i.e when payment was completed?
+    //.limit(50)
+    .getMany();
+};
+
+/**
  * Get order item using its auto incrementing id.
  * Careful with this method, as corresponding relations will be null.
  */

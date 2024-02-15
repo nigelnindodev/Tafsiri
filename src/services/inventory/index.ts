@@ -1,5 +1,5 @@
 import { DataSource } from "typeorm";
-import { getInventoryItemById, getInventoryItems, getInventoryItemsByName, insertInventoryItem } from "../../postgres/queries";
+import { getCompleteOrdersWithInventoryItems, getInventoryItemById, getInventoryItems, getInventoryItemsByName, insertInventoryItem } from "../../postgres/queries";
 import { inventoryList } from "../../components/pages/inventory/inventory_list";
 import { ViewInventoryItemOrdersComponent } from "../../components/pages/inventory/view_inventory_orders";
 
@@ -21,6 +21,7 @@ export const listInventoryItems = async (dataSource: DataSource) => {
 
 export const searchInventoryItems = async (dataSource: DataSource, name: string) => {
 	const result = await getInventoryItemsByName(dataSource, name);
+
 	if (result.length === 0) {
 		return `<div class="container"><small>No inventory items match search criteria '${name}'</small></div>`;
 	} else {
@@ -29,13 +30,20 @@ export const searchInventoryItems = async (dataSource: DataSource, name: string)
 };
 
 export const listInventoryItemOrders = async (dataSource: DataSource, inventoryId: number) => {
-	const getInventoryItemResult = await getInventoryItemById(dataSource, inventoryId);
+	try {
+		const getInventoryItemResult = await getInventoryItemById(dataSource, inventoryId);
 
-	if (getInventoryItemResult === null) {
-		const message = `Failed to find inventory item with id [${inventoryId}]`;
-		console.error(message);
-		throw new Error(message);
+		if (getInventoryItemResult === null) {
+			const message = `Failed to find inventory item with id [${inventoryId}]`;
+			console.error(message);
+			throw new Error(message);
+		}
+
+		const ordersWithInventoryItem = await getCompleteOrdersWithInventoryItems(dataSource, [getInventoryItemResult.id]);
+
+		return ViewInventoryItemOrdersComponent(getInventoryItemResult, ordersWithInventoryItem);
+	} catch (e) {
+		console.error(e);
+		throw (e);
 	}
-
-	return ViewInventoryItemOrdersComponent(getInventoryItemResult, []);
 };
