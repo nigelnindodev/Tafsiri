@@ -34,6 +34,17 @@ export const getInventoryItems = async (
   return data;
 };
 
+export const getInventoryItemById = async(
+  dataSource: DataSource,
+  inventoryId: number
+): Promise<InventoryEntity | null> => {
+  return await dataSource.createQueryBuilder()
+    .select(TableNames.INVENTORY)
+    .from(InventoryEntity, TableNames.INVENTORY)
+    .where("id = :id", {id: inventoryId})
+    .getOne();
+};
+
 /**
  * Query is used to populate the dropdown of inventory items in the create order section of
  * the UI.
@@ -153,7 +164,7 @@ export const getUnfinishedOrderItems = async (
     .innerJoinAndSelect("order_item.inventory", TableNames.INVENTORY)
     .where("orders.status != :orderStatus", { orderStatus: OrderStatus.COMPLETED })
     .orderBy({ "orders.id": "DESC" })
-    .limit(10)
+    //.limit(10)
     .getMany();
 };
 
@@ -170,7 +181,7 @@ export const getCompletedOrders = async (
     .innerJoinAndSelect("orders.payment", TableNames.PAYMENT)
     .where("orders.status = :orderStatus", { orderStatus: OrderStatus.COMPLETED })
     .orderBy({ "orders.id": "DESC" }) // TODO: maybe change order criteria i.e when payment was completed?
-    .limit(50)
+    //.limit(50)
     .getMany();
 }
 

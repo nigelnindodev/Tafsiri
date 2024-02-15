@@ -46,7 +46,7 @@ export class InventoryEntity {
  * TODO: How do we handle changing of an order after it has been created?
  */
 @Entity({ name: TableNames.ORDERS })
-export class OrderEntity {
+export class OrderEntity { // TODO: Rename to OrdersEntity
   @PrimaryGeneratedColumn()
   id: number
 

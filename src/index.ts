@@ -14,7 +14,7 @@ import { PaymentsPage } from "./components/pages/payments";
 import { InventoryPage } from "./components/pages/inventory";
 import { CreateInventorySection } from "./components/pages/inventory/create";
 import { ViewInventorySection } from "./components/pages/inventory/inventory";
-import { createInventoryItem, listInventoryItems, searchInventoryItems } from "./services/inventory";
+import { createInventoryItem, listInventoryItemOrders, listInventoryItems, searchInventoryItems } from "./services/inventory";
 import { ViewOrdersSection } from "./components/pages/orders/orders";
 import { activeOrders, addOrRemoveOrderItem, confirmOrder, createOrder, listUnfinishedOrders, resumeOrder, updateItemCounter, updatePaymentTypeForOrder } from "./services/orders";
 import { PaymentTypes } from "./postgres/common/constants";
@@ -53,22 +53,26 @@ const app = new Elysia()
   .get("/inventory", () => {
     return InventoryPage;
   })
-  .get("inventory/create", () => {
+  .get("/inventory/create", () => {
     return CreateInventorySection;
   })
-  .get("inventory/list", () => {
+  .get("/inventory/list", () => {
     return ViewInventorySection;
   })
-  .get("inventory/list/all", async () => {
+  .get("/inventory/list/all", async () => {
     return await listInventoryItems(dataSource);
   })
-  .get("inventory/list/search", async (ctx) => {
+  .get("/inventory/list/search", async (ctx) => {
     const searchTerm = ctx.query.search;
     if (searchTerm === "") {
       return await listInventoryItems(dataSource);
     } else {
       return await searchInventoryItems(dataSource, searchTerm);
     }
+  })
+  .get("/inventory/orders/:inventoryId", async (ctx) => {
+    console.log(ctx);
+    return await listInventoryItemOrders(dataSource, Number(ctx.params.inventoryId)) ;
   })
   .post("/inventory/create", async (ctx) => {
     const result = await createInventoryItem(dataSource, ctx.body.name, Number(ctx.body.price));
@@ -77,40 +81,40 @@ const app = new Elysia()
   .get("/orders", () => {
     return OrdersPage;
   })
-  .get("/orders/create", () => {
-    return createOrder(dataSource);
+  .get("/orders/create", async () => {
+    return await createOrder(dataSource);
   })
-  .get("/orders/resume/:orderId", (ctx) => {
-    return resumeOrder(dataSource, Number(ctx.params.orderId));
+  .get("/orders/resume/:orderId", async (ctx) => {
+    return await resumeOrder(dataSource, Number(ctx.params.orderId));
   })
-  .get("/orders/active/:orderId", (ctx) => {
-    return activeOrders(dataSource, Number(ctx.params.orderId));
+  .get("/orders/active/:orderId", async (ctx) => {
+    return await activeOrders(dataSource, Number(ctx.params.orderId));
   })
   .get("/orders/list", () => {
     return ViewOrdersSection;
   })
-  .get("/orders/list/all", () => {
+  .get("/orders/list/all", async () => {
     //TODO: Change "all" to "unfinished"
-    return listUnfinishedOrders(dataSource);
+    return await listUnfinishedOrders(dataSource);
   })
-  .post("/orders/confirm/:orderId/:paymentId", (ctx) => {
-    return confirmOrder(dataSource, Number(ctx.params.orderId), Number(ctx.params.paymentId));
+  .post("/orders/confirm/:orderId/:paymentId", async (ctx) => {
+    return await confirmOrder(dataSource, Number(ctx.params.orderId), Number(ctx.params.paymentId));
   })
-  .post("/orders/item/updateQuantity/:itemId/:updateType", (ctx) => {
-    return updateItemCounter(dataSource, Number(ctx.params.itemId), ctx.params.updateType);
+  .post("/orders/item/updateQuantity/:itemId/:updateType", async (ctx) => {
+    return await updateItemCounter(dataSource, Number(ctx.params.itemId), ctx.params.updateType);
   })
-  .post("/orders/item/change/:orderId/:inventoryId", (ctx) => {
-    return addOrRemoveOrderItem(dataSource, Number(ctx.params.orderId), Number(ctx.params.inventoryId));
+  .post("/orders/item/change/:orderId/:inventoryId", async (ctx) => {
+    return await addOrRemoveOrderItem(dataSource, Number(ctx.params.orderId), Number(ctx.params.inventoryId));
   })
-  .post("/orders/payment/updateType/:paymentId", (ctx) => {
+  .post("/orders/payment/updateType/:paymentId", async (ctx) => {
     const paymentTypeString = ctx.body.paymentType as string;
-    return updatePaymentTypeForOrder(dataSource, Number(ctx.params.paymentId), paymentTypeString.toUpperCase() as PaymentTypes);
+    return await updatePaymentTypeForOrder(dataSource, Number(ctx.params.paymentId), paymentTypeString.toUpperCase() as PaymentTypes);
   })
   .get("/payments", () => {
     return PaymentsPage;
   })
-  .get("payments/list", () => {
-    return listPayments(dataSource);
+  .get("payments/list", async () => {
+    return await listPayments(dataSource);
   })
   .get("/pico", () => {
     return picoPage;

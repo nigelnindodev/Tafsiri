@@ -1,6 +1,6 @@
 import { InventoryEntity } from "../../../postgres/entities";
 
-export const inventoryList = (data: InventoryEntity[]) => {
+export const inventoryList = (inventoryItems: InventoryEntity[]) => {
     return (
         <div>
             <h6>Inventory List</h6>
@@ -14,13 +14,13 @@ export const inventoryList = (data: InventoryEntity[]) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {data.map(item => {
+                    {inventoryItems.map(inventoryItem=> {
                         return (
                             <tr>
-                                <td>{item.id}</td>
-                                <td>{item.name}</td>
-                                <td><strong>{item.price}.00 KES</strong></td>
-                                <td><button role="button" class="secondary">View Orders</button><button role="button" class="contrast outline">Edit</button></td>
+                                <td>{inventoryItem.id}</td>
+                                <td>{inventoryItem.name}</td>
+                                <td><strong>{inventoryItem.price}.00 KES</strong></td>
+                                <td><button role="button" class="secondary" hx-get={`/inventory/orders/${inventoryItem.id}`} hx-target="#inventory-section">View Orders</button><button role="button" class="contrast outline">Edit</button></td>
                             </tr>
                         );
                     })}
