@@ -315,12 +315,13 @@ export const getPaymentByOrderId = async (
 
 export const updatePaymentType = async (
   dataSource: DataSource,
-  id: number,
+  paymentId: number,
   paymentType: PaymentTypes
 ): Promise<UpdateResult> => {
+  console.log(`Updating payment type for payment with id [${paymentId}]`);
   return await dataSource.createQueryBuilder()
     .update(PaymentEntity)
     .set({ paymentType: paymentType })
-    .where("payment.id = id", { id: id })
+    .where("payment.id = :id", { id: paymentId })
     .execute();
 };
