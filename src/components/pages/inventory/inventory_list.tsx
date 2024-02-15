@@ -10,6 +10,7 @@ export const inventoryList = (data: InventoryEntity[]) => {
                         <th>Id</th>
                         <th>Name</th>
                         <th>Price</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -19,8 +20,7 @@ export const inventoryList = (data: InventoryEntity[]) => {
                                 <td>{item.id}</td>
                                 <td>{item.name}</td>
                                 <td><strong>{item.price}.00 KES</strong></td>
-                                <td><button role="button" class="secondary">View Orders</button></td>
-                                <td><button role="button" class="contrast outline">Edit</button></td>
+                                <td><button role="button" class="secondary">View Orders</button><button role="button" class="contrast outline">Edit</button></td>
                             </tr>
                         );
                     })}
