@@ -34,14 +34,14 @@ export const getInventoryItems = async (
   return data;
 };
 
-export const getInventoryItemById = async(
+export const getInventoryItemById = async (
   dataSource: DataSource,
   inventoryId: number
 ): Promise<InventoryEntity | null> => {
   return await dataSource.createQueryBuilder()
     .select(TableNames.INVENTORY)
     .from(InventoryEntity, TableNames.INVENTORY)
-    .where("id = :id", {id: inventoryId})
+    .where("id = :id", { id: inventoryId })
     .getOne();
 };
 
@@ -108,7 +108,10 @@ export const completeOrder = async (
 ): Promise<UpdateResult> => {
   return await dataSource.createQueryBuilder()
     .update(OrderEntity)
-    .set({ status: OrderStatus.COMPLETED })
+    .set({
+      status: OrderStatus.COMPLETED,
+      updated_at: new Date()
+    })
     .where("orders.id = :id", { id: orderId })
     .execute();
 };
@@ -154,6 +157,7 @@ export const getOrderItemsInOrder = async (
 
 /**
  * Fetches latest unfinished orders togerther with its order items, limiting to the last 10 items. 
+ * Should be ordered by the order id DESC so that the latest unfinisehd order is at the top.
  */
 export const getUnfinishedOrderItems = async (
   dataSource: DataSource
@@ -191,7 +195,7 @@ export const getCompletedOrders = async (
  * Currently used to only fetch one inventory item, but using a select in for future proofing
  * in case we'll need to fetch for multiple inventory items.
  */
-export const getCompleteOrdersWithInventoryItems = async(
+export const getCompleteOrdersWithInventoryItems = async (
   dataSource: DataSource,
   inventoryIds: number[]
 ): Promise<OrderEntity[]> => {
@@ -201,7 +205,7 @@ export const getCompleteOrdersWithInventoryItems = async(
     .innerJoinAndSelect("order_item.inventory", TableNames.INVENTORY)
     .innerJoinAndSelect("orders.payment", TableNames.PAYMENT)
     .where("orders.status = :orderStatus", { orderStatus: OrderStatus.COMPLETED })
-    .andWhere("inventory.id IN(:...ids)", {ids: inventoryIds})
+    .andWhere("inventory.id IN(:...ids)", { ids: inventoryIds })
     .orderBy({ "payment.updated_at": "DESC" }) // TODO: maybe change order criteria i.e when payment was completed?
     //.limit(50)
     .getMany();
@@ -334,7 +338,8 @@ export const completePayment = async (
     .update(PaymentEntity)
     .set({
       amount: amount,
-      paymentStatus: PaymentStatus.COMPLETED
+      paymentStatus: PaymentStatus.COMPLETED,
+      updated_at: new Date()
     }).where("payment.id = :id", { id: paymentId })
     .execute();
 };
