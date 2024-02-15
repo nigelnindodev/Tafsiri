@@ -1,5 +1,5 @@
 import { DataSource } from "typeorm";
-import { completeOrder, completePayment, getInventoryItemsOrderByName, getOrderById, getOrderItemById, getOrderItemWithInventoryDetails, getOrderItemsInOrder, getOrders, getPaymentById, getPaymentByOrderId, getUnfinishedOrderItems, initializeOrder, initializePayment, insertOrderitem, toggleOrderItem, updateOrderItemCount, updatePaymentType } from "../../postgres/queries";
+import * as queries from "../../postgres/queries";
 import { InfoWrapper } from "../../components/common/info_wrapper";
 import { CreateOrUpdateOrderSection } from "../../components/pages/orders/create";
 import { ActiveOrderItems } from "../../components/pages/orders/active_order_items";
@@ -15,10 +15,10 @@ import { UnfinishedOrdersComponent } from "../../components/pages/orders/unfinis
  */
 export const createOrder = async (dataSource: DataSource) => {
 	try {
-		const initializeOrderResult = await initializeOrder(dataSource);
+		const initializeOrderResult = await queries.initializeOrder(dataSource);
 		// We should always have identifiers[0].id from TypeORM
-		await initializePayment(dataSource, initializeOrderResult.identifiers[0].id);
-		const inventoryItems = await getInventoryItemsOrderByName(dataSource);
+		await queries.initializePayment(dataSource, initializeOrderResult.identifiers[0].id);
+		const inventoryItems = await queries.getInventoryItemsOrderByName(dataSource);
 		return CreateOrUpdateOrderSection(initializeOrderResult.identifiers[0].id, inventoryItems);
 
 	} catch (e) {
@@ -36,7 +36,7 @@ export const createOrder = async (dataSource: DataSource) => {
  */
 export const resumeOrder = async (dataSource: DataSource, orderId: number) => {
 	try {
-		const inventoryItems = await getInventoryItemsOrderByName(dataSource);
+		const inventoryItems = await queries.getInventoryItemsOrderByName(dataSource);
 		return CreateOrUpdateOrderSection(orderId, inventoryItems);
 	} catch (e) {
 		console.log(e);
@@ -55,8 +55,8 @@ export const resumeOrder = async (dataSource: DataSource, orderId: number) => {
 export const confirmOrder = async (dataSource: DataSource, orderId: number, payemntId: number) => {
 	try {
 		await simulateNetworkLatency(2000);
-		const getOrderResult = await getOrderById(dataSource, orderId);
-		const getPaymentResult = await getPaymentByOrderId(dataSource, orderId);
+		const getOrderResult = await queries.getOrderById(dataSource, orderId);
+		const getPaymentResult = await queries.getPaymentByOrderId(dataSource, orderId);
 
 		// ensure that both values are not null
 		if (getOrderResult === null || getPaymentResult === null) {
@@ -82,10 +82,10 @@ export const confirmOrder = async (dataSource: DataSource, orderId: number, paye
 		// get all the items in the order
 		// if confirm button is shown in the UI, there should be active items in the order
 		// We can go ahead and complete the order and payment as well
-		const orderItems = await getOrderItemsInOrder(dataSource, orderId);
+		const orderItems = await queries.getOrderItemsInOrder(dataSource, orderId);
 
-		await completeOrder(dataSource, orderId);
-		await completePayment(dataSource, payemntId, getTotalOrderCost(filterOrderItemsForActiveItems(orderItems)));
+		await queries.completeOrder(dataSource, orderId);
+		await queries.completePayment(dataSource, payemntId, getTotalOrderCost(filterOrderItemsForActiveItems(orderItems)));
 		return orderCreateSuccess;
 	} catch (e) {
 		console.log(e);
@@ -95,8 +95,8 @@ export const confirmOrder = async (dataSource: DataSource, orderId: number, paye
 
 export const activeOrders = async (dataSource: DataSource, orderId: number) => {
 	try {
-		const orderItems = await getOrderItemsInOrder(dataSource, orderId);
-		const getPaymentResult = await getPaymentByOrderId(dataSource, orderId);
+		const orderItems = await queries.getOrderItemsInOrder(dataSource, orderId);
+		const getPaymentResult = await queries.getPaymentByOrderId(dataSource, orderId);
 		if (getPaymentResult === null) {
 			const message = `Failed to get payment for order with id: ${orderId}`;
 			console.error(message);
@@ -129,7 +129,7 @@ export const updateItemCounter = async (dataSource: DataSource, itemId: number, 
 			return;
 		}
 
-		const orderItem = await getOrderItemById(dataSource, itemId);
+		const orderItem = await queries.getOrderItemById(dataSource, itemId);
 
 		// ignore if order item is null
 		if (orderItem === null) {
@@ -143,7 +143,7 @@ export const updateItemCounter = async (dataSource: DataSource, itemId: number, 
 			return;
 		}
 
-		await updateOrderItemCount(dataSource, itemId, updateType === "DEC" ? orderItem.quantity - 1 : orderItem.quantity + 1);
+		await queries.updateOrderItemCount(dataSource, itemId, updateType === "DEC" ? orderItem.quantity - 1 : orderItem.quantity + 1);
 
 	} catch (e) {
 		console.error(e);
@@ -162,11 +162,11 @@ export const updateItemCounter = async (dataSource: DataSource, itemId: number, 
  */
 export const listUnfinishedOrders = async (dataSource: DataSource) => {
 	try {
-		const result = await getOrders(dataSource);
+		const result = await queries.getOrders(dataSource);
 		if (result.length === 0) {
 			return InfoWrapper("No orders made yet. Create first order");
 		} else {
-			const unfinishedOrders = await getUnfinishedOrderItems(dataSource);
+			const unfinishedOrders = await queries.getUnfinishedOrderItems(dataSource);
 			const filteredOrders = filterForOrdersWithActiveOrders(unfinishedOrders);
 			if (filteredOrders.length === 0) {
 				return InfoWrapper("No recent unfinished orders.");
@@ -191,15 +191,15 @@ export const listUnfinishedOrders = async (dataSource: DataSource) => {
  */
 export const addOrRemoveOrderItem = async (dataSource: DataSource, orderId: number, inventoryId: number) => {
 	try {
-		const orderItem = await getOrderItemWithInventoryDetails(dataSource, orderId, inventoryId);
+		const orderItem = await queries.getOrderItemWithInventoryDetails(dataSource, orderId, inventoryId);
 		console.log(orderItem);
 
 		if (orderItem === null) {
 			console.log("Item doesn't exist in order, creating it.");
-			await insertOrderitem(dataSource, orderId, inventoryId);
+			await queries.insertOrderitem(dataSource, orderId, inventoryId);
 		} else {
 			console.log("Item already exists in order. Toggling active state");
-			await toggleOrderItem(dataSource, orderItem.id, !orderItem.active);
+			await queries.toggleOrderItem(dataSource, orderItem.id, !orderItem.active);
 		}
 	} catch (e) {
 		console.error(e);
@@ -212,7 +212,7 @@ export const addOrRemoveOrderItem = async (dataSource: DataSource, orderId: numb
  */
 export const updatePaymentTypeForOrder = async (dataSource: DataSource, paymentId: number, paymentType: PaymentTypes) => {
 	try {
-		const getPaymentResult = await getPaymentById(dataSource, paymentId);
+		const getPaymentResult = await queries.getPaymentById(dataSource, paymentId);
 
 		if (getPaymentResult === null) {
 			const message = `Cannot update payment type as payment with id: ${paymentId} not found`;
@@ -220,7 +220,7 @@ export const updatePaymentTypeForOrder = async (dataSource: DataSource, paymentI
 			throw new Error(message);
 		}
 
-		await updatePaymentType(dataSource, paymentId, paymentType);
+		await queries.updatePaymentType(dataSource, paymentId, paymentType);
 	} catch (e) {
 		console.error(e);
 		throw (e);

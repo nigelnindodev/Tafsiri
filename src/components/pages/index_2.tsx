@@ -4,7 +4,8 @@ export const newIndexPage = (
             <title>Epic Hideout</title>
             <link rel="stylesheet" href="http://localhost:3000/public/pico.min.css" />
             <link rel="stylesheet" href="http://localhost:3000/public/custom.css" />
-            <script src="http://localhost:3000/public/htmx.min.js"></script>
+            <script src="http://localhost:3000/public/htmx.min.js" />
+            <script src="http://localhost:3000/public/theme_switcher.js" />
         </head>
         <body>
             <main class="container">
