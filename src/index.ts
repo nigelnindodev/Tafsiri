@@ -18,6 +18,7 @@ import { createInventoryItem, listInventoryItems, searchInventoryItems } from ".
 import { ViewOrdersSection } from "./components/pages/orders/orders";
 import { activeOrders, addOrRemoveOrderItem, confirmOrder, createOrder, listUnfinishedOrders, resumeOrder, updateItemCounter, updatePaymentTypeForOrder } from "./services/orders";
 import { PaymentTypes } from "./postgres/common/constants";
+import { listPayments } from "./services/payments";
 
 export interface Config {
   postgresUser: string;
@@ -108,6 +109,9 @@ const app = new Elysia()
   })
   .get("/payments", () => {
     return PaymentsPage;
+  })
+  .get("payments/list", () => {
+    return listPayments(dataSource);
   })
   .get("/pico", () => {
     return picoPage;

@@ -6,7 +6,7 @@ export const PaymentsPage = (
             </h1>
         </header>
         <body>
-
+            <div id="payments-section" hx-get="/payments/list" hx-trigger="load" />
         </body>
     </article>
 );

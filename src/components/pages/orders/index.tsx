@@ -6,7 +6,7 @@ export const OrdersPage = (
             </h1>
         </header>
         <body>
-            <div id="orders-section" hx-get="/orders/list" hx-trigger="load"></div>
+            <div id="orders-section" hx-get="/orders/list" hx-trigger="load" />
         </body>
     </article>
 );

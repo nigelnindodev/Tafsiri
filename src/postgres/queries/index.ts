@@ -1,5 +1,5 @@
 import { DataSource, InsertResult, UpdateResult } from "typeorm"
-import { InventoryEntity, OrderEntity, OrderItemEntity, PaymentEntity } from "../entities";
+import { InventoryEntity, OrderEntity, OrderItemEntity, PaymentEntity, PaymentEntity } from "../entities";
 import { OrderStatus, PaymentStatus, PaymentTypes, TableNames } from "../common/constants";
 
 export const insertInventoryItem = async (
@@ -152,6 +152,23 @@ export const getUnfinishedOrderItems = async (
     .limit(10)
     .getMany();
 };
+
+/**
+ * Fetches all completed orders with all its details (Order Items, Inventory Details, Payment Details)
+ */
+export const getCompletedOrders = async (
+  dataSource: DataSource
+): Promise<OrderEntity[]> => {
+  return await dataSource.getRepository(OrderEntity)
+    .createQueryBuilder(TableNames.ORDERS)
+    .innerJoinAndSelect("orders.orderItems", TableNames.ORDER_ITEM)
+    .innerJoinAndSelect("order_item.inventory", TableNames.INVENTORY)
+    .innerJoinAndSelect("orders.payment", TableNames.PAYMENT)
+    .where("orders.status = :orderStatus", { orderStatus: OrderStatus.COMPLETED })
+    .orderBy({ "orders.id": "DESC" })
+    .limit(50)
+    .getMany();
+}
 
 /**
  * Get order item using its auto incrementing id.

@@ -45,3 +45,19 @@ export const filterForOrdersWithActiveOrders = (orders: OrderEntity[]): OrderEnt
 export const filterOrderItemsForActiveItems = (orderItems: OrderItemEntity[]): OrderItemEntity[] => {
 	return orderItems.filter(item => item.active === true);
 }
+
+/**
+ * Creates a string description of order items from an array.
+ * Expects OrderItemEntity obbjects to also have `inventory` property defined.
+ */
+export const createOrderItemsDescription = (orderItems: OrderItemEntity[]): string => {
+	let returnString = "";
+	orderItems.forEach((item, index) => {
+		if (index < orderItems.length - 1) {
+			returnString = returnString + `${item.quantity} x ${item.inventory.name} <ins>|</ins> `;
+		} else {
+			returnString = returnString + `${item.quantity} x ${item.inventory.name}`;
+		}
+	});
+	return returnString;
+};

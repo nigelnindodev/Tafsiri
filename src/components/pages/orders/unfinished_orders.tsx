@@ -1,18 +1,10 @@
 import { OrderEntity, OrderItemEntity } from "../../../postgres/entities";
-import { filterOrderItemsForActiveItems, getTotalOrderCost } from "../../../services/common";
+import { createOrderItemsDescription, filterOrderItemsForActiveItems, getTotalOrderCost } from "../../../services/common";
 
 const unfinishedItemRowDescription = (orderItems: OrderItemEntity[]): string => {
     // We should have some active items due to 'getUnfinishedOrderItems' query
     const activeOrderItems = filterOrderItemsForActiveItems(orderItems);
-    let finalString = "";
-    activeOrderItems.forEach((item, index) => {
-        if (index < activeOrderItems.length - 1) {
-            finalString = finalString + `${item.quantity} x ${item.inventory.name} | `;
-        } else {
-            finalString = finalString + `${item.quantity} x ${item.inventory.name}`;
-        }
-    });
-    return finalString;
+    return createOrderItemsDescription(activeOrderItems);
 };
 
 export const UnfinishedOrdersComponent = (unfinishedOrderitems: OrderEntity[]) => {
