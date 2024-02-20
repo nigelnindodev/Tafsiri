@@ -19,7 +19,10 @@ export const createOrder = async (dataSource: DataSource) => {
 		// We should always have identifiers[0].id from TypeORM
 		await queries.initializePayment(dataSource, initializeOrderResult.identifiers[0].id);
 		const inventoryItems = await queries.getInventoryItemsOrderByName(dataSource);
-		return CreateOrUpdateOrderSection(initializeOrderResult.identifiers[0].id, inventoryItems);
+		/**
+		 * Return empty array for orderItemsInOrder since ther order was just created.
+		 */
+		return CreateOrUpdateOrderSection(initializeOrderResult.identifiers[0].id, inventoryItems, []);
 
 	} catch (e) {
 		console.log(e);
@@ -37,7 +40,8 @@ export const createOrder = async (dataSource: DataSource) => {
 export const resumeOrder = async (dataSource: DataSource, orderId: number) => {
 	try {
 		const inventoryItems = await queries.getInventoryItemsOrderByName(dataSource);
-		return CreateOrUpdateOrderSection(orderId, inventoryItems);
+		const orderItems = await queries.getOrderItemsInOrder(dataSource, orderId);
+		return CreateOrUpdateOrderSection(orderId, inventoryItems, filterOrderItemsForActiveItems(orderItems));
 	} catch (e) {
 		console.log(e);
 		throw (e);
