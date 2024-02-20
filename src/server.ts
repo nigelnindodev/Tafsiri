@@ -13,13 +13,18 @@ import { paymentRoutes } from "./routes/payments";
 
 /**
  * We're initializing the application server with the DataSource as a parameter so that we can
- * easily replace the data source with a test database instance.
+ * replace the data source with a test database instance, for easier unit testing.
  */
 export const createApplicationServer = (dataSource: DataSource) => {
   const app = new Elysia()
     .use(swagger())
     .use(staticPlugin())
     .use(html())
+    // Ensures that all 500 errors are logged for API routes 
+    // TODO: Should we also log third party errors and add this middleware at the top? Seems like a solid idea.
+    .onError(({ code, error }) => {
+      console.error(`API error occured with code [${code}]: ${error}`);
+    })
     .use(inventoryRoutes(dataSource))
     .use(orderRoutes(dataSource))
     .use(paymentRoutes(dataSource))

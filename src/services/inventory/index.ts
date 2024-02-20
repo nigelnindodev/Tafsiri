@@ -2,11 +2,11 @@ import { DataSource } from "typeorm";
 import * as queries from "../../postgres/queries";
 import { inventoryList } from "../../components/pages/inventory/inventory_list";
 import { ViewInventoryItemOrdersComponent } from "../../components/pages/inventory/view_inventory_orders";
+import { InfoWrapper } from "../../components/common/info_wrapper";
 
 export const createInventoryItem = async (dataSource: DataSource, name: string, price: number) => {
-	const result = await queries.insertInventoryItem(dataSource, { name, price });
-
-	return `<div class="container">small>Added ${name} to inventory list</small></div>`;
+	await queries.insertInventoryItem(dataSource, { name, price });
+	return InfoWrapper(`Added ${name} to inventory list`);
 };
 
 export const listInventoryItems = async (dataSource: DataSource) => {
