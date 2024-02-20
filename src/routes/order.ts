@@ -1,4 +1,6 @@
 import Elysia from "elysia";
+import { z } from "zod";
+
 import { DataSource } from "typeorm";
 import { OrdersPage } from "../components/pages/orders";
 import { activeOrders, addOrRemoveOrderItem, confirmOrder, createOrder, listUnfinishedOrders, resumeOrder, updateItemCounter, updatePaymentTypeForOrder } from "../services/orders";
@@ -6,20 +8,45 @@ import { ViewOrdersSection } from "../components/pages/orders/orders";
 import { PaymentTypes } from "../postgres/common/constants";
 import { ServerHxTriggerEvents } from "../services/common/constants";
 
+const orderSchema = {
+  activeOrdersParams: z.object({
+    orderId: z.number()
+  }),
+  resumeOrderParams: z.object({
+    orderId: z.number()
+  }),
+  confirmOrderParams: z.object({
+    orderId: z.number(),
+    paymentId: z.number()
+  }),
+  updateItemCounterParams: z.object({
+    itemId: z.number(),
+    updateType: z.string().length(3)
+  }),
+  addOrRemoveItemParams: z.object({
+    orderId: z.number(),
+    inventoryId: z.number()
+  }),
+  updatePaymentTypeForOrderBody: z.object({
+    paymentType: z.nativeEnum(PaymentTypes)
+  }),
+  updatePaymentTypeForOrderParams: z.object({
+    paymentId: z.number()
+  })
+};
+
 export const orderRoutes = (dataSource: DataSource) => {
   const app = new Elysia({ prefix: "/orders" });
   app
     .get("/", () => {
       return OrdersPage;
     })
+    .get("/active/:orderId", async (ctx) => {
+      const validateResult = orderSchema.activeOrdersParams.parse(ctx.params);
+      return await activeOrders(dataSource, validateResult.orderId);
+    })
     .get("/create", async () => {
       return await createOrder(dataSource);
-    })
-    .get("/resume/:orderId", async (ctx) => {
-      return await resumeOrder(dataSource, Number(ctx.params.orderId));
-    })
-    .get("/active/:orderId", async (ctx) => {
-      return await activeOrders(dataSource, Number(ctx.params.orderId));
     })
     .get("/list", () => {
       return ViewOrdersSection;
@@ -28,22 +55,30 @@ export const orderRoutes = (dataSource: DataSource) => {
       //TODO: Change "all" to "unfinished"
       return await listUnfinishedOrders(dataSource);
     })
+    .get("/resume/:orderId", async (ctx) => {
+      const validateResult = orderSchema.resumeOrderParams.parse(ctx.params);
+      return await resumeOrder(dataSource, validateResult.orderId);
+    })
     .post("/confirm/:orderId/:paymentId", async (ctx) => {
-      return await confirmOrder(dataSource, Number(ctx.params.orderId), Number(ctx.params.paymentId));
+      const validateResult = orderSchema.confirmOrderParams.parse(ctx.params);
+      return await confirmOrder(dataSource, validateResult.orderId, validateResult.paymentId);
     })
     .post("/item/updateQuantity/:itemId/:updateType", async (ctx) => {
-      const result = await updateItemCounter(dataSource, Number(ctx.params.itemId), ctx.params.updateType);
+      const validateResult = orderSchema.updateItemCounterParams.parse(ctx.params);
+      const result = await updateItemCounter(dataSource, validateResult.itemId, validateResult.updateType);
       ctx.set.headers["HX-Trigger"] = ServerHxTriggerEvents.REFRESH_ORDER;
       return result;
     })
     .post("/item/change/:orderId/:inventoryId", async (ctx) => {
-      const result = await addOrRemoveOrderItem(dataSource, Number(ctx.params.orderId), Number(ctx.params.inventoryId));
+      const validateResult = orderSchema.addOrRemoveItemParams.parse(ctx.params);
+      const result = await addOrRemoveOrderItem(dataSource, validateResult.orderId, validateResult.inventoryId);
       ctx.set.headers["HX-Trigger"] = ServerHxTriggerEvents.REFRESH_ORDER;
       return result;
     })
     .post("/payment/updateType/:paymentId", async (ctx) => {
-      const paymentTypeString = ctx.body.paymentType as string;
-      const result = await updatePaymentTypeForOrder(dataSource, Number(ctx.params.paymentId), paymentTypeString.toUpperCase() as PaymentTypes);
+      const validateBodyResult = orderSchema.updatePaymentTypeForOrderBody.parse(ctx.body);
+      const validateParamsResult = orderSchema.updatePaymentTypeForOrderParams.parse(ctx.params);
+      const result = await updatePaymentTypeForOrder(dataSource, validateParamsResult.paymentId, validateBodyResult.paymentType);
       ctx.set.headers["HX-Trigger"] = ServerHxTriggerEvents.REFRESH_ORDER;
       return result;
     });
