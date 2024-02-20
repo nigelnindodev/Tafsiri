@@ -12,7 +12,7 @@ export class PostgresDataSourceSingleton {
     if (!PostgresDataSourceSingleton.dataSource) {
       const dataSource = new DataSource({
         type: "postgres",
-        host: config.postgressHost,
+        host: config.postgresHost,
         port: config.postgresPort,
         username: config.postgresUser,
         password: config.postgresPassword,
