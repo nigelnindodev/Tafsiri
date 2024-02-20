@@ -27,8 +27,8 @@ export const ViewInventoryItemOrdersComponent = (inventoryItem: InventoryEntity,
                             {orders.map(order => {
                                 return (
                                     <tr>
-                                        <td>{createOrderItemsDescription(order.orderItems)}</td>
-                                        <td>{getTotalOrderCost(order.orderItems)}</td>
+                                        <td>{createOrderItemsDescription(order.order_items)}</td>
+                                        <td>{getTotalOrderCost(order.order_items)}</td>
                                         <td>{order.payment.updated_at}</td>
                                     </tr>
                                 )

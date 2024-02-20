@@ -164,7 +164,7 @@ export const getUnfinishedOrderItems = async (
 ): Promise<OrderEntity[]> => {
   return await dataSource.getRepository(OrderEntity)
     .createQueryBuilder(TableNames.ORDERS)
-    .innerJoinAndSelect("orders.orderItems", TableNames.ORDER_ITEM)
+    .innerJoinAndSelect("orders.order_items", TableNames.ORDER_ITEM)
     .innerJoinAndSelect("order_item.inventory", TableNames.INVENTORY)
     .where("orders.status != :orderStatus", { orderStatus: OrderStatus.COMPLETED })
     .orderBy({ "orders.id": "DESC" })
@@ -180,7 +180,7 @@ export const getCompletedOrders = async (
 ): Promise<OrderEntity[]> => {
   return await dataSource.getRepository(OrderEntity)
     .createQueryBuilder(TableNames.ORDERS)
-    .innerJoinAndSelect("orders.orderItems", TableNames.ORDER_ITEM)
+    .innerJoinAndSelect("orders.order_items", TableNames.ORDER_ITEM)
     .innerJoinAndSelect("order_item.inventory", TableNames.INVENTORY)
     .innerJoinAndSelect("orders.payment", TableNames.PAYMENT)
     .where("orders.status = :orderStatus", { orderStatus: OrderStatus.COMPLETED })
@@ -201,7 +201,7 @@ export const getCompleteOrdersWithInventoryItems = async (
 ): Promise<OrderEntity[]> => {
   return await dataSource.getRepository(OrderEntity)
     .createQueryBuilder(TableNames.ORDERS)
-    .innerJoinAndSelect("orders.orderItems", TableNames.ORDER_ITEM)
+    .innerJoinAndSelect("orders.order_items", TableNames.ORDER_ITEM)
     .innerJoinAndSelect("order_item.inventory", TableNames.INVENTORY)
     .innerJoinAndSelect("orders.payment", TableNames.PAYMENT)
     .where("orders.status = :orderStatus", { orderStatus: OrderStatus.COMPLETED })
@@ -312,9 +312,9 @@ export const initializePayment = async (
     .into(TableNames.PAYMENT)
     .values({
       amount: 0,
-      orderRef: orderId,
-      paymentType: PaymentTypes.CASH, // initialize payemnts with cash
-      paymentStatus: PaymentStatus.INITIALIZED
+      order_ref: orderId,
+      payment_type: PaymentTypes.CASH, // initialize payemnts with cash
+      payment_status: PaymentStatus.INITIALIZED
     }).execute();
 };
 
@@ -338,7 +338,7 @@ export const completePayment = async (
     .update(PaymentEntity)
     .set({
       amount: amount,
-      paymentStatus: PaymentStatus.COMPLETED,
+      payment_status: PaymentStatus.COMPLETED,
       updated_at: new Date()
     }).where("payment.id = :id", { id: paymentId })
     .execute();
@@ -362,7 +362,7 @@ export const updatePaymentType = async (
 ): Promise<UpdateResult> => {
   return await dataSource.createQueryBuilder()
     .update(PaymentEntity)
-    .set({ paymentType: paymentType })
+    .set({ payment_type: paymentType })
     .where("payment.id = :id", { id: paymentId })
     .execute();
 };

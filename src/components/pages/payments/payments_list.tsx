@@ -22,9 +22,9 @@ export const PaymentsListComponent = (orders: OrderEntity[]) => {
                     {orders.map(order => {
                         return (
                             <tr>
-                                <td>{createOrderItemsDescription(order.orderItems)}</td>
-                                <td><strong>{getTotalOrderCost(order.orderItems)}.00 KES</strong></td>
-                                <td>{order.payment.paymentType}</td>
+                                <td>{createOrderItemsDescription(order.order_items)}</td>
+                                <td><strong>{getTotalOrderCost(order.order_items)}.00 KES</strong></td>
+                                <td>{order.payment.payment_type}</td>
                                 <td>{order.payment.updated_at}</td>
                             </tr>
                         )

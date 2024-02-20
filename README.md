@@ -17,13 +17,14 @@ Open http://localhost:3000/ with your browser to see the result.
 ## TODO
 - [X] Remove long polling in creation of an order
 - [X] Instead of repeating try/catch error handling for each service method, refactor the try catch to wrap all controller methods. TODO: Does this this also propagate to the service methods? This will be interesting to find out!
+- [X] Add Zod for handling API validations
+- [] Return BAD REQUEST on failed Zod validations
 - [] Add DB indexes
 - [] Improve logging with ts-log and create standard semantics for logs
 - [] For HTMX sections where we replace all content(hx-target="outerHTML"), would be a good practice to place these sections in constants sine they are referenced in multiple locations. Should we then choose to rename them, we'll then just need to change once reference (DRY)
 - [] Use snake_case for all DB columns
 - [] Ensure once order item added to an order, it's price is immutable
 - [] API tests
-- [] Add Zod for handling API validations
 - [] HTMX input white listing (Maybe important to avoid XSS attacks)
 - [] Timezone awareness
 - [] State machines for model statuses???

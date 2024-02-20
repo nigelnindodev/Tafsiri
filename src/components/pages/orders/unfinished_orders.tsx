@@ -21,8 +21,8 @@ export const UnfinishedOrdersComponent = (unfinishedOrderitems: OrderEntity[]) =
                     {unfinishedOrderitems.map(item => {
                         return (
                             <tr>
-                                <td>{unfinishedItemRowDescription(item.orderItems)}</td>
-                                <td><strong>{getTotalOrderCost(filterOrderItemsForActiveItems(item.orderItems))}.00 KES</strong></td>
+                                <td>{unfinishedItemRowDescription(item.order_items)}</td>
+                                <td><strong>{getTotalOrderCost(filterOrderItemsForActiveItems(item.order_items))}.00 KES</strong></td>
                                 <td><button role="button" class="secondary outline" hx-get={`/orders/resume/${item.id}`} hx-target="#orders-section">Resume</button></td>
                             </tr>
                         )

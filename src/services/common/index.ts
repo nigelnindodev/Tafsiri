@@ -41,7 +41,7 @@ export const getTotalOrderCost = (orderItems: OrderItemEntity[]): number => {
 export const filterForOrdersWithActiveOrders = (orders: OrderEntity[]): OrderEntity[] => {
 	return orders.filter(item => {
 		let activeOrderFound = false;
-		item.orderItems.forEach(orderItem => {
+		item.order_items.forEach(orderItem => {
 			if (orderItem.active === true) {
 				activeOrderFound = true;
 			}

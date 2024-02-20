@@ -1,5 +1,9 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm"
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, Index } from "typeorm"
 import { TableNames, OrderStatus, PaymentStatus, PaymentTypes } from "../common/constants"
+
+const generateIndexName = (tableName: TableNames, columnName: string): string => {
+  return `${tableName}_${columnName}_idx`;
+};
 
 @Entity({ name: TableNames.SCAFFOLD })
 export class ScaffoldEntity {
@@ -11,24 +15,27 @@ export class ScaffoldEntity {
  * The inventory entity stores the types of items that can be sold.
  * Will have queries for:
  * - Adding a new item to the inventory.
- * - Updatig an existing items price in the inventory.
+ * - Updating an existing items price in the inventory.
  */
 @Entity({ name: TableNames.INVENTORY })
 export class InventoryEntity {
   @PrimaryGeneratedColumn()
   id: number
 
+  @Index(generateIndexName(TableNames.INVENTORY, "name"), { unique: true })
   @Column("varchar", { length: 100, nullable: false })
   name: string
 
+  @Index(generateIndexName(TableNames.INVENTORY, "price"))
   @Column("decimal", { nullable: false })
   price: number
 
+  @Index(generateIndexName(TableNames.INVENTORY, "active"))
   @Column("boolean", { nullable: false })
   active: boolean
 
   @OneToMany(() => OrderItemEntity, (orderItem) => orderItem.inventory)
-  orderItems: OrderItemEntity[]
+  order_items: OrderItemEntity[]
 
   @Column("timestamptz", { nullable: false, default: () => "CURRENT_TIMESTAMP" })
   created_at: Date
@@ -50,11 +57,11 @@ export class OrderEntity { // TODO: Rename to OrdersEntity
   @PrimaryGeneratedColumn()
   id: number
 
-  @OneToOne(() => PaymentEntity, (payment) => payment.orderRef)
+  @OneToOne(() => PaymentEntity, (payment) => payment.order_ref)
   payment: PaymentEntity
 
   @OneToMany(() => OrderItemEntity, (orderItem) => orderItem.orders)
-  orderItems: OrderItemEntity[]
+  order_items: OrderItemEntity[]
 
   @Column("enum", { enum: OrderStatus, nullable: false })
   status: OrderStatus
@@ -84,10 +91,10 @@ export class OrderItemEntity {
   @Column("int", { nullable: false })
   quantity: number
 
-  @ManyToOne(() => InventoryEntity, (inventory) => inventory.orderItems, { nullable: false })
+  @ManyToOne(() => InventoryEntity, (inventory) => inventory.order_items, { nullable: false })
   inventory: InventoryEntity
 
-  @ManyToOne(() => OrderEntity, (order) => order.orderItems, { nullable: false })
+  @ManyToOne(() => OrderEntity, (order) => order.order_items, { nullable: false })
   orders: OrderEntity
 
   @Column("timestamptz", { nullable: false, default: () => "CURRENT_TIMESTAMP" })
@@ -108,13 +115,13 @@ export class PaymentEntity {
 
   @OneToOne(() => OrderEntity, (order) => order.payment, { nullable: false })
   @JoinColumn()
-  orderRef: OrderEntity
+  order_ref: OrderEntity
 
   @Column("enum", { enum: PaymentStatus, nullable: false })
-  paymentStatus: PaymentStatus
+  payment_status: PaymentStatus
 
   @Column("enum", { enum: PaymentTypes, nullable: false })
-  paymentType: PaymentTypes
+  payment_type: PaymentTypes
 
   @Column("timestamptz", { nullable: false, default: () => "CURRENT_TIMESTAMP" })
   created_at: Date
