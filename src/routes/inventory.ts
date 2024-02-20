@@ -5,12 +5,8 @@ import { DataSource } from "typeorm";
 import { createInventoryItem, listInventoryItemOrders, listInventoryItems, searchInventoryItems } from "../services/inventory";
 import { InventoryPage } from "../components/pages/inventory";
 
-export const addInventoryRoutes = (dataSource: DataSource) => {
-  
-};
-
-export const inventoryRoutes = ( dataSource: DataSource) => {
-  const app = new Elysia({prefix: "/inventory"});
+export const inventoryRoutes = (dataSource: DataSource) => {
+  const app = new Elysia({ prefix: "/inventory" });
   app
     .get("/", () => InventoryPage)
     .get("/create", () => CreateInventorySection)
