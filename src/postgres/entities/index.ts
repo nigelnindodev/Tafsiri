@@ -117,6 +117,7 @@ export class PaymentEntity {
   @JoinColumn()
   order_ref: OrderEntity
 
+  @Index(generateIndexName(TableNames.PAYMENT, "payment_status"))
   @Column("enum", { enum: PaymentStatus, nullable: false })
   payment_status: PaymentStatus
 
