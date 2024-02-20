@@ -1,4 +1,5 @@
 import { InventoryEntity } from "../../../postgres/entities";
+import { ServerHxTriggerEvents } from "../../../services/common/constants";
 import { InventoryItemSelectDuringOrder } from "./inventory_item_select_during_order";
 
 export const CreateOrUpdateOrderSection = (orderId: number, inventoryData: InventoryEntity[]) => {
@@ -14,7 +15,7 @@ export const CreateOrUpdateOrderSection = (orderId: number, inventoryData: Inven
             </nav>
             <div id="create-order-section">
                 {InventoryItemSelectDuringOrder(orderId, inventoryData)}
-                <div id="active-items" hx-get={`/orders/active/${orderId}`} hx-trigger="every 1s" />
+                <div id="active-items" hx-get={`/orders/active/${orderId}`} hx-trigger={`load, ${ServerHxTriggerEvents.REFRESH_ORDER} from:body`} />
             </div>
         </div>
     );

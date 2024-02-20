@@ -19,6 +19,7 @@ import { ViewOrdersSection } from "./components/pages/orders/orders";
 import { activeOrders, addOrRemoveOrderItem, confirmOrder, createOrder, listUnfinishedOrders, resumeOrder, updateItemCounter, updatePaymentTypeForOrder } from "./services/orders";
 import { PaymentTypes } from "./postgres/common/constants";
 import { listPayments } from "./services/payments";
+import { ServerHxTriggerEvents } from "./services/common/constants";
 
 export interface Config {
   postgresUser: string;
@@ -72,7 +73,7 @@ const app = new Elysia()
   })
   .get("/inventory/orders/:inventoryId", async (ctx) => {
     console.log(ctx);
-    return await listInventoryItemOrders(dataSource, Number(ctx.params.inventoryId)) ;
+    return await listInventoryItemOrders(dataSource, Number(ctx.params.inventoryId));
   })
   .post("/inventory/create", async (ctx) => {
     const result = await createInventoryItem(dataSource, ctx.body.name, Number(ctx.body.price));
@@ -101,14 +102,20 @@ const app = new Elysia()
     return await confirmOrder(dataSource, Number(ctx.params.orderId), Number(ctx.params.paymentId));
   })
   .post("/orders/item/updateQuantity/:itemId/:updateType", async (ctx) => {
-    return await updateItemCounter(dataSource, Number(ctx.params.itemId), ctx.params.updateType);
+    const result = await updateItemCounter(dataSource, Number(ctx.params.itemId), ctx.params.updateType);
+    ctx.set.headers["HX-Trigger"] = ServerHxTriggerEvents.REFRESH_ORDER;
+    return result;
   })
   .post("/orders/item/change/:orderId/:inventoryId", async (ctx) => {
-    return await addOrRemoveOrderItem(dataSource, Number(ctx.params.orderId), Number(ctx.params.inventoryId));
+    const result = await addOrRemoveOrderItem(dataSource, Number(ctx.params.orderId), Number(ctx.params.inventoryId));
+    ctx.set.headers["HX-Trigger"] = ServerHxTriggerEvents.REFRESH_ORDER;
+    return result;
   })
   .post("/orders/payment/updateType/:paymentId", async (ctx) => {
     const paymentTypeString = ctx.body.paymentType as string;
-    return await updatePaymentTypeForOrder(dataSource, Number(ctx.params.paymentId), paymentTypeString.toUpperCase() as PaymentTypes);
+    const result = await updatePaymentTypeForOrder(dataSource, Number(ctx.params.paymentId), paymentTypeString.toUpperCase() as PaymentTypes);
+    ctx.set.headers["HX-Trigger"] = ServerHxTriggerEvents.REFRESH_ORDER;
+    return result;
   })
   .get("/payments", () => {
     return PaymentsPage;

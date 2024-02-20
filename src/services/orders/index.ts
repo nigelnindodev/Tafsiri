@@ -120,6 +120,7 @@ export const activeOrders = async (dataSource: DataSource, orderId: number) => {
  * Maybe in the future we might expand this to just, or also, accept a number to update the inventory items to. 
  *
  * But for now, the backend will update the number through the "INC" and "DEC" commands as appropriate.
+ * 
  */
 export const updateItemCounter = async (dataSource: DataSource, itemId: number, updateType: string) => {
 	try {
