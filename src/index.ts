@@ -1,18 +1,13 @@
 import "reflect-metadata"; // required for TypeORM
 
-import { Elysia } from "elysia";
-import { html } from "@elysiajs/html";
-import { staticPlugin } from "@elysiajs/static";
-import { swagger } from "@elysiajs/swagger";
-
-import { newIndexPage } from "./components/pages/index_2";
-import { nameResult } from "./components/name_result";
 import { PostgresDataSourceSingleton } from "./postgres";
-import { picoPage } from "./components/pico_example";
-import { inventoryRoutes } from "./routes/inventory";
-import { orderRoutes } from "./routes/orders";
-import { paymentRoutes } from "./routes/payments";
+import { createApplicationServer } from "./server";
 
+/**
+ * Application configuration object. 
+ * Values here are to be read from an .env file. Bun has built in support for env files.
+ * TODO: Purge the local .env file from source control [IMPORTANT]
+ */
 export interface Config {
   postgresUser: string;
   postgresPassword: string;
@@ -32,29 +27,10 @@ export function getConfig(): Config {
 };
 
 const dataSource = await PostgresDataSourceSingleton.getInstance();
-
-let app = new Elysia()
-  .use(swagger())
-  .use(staticPlugin())
-  .use(html())
-  .get("/html", () => {
-    return newIndexPage;
-  })
-  .post("/name", () => {
-    return nameResult;
-  })
-  .use(inventoryRoutes(dataSource))
-  .use(orderRoutes(dataSource))
-  .use(paymentRoutes(dataSource))
-  .get("/pico", () => {
-    return picoPage;
-  })
-  .get("/", () => {
-    return "Hello Elysia";
-  });
+const app = createApplicationServer(dataSource);
 
 app.listen(3000);
 
 console.log(
-  `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
+  `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port} with NODE_ENV ${process.env.NODE_ENV}`
 );
