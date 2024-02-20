@@ -40,7 +40,7 @@ export const ActiveOrderItems = (orderId: number, orderItems: OrderItemEntity[],
             <blockquote>
                 <div class="grid">
                     <div>
-                        <h3>TOTAL COST :</h3>
+                        <h3 class="text-green-500">TOTAL COST :</h3>
                     </div>
                     <div>
                         <h2><mark>{getTotalOrderCost(orderItems)}.00 KES</mark></h2>
