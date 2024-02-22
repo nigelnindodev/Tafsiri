@@ -4,7 +4,9 @@ export enum TableNames {
   ORDERS = "orders",
   ORDER_ITEM = "order_item",
   PAYMENT = "payment",
-  PAYMENT_TYPE = "payment_type"
+  PAYMENT_TYPE = "payment_type",
+  USER = "user",
+  USER_CREDENTIALS = "user_credentials"
 };
 
 export enum PaymentTypes {

@@ -12,6 +12,11 @@ export class ScaffoldEntity {
 }
 
 /**
+ * TODO: Does a many-to-ne column auto generate an index? Most likely not. Same applies to one-to-one
+ * with on the joinColumn reletionship.
+ */
+
+/**
  * The inventory entity stores the types of items that can be sold.
  * Will have queries for:
  * - Adding a new item to the inventory.
@@ -121,8 +126,51 @@ export class PaymentEntity {
   @Column("enum", { enum: PaymentStatus, nullable: false })
   payment_status: PaymentStatus
 
+  @Index(generateIndexName(TableNames.PAYMENT, "payment_type"))
   @Column("enum", { enum: PaymentTypes, nullable: false })
   payment_type: PaymentTypes
+
+  @Column("timestamptz", { nullable: false, default: () => "CURRENT_TIMESTAMP" })
+  created_at: Date
+
+  @Column("timestamptz", { nullable: false, default: () => "CURRENT_TIMESTAMP", onUpdate: "CURRENT_TIMESTAMP" })
+  updated_at: Date
+}
+
+@Entity({ name: TableNames.USER })
+export class UserEntity {
+  @PrimaryGeneratedColumn()
+  id: number
+
+  @OneToOne(() => UserCredentialsEntity, (userCredentials) => userCredentials.user_ref)
+  user_credentials: UserCredentialsEntity
+
+  @Index(generateIndexName(TableNames.USER, "username"), { unique: true })
+  @Column("varchar", { length: 100, nullable: false })
+  username: string
+
+  @Index(generateIndexName(TableNames.USER, "is_admin"))
+  @Column("boolean", { nullable: false })
+  is_admin: boolean
+
+  @Column("timestamptz", { nullable: false, default: () => "CURRENT_TIMESTAMP" })
+  created_at: Date
+
+  @Column("timestamptz", { nullable: false, default: () => "CURRENT_TIMESTAMP", onUpdate: "CURRENT_TIMESTAMP" })
+  updated_at: Date
+}
+
+@Entity({ name: TableNames.USER_CREDENTIALS })
+export class UserCredentialsEntity {
+  @PrimaryGeneratedColumn()
+  id: number
+
+  @OneToOne(() => UserEntity, (user) => user.user_credentials, { nullable: false })
+  @JoinColumn()
+  user_ref: UserEntity
+
+  @Column("varchar")
+  password: string
 
   @Column("timestamptz", { nullable: false, default: () => "CURRENT_TIMESTAMP" })
   created_at: Date

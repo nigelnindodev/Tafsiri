@@ -2,7 +2,7 @@ import "reflect-metadata"; // required for TypeORM
 
 import { DataSource } from "typeorm";
 import { Elysia } from "elysia";
-import { jwt} from "@elysiajs/jwt";
+import { jwt } from "@elysiajs/jwt";
 import { html } from "@elysiajs/html";
 import { staticPlugin } from "@elysiajs/static";
 import { swagger } from "@elysiajs/swagger";
@@ -13,6 +13,7 @@ import { orderRoutes } from "./routes/orders";
 import { paymentRoutes } from "./routes/payments";
 import { tailWindPlugin } from "./plugins/tailwind";
 import { LoginPage } from "./components/pages/auth/login";
+import { authRoutes } from "./routes/auth";
 
 /**
  * We're initializing the application server with the DataSource as a parameter so that we can
@@ -47,6 +48,7 @@ export const createApplicationServer = (dataSource: DataSource) => {
       console.log(ctx);
       return "Get JWT";
     })
+    .use(authRoutes(dataSource))
     .use(inventoryRoutes(dataSource))
     .use(orderRoutes(dataSource))
     .use(paymentRoutes(dataSource))
@@ -56,7 +58,8 @@ export const createApplicationServer = (dataSource: DataSource) => {
       const authValue = await ctx.jwt.verify(auth.value);
       console.log(authValue);
       if (!authValue) {
-        return LoginPage();
+        ctx.set.redirect = "/auth/login";
+        return "";
       } else {
         return IndexPage();
       }
