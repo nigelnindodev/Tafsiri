@@ -9,7 +9,7 @@ export const LoginPage = () => {
                 <script src="http://localhost:3000/public/htmx.min.js" />
                 <script src="http://localhost:3000/public/theme_switcher.js" />
             </head>
-            <body>
+            <body id="body-container">
                 <nav class="container-fluid">
                     <ul>
                         <li><a href="http://localhost:3000" aria-label="Back home"><svg aria-hidden="true" focusable="false" role="img"
@@ -27,7 +27,7 @@ export const LoginPage = () => {
                         <input type="username" id="username" name="username" placeholder="Username" required />
                         <label for="password">Password</label>
                         <input type="password" id="password" name="password" placeholder="Password" required />
-                        <button type="submit">Submit</button>
+                        <button type="submit" hx-post="/auth/login" hx-target="#body-container" hx-swap="outerHTML">Submit</button>
                     </form>
                 </main>
             </body>

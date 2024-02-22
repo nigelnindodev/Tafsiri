@@ -7,7 +7,7 @@ import { html } from "@elysiajs/html";
 import { staticPlugin } from "@elysiajs/static";
 import { swagger } from "@elysiajs/swagger";
 
-import { IndexPage} from "./components/pages/index_2";
+import { IndexPage } from "./components/pages/index_2";
 import { inventoryRoutes } from "./routes/inventory";
 import { orderRoutes } from "./routes/orders";
 import { paymentRoutes } from "./routes/payments";
@@ -34,30 +34,17 @@ export const createApplicationServer = (dataSource: DataSource) => {
     .onError(({ code, error }) => {
       console.error(`API error occured with code [${code}]: ${error}`);
     })
-    .get("/setjwt", async (ctx) => {
-      console.log(ctx); 
-      const {auth} = ctx.cookie;
-      auth.set({
-        httpOnly: true, // very important to prevent front end javascript accessing the cookie
-        value: await ctx.jwt.sign({username: "admin"}),
-        maxAge: 60 * 2
-      });
-      return "Set JWT";
-    })
-    .get("/getjwt", (ctx) => {
-      console.log(ctx);
-      return "Get JWT";
-    })
     .use(authRoutes(dataSource))
     .use(inventoryRoutes(dataSource))
     .use(orderRoutes(dataSource))
     .use(paymentRoutes(dataSource))
     .get("/", async (ctx) => {
       console.log(ctx);
-      const {auth} = ctx.cookie;
+      const { auth } = ctx.cookie;
       const authValue = await ctx.jwt.verify(auth.value);
-      console.log(authValue);
+      console.log("authValue", authValue);
       if (!authValue) {
+        console.log("Redirecting to /auth/login");
         ctx.set.redirect = "/auth/login";
         return "";
       } else {

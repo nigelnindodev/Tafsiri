@@ -391,7 +391,7 @@ export const getUserByUsernameWithCredentials = async (
 ): Promise<UsersEntity | null> => {
   return await dataSource.getRepository(UsersEntity)
     .createQueryBuilder(TableNames.USERS)
-    .innerJoinAndSelect("user_credentials.userrefId", TableNames.USER_CREDENTIALS)
+    .innerJoinAndSelect("users.user_credentials", TableNames.USER_CREDENTIALS)
     .where("users.username = :username", { username: username })
     .getOne();
 }

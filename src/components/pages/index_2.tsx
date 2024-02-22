@@ -9,7 +9,7 @@ export const IndexPage = () => {
                 <script src="http://localhost:3000/public/htmx.min.js" />
                 <script src="http://localhost:3000/public/theme_switcher.js" />
             </head>
-            <body>
+            <body id="body-container">
                 <nav class="container-fluid">
                     <ul>
                         <li><a href="http://localhost:3000" aria-label="Back home"><svg aria-hidden="true" focusable="false" role="img"

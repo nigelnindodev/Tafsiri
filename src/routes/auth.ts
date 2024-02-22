@@ -62,7 +62,8 @@ export const authRoutes = (dataSource: DataSource) => {
         auth.set({
           httpOnly: true,
           value: await ctx.jwt.sign({ username: validateresult.username }),
-          maxAge: 60 * 5
+          maxAge: 60 * 3, // 3 minute session (short for testing purposes)
+          path: "/"
         });
         // this redirect now loads the main application page since the JWT cookie is now set
         ctx.set.redirect = "/";
