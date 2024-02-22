@@ -10,6 +10,7 @@ import { newIndexPage } from "./components/pages/index_2";
 import { inventoryRoutes } from "./routes/inventory";
 import { orderRoutes } from "./routes/orders";
 import { paymentRoutes } from "./routes/payments";
+import { tailWindPlugin } from "./plugins/tailwind";
 
 /**
  * We're initializing the application server with the DataSource as a parameter so that we can
@@ -19,6 +20,7 @@ export const createApplicationServer = (dataSource: DataSource) => {
   const app = new Elysia()
     .use(swagger())
     .use(staticPlugin())
+    .use(tailWindPlugin())
     .use(html())
     // Ensures that all 500 errors are logged for API routes 
     // TODO: Should we also log third party errors and add this middleware at the top? Seems like a solid idea.

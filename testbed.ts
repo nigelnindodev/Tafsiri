@@ -1,5 +1,5 @@
-import { z } from "zod";
+const password = "SecurePassword";
 
-const mySchema = z.string();
+const hash = await Bun.password.hash(password);
 
-mySchema.parse(12);
+console.log(hash);
