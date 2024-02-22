@@ -1,5 +1,5 @@
-import { DataSource, InsertResult, UpdateResult } from "typeorm"
-import { InventoryEntity, OrderEntity, OrderItemEntity, PaymentEntity } from "../entities";
+import { DataSource, InsertResult, InsertResult, UpdateResult } from "typeorm"
+import { InventoryEntity, OrderEntity, OrderItemEntity, PaymentEntity, UsersEntity } from "../entities";
 import { OrderStatus, PaymentStatus, PaymentTypes, TableNames } from "../common/constants";
 
 export const insertInventoryItem = async (
@@ -364,5 +364,66 @@ export const updatePaymentType = async (
     .update(PaymentEntity)
     .set({ payment_type: paymentType })
     .where("payment.id = :id", { id: paymentId })
+    .execute();
+};
+
+/**
+ * Fetches a user using their database id. Does not return encrypted user credentials.
+ */
+export const getUserById = async (
+  dataSource: DataSource,
+  userId: number
+): Promise<UsersEntity | null> => {
+  return await dataSource.createQueryBuilder()
+    .select(TableNames.USERS)
+    .from(UsersEntity, TableNames.USERS)
+    .where("users.id = :id", { id: userId })
+    .getOne();
+};
+
+/**
+ * Fetches user detials by using their username. returns the user's encrypted credentials. Useful
+ * for loggin in users.
+ */
+export const getUserByUsernameWithCredentials = async (
+  dataSource: DataSource,
+  username: string
+): Promise<UsersEntity | null> => {
+  return await dataSource.getRepository(UsersEntity)
+    .createQueryBuilder(TableNames.USERS)
+    .innerJoinAndSelect("user_credentials.userrefId", TableNames.USER_CREDENTIALS)
+    .where("users.username = :username", { username: username })
+    .getOne();
+}
+
+/**
+ * Creates a new user. By defualt, all users are non-admin.
+ */
+export const createUser = async (
+  dataSource: DataSource,
+  username: string
+): Promise<InsertResult> => {
+  return await dataSource.createQueryBuilder()
+    .insert()
+    .into(UsersEntity)
+    .values({
+      username: username,
+      is_admin: false
+    })
+    .execute();
+};
+
+export const createUserCredentials = async (
+  dataSource: DataSource,
+  userId: number,
+  encryptedPassword: string
+): Promise<InsertResult> => {
+  return await dataSource.createQueryBuilder()
+    .insert()
+    .into(TableNames.USER_CREDENTIALS)
+    .values({
+      user_ref: userId,
+      encrypted_password: encryptedPassword
+    })
     .execute();
 };

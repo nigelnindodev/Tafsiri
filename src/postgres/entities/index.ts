@@ -137,19 +137,19 @@ export class PaymentEntity {
   updated_at: Date
 }
 
-@Entity({ name: TableNames.USER })
-export class UserEntity {
+@Entity({ name: TableNames.USERS })
+export class UsersEntity {
   @PrimaryGeneratedColumn()
   id: number
 
   @OneToOne(() => UserCredentialsEntity, (userCredentials) => userCredentials.user_ref)
   user_credentials: UserCredentialsEntity
 
-  @Index(generateIndexName(TableNames.USER, "username"), { unique: true })
+  @Index(generateIndexName(TableNames.USERS, "username"), { unique: true })
   @Column("varchar", { length: 100, nullable: false })
   username: string
 
-  @Index(generateIndexName(TableNames.USER, "is_admin"))
+  @Index(generateIndexName(TableNames.USERS, "is_admin"))
   @Column("boolean", { nullable: false })
   is_admin: boolean
 
@@ -165,9 +165,9 @@ export class UserCredentialsEntity {
   @PrimaryGeneratedColumn()
   id: number
 
-  @OneToOne(() => UserEntity, (user) => user.user_credentials, { nullable: false })
+  @OneToOne(() => UsersEntity, (users) => users.user_credentials, { nullable: false })
   @JoinColumn()
-  user_ref: UserEntity
+  user_ref: UsersEntity
 
   @Column("varchar")
   password: string

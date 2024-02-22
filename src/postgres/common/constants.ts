@@ -5,7 +5,7 @@ export enum TableNames {
   ORDER_ITEM = "order_item",
   PAYMENT = "payment",
   PAYMENT_TYPE = "payment_type",
-  USER = "user",
+  USERS = "users",
   USER_CREDENTIALS = "user_credentials"
 };
 
