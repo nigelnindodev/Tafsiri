@@ -2,6 +2,7 @@ import "reflect-metadata"; // required for TypeORM
 
 import { PostgresDataSourceSingleton } from "./postgres";
 import { createApplicationServer } from "./server";
+import { Logger } from "ts-log"; // Holy crap, this should tslog, not ts-log
 
 /**
  * Application configuration object. 
@@ -16,6 +17,10 @@ export interface Config {
   postgresDatabaseName: string;
 }
 
+/**
+ * Helper function that fetches reads applicaion config values and returns it as a `Config`
+ * object.
+ */
 export function getConfig(): Config {
   return {
     postgresUser: process.env.POSTGRES_USER || "",
@@ -26,7 +31,16 @@ export function getConfig(): Config {
   }
 };
 
+//export const logger = new Logger({type: "pretty", name: "mainLogger"});
+
+/**
+ * Initialize Postgres database connector, to be passed on to the application server creator.
+ */
 const dataSource = await PostgresDataSourceSingleton.getInstance();
+
+/**
+ * Create the application server, passing in the TypeORM data source.
+ */
 const app = createApplicationServer(dataSource);
 
 app.listen(3000);

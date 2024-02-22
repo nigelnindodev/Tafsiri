@@ -11,7 +11,7 @@ export const paymentRoutes = (dataSource: DataSource) => {
     })
     .get("/list", async () => {
       return await listPayments(dataSource);
-    })
+    });
 
   return app;
 };
