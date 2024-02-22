@@ -1,8 +1,14 @@
 import { DataSource } from "typeorm";
-import { getUserByUsernameWithCredentials } from "../../postgres/queries";
+import * as queries from "../../postgres/queries";
 
+/**
+ * Processes a login request. 
+ * This service function is unique in because some of the business logic required to complete
+ * it's functionality has been leaked to the auth routes handler. An explanation for the reasons
+ * why can be found there.
+ */
 export const processLoginRequest = async (dataSource: DataSource, username: string, possiblePassword: string): Promise<{ success: boolean; errorMessage?: string | undefined; }> => {
-	const user = await getUserByUsernameWithCredentials(dataSource, username);
+	const user = await queries.getUserByUsernameWithCredentials(dataSource, username);
 
 	if (user === null) {
 		// return unknown user error message back to the UI
@@ -17,4 +23,21 @@ export const processLoginRequest = async (dataSource: DataSource, username: stri
 	}
 
 	return { success: true };
+};
+
+/**
+ * For now, anyone can create a user via the API endpoint :-)
+ * Of course this will be purged once authentication is tested more, this just makes testing
+ * much more easier.
+ * TODO: Only Admin accounts should be able to create new users.
+ * 
+ * Minor chicken/egg problem here as well, once a fresh instance of the application is started, how
+ * should we seed the admin user? I'm thinking just use admin/pass combination and show a warning
+ * to update admin credentials as soon as possible.
+ */
+export const processCreateUserRequest = async (dataSource: DataSource, newUserUsername: string, newUserPassword: string) => {
+	const initializeNewUserResult = await queries.createNewUser(dataSource, newUserUsername);
+	const hashedPassword = await Bun.password.hash(newUserPassword);
+	await queries.createUserCredentials(dataSource, initializeNewUserResult.identifiers[0].id, hashedPassword);
+	return "User created";
 };

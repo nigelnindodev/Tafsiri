@@ -5,7 +5,7 @@ import { z } from "zod";
 
 import { LoginPage } from "../components/pages/auth/login";
 import { IndexPage } from "../components/pages/index_2";
-import { processLoginRequest } from "../services/auth";
+import { processCreateUserRequest, processLoginRequest } from "../services/auth";
 
 /**
  * There's some code dupliation with adding JWT middleware twice, currently happening
@@ -19,7 +19,11 @@ import { processLoginRequest } from "../services/auth";
  */
 
 const authSchemas = {
-  loginSchema: z.object({
+  processLoginRequestSchema: z.object({
+    username: z.string(),
+    password: z.string()
+  }),
+  processCreateuserRequestSchema: z.object({
     username: z.string(),
     password: z.string()
   })
@@ -43,11 +47,13 @@ export const authRoutes = (dataSource: DataSource) => {
     })
     // TODO: Update to usa basic auth
     /**
-     * Trying to avoid more type gymnastics for now for parsing the JWT context to the service
-     * method for login, so a little bit of the logic will creep in to the router.
+     * Trying to avoid more type gymnastics for now (would be required for the 
+     * `processLoginRequest` method to understand jwt functionality is available), so a bit of the logic will creep in to the router.
+     * Not the most ideal as what we were going after as the core function of the router is to 
+     * determine which service methods will handle the request based on the route, and that's wehre the business logic should live. However, for now this seems it will lead to some really hard to understand type annotations on the service method. We will find a workaround though.
      */
     .post("/login", async (ctx) => {
-      const validateresult = authSchemas.loginSchema.parse(ctx.body);
+      const validateresult = authSchemas.processLoginRequestSchema.parse(ctx.body);
       const result = await processLoginRequest(dataSource, validateresult.username, validateresult.password);
       if (result.success === false) {
         return result.errorMessage;
@@ -62,6 +68,15 @@ export const authRoutes = (dataSource: DataSource) => {
         ctx.set.redirect = "/";
         return "";
       }
+    })
+    // Most of our routes should like below, not too verbose :-)
+    .post("/user/create", async (ctx) => {
+      //console.log(ctx);
+      //const parsedBody = JSON.parse(ctx.request.body);
+      //console.log("JSON", parsedBody);
+      console.log(ctx.body);
+      const validateResult = authSchemas.processCreateuserRequestSchema.parse(ctx.body);
+      return await processCreateUserRequest(dataSource, validateResult.username, validateResult.password);
     });
   return app;
 };

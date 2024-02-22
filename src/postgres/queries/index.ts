@@ -399,7 +399,7 @@ export const getUserByUsernameWithCredentials = async (
 /**
  * Creates a new user. By defualt, all users are non-admin.
  */
-export const createUser = async (
+export const createNewUser = async (
   dataSource: DataSource,
   username: string
 ): Promise<InsertResult> => {

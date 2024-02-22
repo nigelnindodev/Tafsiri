@@ -170,7 +170,7 @@ export class UserCredentialsEntity {
   user_ref: UsersEntity
 
   @Column("varchar")
-  password: string
+  encrypted_password: string
 
   @Column("timestamptz", { nullable: false, default: () => "CURRENT_TIMESTAMP" })
   created_at: Date
