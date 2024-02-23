@@ -14,6 +14,7 @@ import { paymentRoutes } from "./routes/payments";
 import { tailWindPlugin } from "./plugins/tailwind";
 import { authRoutes } from "./routes/auth";
 import { LoginPage } from "./components/pages/auth/login";
+import { getUserByUsernameWithCredentials } from "./postgres/queries";
 
 /**
  * We're initializing the application server with the DataSource as a parameter so that we can
@@ -48,7 +49,13 @@ export const createApplicationServer = (dataSource: DataSource) => {
           return LoginPage();
         } else {
           //auth.remove();
-          return IndexPage(authValue.username.toString());
+          console.log("usernameQuery", authValue.username.toString());
+          const user = await getUserByUsernameWithCredentials(dataSource, authValue.username.toString());
+          if (user === null) {
+            return LoginPage();
+          } else {
+            return IndexPage(user);
+          }
         }
       } catch (e) {
         console.log(e);

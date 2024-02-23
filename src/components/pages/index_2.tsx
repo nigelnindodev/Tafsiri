@@ -1,4 +1,7 @@
-export const IndexPage = (username: string) => {
+import { UsersEntity } from "../../postgres/entities";
+
+export const IndexPage = (user: UsersEntity) => {
+    console.log("user", user);
     return (
         <html data-theme="dark" lang="en">
             <head>
@@ -20,7 +23,7 @@ export const IndexPage = (username: string) => {
                         <li>Business Name</li>
                     </ul>
                     <ul>
-                        <li>{username}</li>
+                        <li>{user.username}</li>
                         <li><a hx-post="/auth/logout">logout</a></li>
                     </ul>
                 </nav>
@@ -32,10 +35,18 @@ export const IndexPage = (username: string) => {
                         <ul>
                             <li><a hx-get="/orders" hx-target="#main-view">Orders</a></li>
                             <li><a hx-get="/payments" hx-target="#main-view">Payments</a></li>
-                            <li><a hx-get="/inventory" hx-target="#main-view">Inventory</a></li>
+                            {
+                                user.is_admin ?
+                                    <div>
+                                        <li><a hx-get="/inventory" hx-target="#main-view">Inventory</a></li>
+                                        <li><a hx-get="/users" hx-target="#main-view">Users</a></li>
+                                    </div>
+                                    :
+                                    ""
+                            }
                         </ul>
                     </nav>
-                    <div id="main-view" hx-get="/inventory" hx-trigger="load" />
+                    <div id="main-view" hx-get="/orders" hx-trigger="load" />
                 </main>
             </body>
         </html>

@@ -7,6 +7,7 @@ import { LoginPage } from "../components/pages/auth/login";
 import { IndexPage } from "../components/pages/index_2";
 import { processCreateUserRequest, processLoginRequest } from "../services/auth";
 import { MarkedInfoWrapperComponent } from "../components/common/marked_info_wrapper";
+import { getUserByUsernameWithCredentials } from "../postgres/queries";
 
 /**
  * There's some code dupliation with adding JWT middleware twice, currently happening
@@ -54,10 +55,17 @@ export const authRoutes = (dataSource: DataSource) => {
         auth.set({
           httpOnly: true,
           value: await ctx.jwt.sign({ username: validateresult.username }),
-          maxAge: 60 * 5, // 5 minute session (short for testing purposes)
-          //path: "/"
+          maxAge: 60 * 3, // 3 minute session (short for testing purposes)
+          path: "/"
         });
-        return IndexPage(validateresult.username);
+        const user = await getUserByUsernameWithCredentials(dataSource, validateresult.username);
+        //Not expecting user to be null at this point as we have successfully logged in the user
+        if (user === null) {
+          console.warn(`Just logged in user with username [${validateresult.username}], should not fail to find user with credentials`);
+          return LoginPage();
+        } else {
+          return IndexPage(user);
+        }
       }
     }).post("/logout", async (ctx) => {
       const { auth } = ctx.cookie;
