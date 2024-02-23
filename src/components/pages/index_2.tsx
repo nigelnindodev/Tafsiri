@@ -21,6 +21,7 @@ export const IndexPage = (username: string) => {
                     </ul>
                     <ul>
                         <li>{username}</li>
+                        <li><a hx-post="/auth/logout">logout</a></li>
                     </ul>
                 </nav>
                 <main class="container">

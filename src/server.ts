@@ -32,20 +32,27 @@ export const createApplicationServer = (dataSource: DataSource) => {
     // Ensures that all 500 errors are logged for API routes 
     // TODO: Should we also log third party errors and add this middleware at the top? Seems like a solid idea.
     .onError(({ code, error }) => {
-      console.error(`API error occured with code [${code}]: ${error}`);
+      console.error(`API error occured with code [${code}]: ${error.message} ${error.cause} ${error.stack}`);
     })
     .use(authRoutes(dataSource))
     .use(inventoryRoutes(dataSource))
     .use(orderRoutes(dataSource))
     .use(paymentRoutes(dataSource))
     .get("/", async (ctx) => {
-      const { auth } = ctx.cookie;
-      const authValue = await ctx.jwt.verify(auth.value);
-      console.log("authValue", authValue);
-      if (!authValue) {
-        return LoginPage();
-      } else {
-        return IndexPage(authValue.username.toString());
+      try {
+        console.log(ctx);
+        const { auth } = ctx.cookie;
+        const authValue = await ctx.jwt.verify(auth.value);
+        console.log("authValue", authValue);
+        if (!authValue) {
+          return LoginPage();
+        } else {
+          //auth.remove();
+          return IndexPage(authValue.username.toString());
+        }
+      } catch (e) {
+        console.log(e);
+        throw (e);
       }
     });
   return app;

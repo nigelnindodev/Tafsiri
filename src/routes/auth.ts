@@ -6,6 +6,7 @@ import { z } from "zod";
 import { LoginPage } from "../components/pages/auth/login";
 import { IndexPage } from "../components/pages/index_2";
 import { processCreateUserRequest, processLoginRequest } from "../services/auth";
+import { MarkedInfoWrapperComponent } from "../components/common/marked_info_wrapper";
 
 /**
  * There's some code dupliation with adding JWT middleware twice, currently happening
@@ -47,17 +48,25 @@ export const authRoutes = (dataSource: DataSource) => {
       const validateresult = authSchemas.processLoginRequestSchema.parse(ctx.body);
       const result = await processLoginRequest(dataSource, validateresult.username, validateresult.password);
       if (result.success === false) {
-        return result.errorMessage;
+        return MarkedInfoWrapperComponent(result.errorMessage);
       } else {
         const { auth } = ctx.cookie;
         auth.set({
           httpOnly: true,
           value: await ctx.jwt.sign({ username: validateresult.username }),
           maxAge: 60 * 5, // 5 minute session (short for testing purposes)
-          path: "/"
+          //path: "/"
         });
         return IndexPage(validateresult.username);
       }
+    }).post("/logout", async (ctx) => {
+      const { auth } = ctx.cookie;
+
+      console.log(ctx.cookie);
+      auth.remove();
+      console.log("removed auth cookie");
+      console.log(ctx.cookie);
+      //ctx.set.redirect = "/";
     })
     // Most of our routes should like below, not too verbose :-)
     .post("/user/create", async (ctx) => {

@@ -7,22 +7,22 @@ import * as queries from "../../postgres/queries";
  * it's functionality has been leaked to the auth routes handler. An explanation for the reasons
  * why can be found there.
  */
-export const processLoginRequest = async (dataSource: DataSource, username: string, possiblePassword: string): Promise<{ success: boolean; errorMessage?: string | undefined; }> => {
+export const processLoginRequest = async (dataSource: DataSource, username: string, possiblePassword: string): Promise<{ success: boolean; errorMessage: string; }> => {
 	const user = await queries.getUserByUsernameWithCredentials(dataSource, username);
 
 	if (user === null) {
 		// return unknown user error message back to the UI
-		return { success: false, errorMessage: "Unknown user" };
+		return { success: false, errorMessage: `No user exists with username ${username}. Please try again.` };
 	}
 
 	const isMatch = await Bun.password.verify(possiblePassword, user.user_credentials.encrypted_password);
 
 	if (isMatch === false) {
 		// return incorrect credentials message back to the user
-		return { success: false, errorMessage: "Incorrect Credentials" };
+		return { success: false, errorMessage: `Invalid password entered for user ${username}.` };
 	}
 
-	return { success: true };
+	return { success: true, errorMessage: "" };
 };
 
 /**

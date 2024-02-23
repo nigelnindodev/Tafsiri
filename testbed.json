@@ -1,0 +1,11 @@
+{
+  "auth": {
+    "name": "auth",
+    "setter": {
+      "headers": {},
+      "status": 200
+    },
+    "_value": "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIn0.wQ5Eellb6Olz6QPHsYh5Kv1z-uwOfeA059ik7932jz0",
+    "property": {}
+  }
+}

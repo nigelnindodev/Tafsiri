@@ -22,12 +22,13 @@ export const LoginPage = () => {
                 </nav>
                 <main class="container">
                     <h3>Log in to get started.</h3>
+                    <div id="login-info" />
                     <form>
                         <label for="username">Username</label>
                         <input type="username" id="username" name="username" placeholder="Username" required />
                         <label for="password">Password</label>
                         <input type="password" id="password" name="password" placeholder="Password" required />
-                        <button type="submit" hx-post="/auth/login" hx-target="#body-container" hx-swap="outerHTML">Login</button>
+                        <button type="submit" hx-post="/auth/login" hx-target="#login-info">Login</button>
                     </form>
                 </main>
             </body>
