@@ -53,10 +53,10 @@ export const authRoutes = (dataSource: DataSource) => {
         auth.set({
           httpOnly: true,
           value: await ctx.jwt.sign({ username: validateresult.username }),
-          maxAge: 60 * 2, // 2 minute session (short for testing purposes)
+          maxAge: 60 * 5, // 5 minute session (short for testing purposes)
           path: "/"
         });
-        return IndexPage();
+        return IndexPage(validateresult.username);
       }
     })
     // Most of our routes should like below, not too verbose :-)

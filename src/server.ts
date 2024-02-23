@@ -41,10 +41,11 @@ export const createApplicationServer = (dataSource: DataSource) => {
     .get("/", async (ctx) => {
       const { auth } = ctx.cookie;
       const authValue = await ctx.jwt.verify(auth.value);
+      console.log("authValue", authValue);
       if (!authValue) {
         return LoginPage();
       } else {
-        return IndexPage();
+        return IndexPage(authValue.username.toString());
       }
     });
   return app;
