@@ -53,10 +53,11 @@ export const authRoutes = (dataSource: DataSource) => {
       } else {
         const { auth } = ctx.cookie;
         auth.set({
+          domain: "localhost",
           httpOnly: true,
           value: await ctx.jwt.sign({ username: validateresult.username }),
           maxAge: 60 * 3, // 3 minute session (short for testing purposes)
-          path: "/"
+          path: "/;/auth"// we can set mutiple cookie paths with a comma separetd list
         });
         const user = await getUserByUsernameWithCredentials(dataSource, validateresult.username);
         //Not expecting user to be null at this point as we have successfully logged in the user

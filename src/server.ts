@@ -15,6 +15,8 @@ import { tailWindPlugin } from "./plugins/tailwind";
 import { authRoutes } from "./routes/auth";
 import { LoginPage } from "./components/pages/auth/login";
 import { getUserByUsernameWithCredentials } from "./postgres/queries";
+import { OrderExampleTailwindComponent } from "./components/pages/orders/order_tailwind";
+import { TailWindComponent } from "./components/pages/tailwind";
 
 /**
  * We're initializing the application server with the DataSource as a parameter so that we can
@@ -24,7 +26,7 @@ export const createApplicationServer = (dataSource: DataSource) => {
   const app = new Elysia()
     .use(swagger())
     .use(staticPlugin())
-    //    .use(tailWindPlugin())
+    //.use(tailWindPlugin())
     .use(jwt({
       name: "jwt",
       secret: "notSoSecretForTesting"
@@ -34,6 +36,9 @@ export const createApplicationServer = (dataSource: DataSource) => {
     // TODO: Should we also log third party errors and add this middleware at the top? Seems like a solid idea.
     .onError(({ code, error }) => {
       console.error(`API error occured with code [${code}]: ${error.message} ${error.cause} ${error.stack}`);
+    })
+    .get("/tailwind", () => {
+      return OrderExampleTailwindComponent();
     })
     .use(authRoutes(dataSource))
     .use(inventoryRoutes(dataSource))

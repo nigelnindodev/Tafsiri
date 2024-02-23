@@ -24,8 +24,11 @@
   },
   "devDependencies": {
     "@types/bun": "^1.0.3",
+    "autoprefixer": "^10.4.17",
     "bun-types": "latest",
-    "tailwindcss": "^3.4.1"
+    "postcss": "^8.4.35",
+    "tailwindcss": "^3.4.1",
+    "vite": "^5.1.4"
   },
   "module": "src/index.js"
 }

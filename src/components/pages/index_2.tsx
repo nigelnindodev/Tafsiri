@@ -9,6 +9,7 @@ export const IndexPage = (user: UsersEntity) => {
                 <link rel="stylesheet" href="http://localhost:3000/public/pico.min.css" />
                 <link rel="stylesheet" href="http://localhost:3000/public/tailwind.css" />
                 <link rel="stylesheet" href="http://localhost:3000/public/custom.css" />
+                <link rel="stylesheet" href="http://localhost:3000/public/stylesheet.css" />
                 <script src="http://localhost:3000/public/htmx.min.js" />
                 <script src="http://localhost:3000/public/theme_switcher.js" />
             </head>
