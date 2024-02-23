@@ -76,12 +76,8 @@ export const authRoutes = (dataSource: DataSource) => {
       console.log(ctx.cookie);
       //ctx.set.redirect = "/";
     })
-    // Most of our routes should like below, not too verbose :-)
+    // Most of our route handler functions should finally look like below, not too verbose :-)
     .post("/user/create", async (ctx) => {
-      //console.log(ctx);
-      //const parsedBody = JSON.parse(ctx.request.body);
-      //console.log("JSON", parsedBody);
-      console.log(ctx.body);
       const validateResult = authSchemas.processCreateuserRequestSchema.parse(ctx.body);
       return await processCreateUserRequest(dataSource, validateResult.username, validateResult.password);
     });
