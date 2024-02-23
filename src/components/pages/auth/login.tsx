@@ -27,7 +27,7 @@ export const LoginPage = () => {
                         <input type="username" id="username" name="username" placeholder="Username" required />
                         <label for="password">Password</label>
                         <input type="password" id="password" name="password" placeholder="Password" required />
-                        <button type="submit" hx-post="/auth/login" hx-target="#body-container" hx-swap="outerHTML">Submit</button>
+                        <button type="submit" hx-post="/auth/login" hx-target="#body-container" hx-swap="outerHTML">Login</button>
                     </form>
                 </main>
             </body>

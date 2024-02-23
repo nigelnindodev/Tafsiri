@@ -36,15 +36,6 @@ export const authRoutes = (dataSource: DataSource) => {
       name: "jwt",
       secret: "notSoSecretForTesting"
     }))
-    .get("/login", async (ctx) => {
-      const { auth } = ctx.cookie;
-      const authValue = await ctx.jwt.verify(auth.value);
-      if (!authValue) {
-        return LoginPage();
-      } else {
-        return IndexPage();
-      }
-    })
     // TODO: Update to usa basic auth
     /**
      * Trying to avoid more type gymnastics for now (would be required for the 
@@ -62,12 +53,10 @@ export const authRoutes = (dataSource: DataSource) => {
         auth.set({
           httpOnly: true,
           value: await ctx.jwt.sign({ username: validateresult.username }),
-          maxAge: 60 * 3, // 3 minute session (short for testing purposes)
+          maxAge: 60 * 2, // 2 minute session (short for testing purposes)
           path: "/"
         });
-        // this redirect now loads the main application page since the JWT cookie is now set
-        ctx.set.redirect = "/";
-        return "";
+        return IndexPage();
       }
     })
     // Most of our routes should like below, not too verbose :-)

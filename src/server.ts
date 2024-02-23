@@ -12,8 +12,8 @@ import { inventoryRoutes } from "./routes/inventory";
 import { orderRoutes } from "./routes/orders";
 import { paymentRoutes } from "./routes/payments";
 import { tailWindPlugin } from "./plugins/tailwind";
-import { LoginPage } from "./components/pages/auth/login";
 import { authRoutes } from "./routes/auth";
+import { LoginPage } from "./components/pages/auth/login";
 
 /**
  * We're initializing the application server with the DataSource as a parameter so that we can
@@ -39,14 +39,10 @@ export const createApplicationServer = (dataSource: DataSource) => {
     .use(orderRoutes(dataSource))
     .use(paymentRoutes(dataSource))
     .get("/", async (ctx) => {
-      console.log(ctx);
       const { auth } = ctx.cookie;
       const authValue = await ctx.jwt.verify(auth.value);
-      console.log("authValue", authValue);
       if (!authValue) {
-        console.log("Redirecting to /auth/login");
-        ctx.set.redirect = "/auth/login";
-        return "";
+        return LoginPage();
       } else {
         return IndexPage();
       }
