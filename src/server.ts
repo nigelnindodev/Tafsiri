@@ -7,16 +7,15 @@ import { html } from "@elysiajs/html";
 import { staticPlugin } from "@elysiajs/static";
 import { swagger } from "@elysiajs/swagger";
 
-import { IndexPage } from "./components/pages/index_2";
+import { IndexComponent } from "./components/pages/index_component";
 import { inventoryRoutes } from "./routes/inventory";
 import { orderRoutes } from "./routes/orders";
 import { paymentRoutes } from "./routes/payments";
-import { tailWindPlugin } from "./plugins/tailwind";
 import { authRoutes } from "./routes/auth";
-import { LoginPage } from "./components/pages/auth/login";
+import { LoginComponent } from "./components/pages/auth/login";
 import { getUserByUsernameWithCredentials } from "./postgres/queries";
 import { OrderExampleTailwindComponent } from "./components/pages/orders/order_tailwind";
-import { TailWindComponent } from "./components/pages/tailwind";
+import { RootPage } from "./components/pages/root_page";
 
 /**
  * We're initializing the application server with the DataSource as a parameter so that we can
@@ -26,7 +25,6 @@ export const createApplicationServer = (dataSource: DataSource) => {
   const app = new Elysia()
     .use(swagger())
     .use(staticPlugin())
-    //.use(tailWindPlugin())
     .use(jwt({
       name: "jwt",
       secret: "notSoSecretForTesting"
@@ -44,27 +42,21 @@ export const createApplicationServer = (dataSource: DataSource) => {
     .use(inventoryRoutes(dataSource))
     .use(orderRoutes(dataSource))
     .use(paymentRoutes(dataSource))
-    .get("/", async (ctx) => {
-      try {
-        console.log(ctx);
-        const { auth } = ctx.cookie;
-        const authValue = await ctx.jwt.verify(auth.value);
-        console.log("authValue", authValue);
-        if (!authValue) {
-          return LoginPage();
+    .get("/", () => {
+      return RootPage();
+    })
+    .get("/root", async (ctx) => {
+      const { auth } = ctx.cookie;
+      const authValue = await ctx.jwt.verify(auth.value);
+      if (!authValue) {
+        return LoginComponent();
+      } else {
+        const user = await getUserByUsernameWithCredentials(dataSource, authValue.username.toString());
+        if (user === null) {
+          return LoginComponent();
         } else {
-          //auth.remove();
-          console.log("usernameQuery", authValue.username.toString());
-          const user = await getUserByUsernameWithCredentials(dataSource, authValue.username.toString());
-          if (user === null) {
-            return LoginPage();
-          } else {
-            return IndexPage(user);
-          }
+          return IndexComponent(user);
         }
-      } catch (e) {
-        console.log(e);
-        throw (e);
       }
     });
   return app;

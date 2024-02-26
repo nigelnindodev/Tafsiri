@@ -3,22 +3,10 @@ import { DataSource } from "typeorm";
 import { jwt } from "@elysiajs/jwt";
 import { z } from "zod";
 
-import { LoginPage } from "../components/pages/auth/login";
-import { IndexPage } from "../components/pages/index_2";
 import { processCreateUserRequest, processLoginRequest } from "../services/auth";
 import { MarkedInfoWrapperComponent } from "../components/common/marked_info_wrapper";
-import { getUserByUsernameWithCredentials } from "../postgres/queries";
+import { ServerHxTriggerEvents } from "../services/common/constants";
 
-/**
- * There's some code dupliation with adding JWT middleware twice, currently happening
- * to get the TypeScript transpiler to be happy. We'll fix this later.
- *
- * Also the logic for the root ("/") controller is duplicated here, so that will have to
- * be fixed as well.
- * This duplication helps handle the scenario of where on the browser url bar ("/auth/login") 
- * is directly accessed. We can then ensure that if the user is logged in we cna return them
- * to the home screen, instead of having them log in again.
- */
 
 const authSchemas = {
   processLoginRequestSchema: z.object({
@@ -31,6 +19,10 @@ const authSchemas = {
   })
 };
 
+/**
+ * There's some code duplication with adding JWT middleware in here and in the main server.js file
+ * , currently happening to get the Typescript compiler to be happy.   
+ */
 export const authRoutes = (dataSource: DataSource) => {
   const app = new Elysia({ prefix: "/auth" });
   app
@@ -38,13 +30,7 @@ export const authRoutes = (dataSource: DataSource) => {
       name: "jwt",
       secret: "notSoSecretForTesting"
     }))
-    // TODO: Update to usa basic auth
-    /**
-     * Trying to avoid more type gymnastics for now (would be required for the 
-     * `processLoginRequest` method to understand jwt functionality is available), so a bit of the logic will creep in to the router.
-     * Not the most ideal as what we were going after as the core function of the router is to 
-     * determine which service methods will handle the request based on the route, and that's wehre the business logic should live. However, for now this seems it will lead to some really hard to understand type annotations on the service method. We will find a workaround though.
-     */
+    // TODO: Update to use basic authentication instead of passing username & password in request body?
     .post("/login", async (ctx) => {
       const validateresult = authSchemas.processLoginRequestSchema.parse(ctx.body);
       const result = await processLoginRequest(dataSource, validateresult.username, validateresult.password);
@@ -52,30 +38,24 @@ export const authRoutes = (dataSource: DataSource) => {
         return MarkedInfoWrapperComponent(result.errorMessage);
       } else {
         const { auth } = ctx.cookie;
+        // TODO: If in production, should also set up the secure attribute
         auth.set({
           domain: "localhost",
           httpOnly: true,
           value: await ctx.jwt.sign({ username: validateresult.username }),
           maxAge: 60 * 3, // 3 minute session (short for testing purposes)
-          path: "/;/auth"// we can set mutiple cookie paths with a comma separetd list
+          path: "/;/auth;/root;"// we can set multiple cookie paths with a comma separated list
         });
-        const user = await getUserByUsernameWithCredentials(dataSource, validateresult.username);
-        //Not expecting user to be null at this point as we have successfully logged in the user
-        if (user === null) {
-          console.warn(`Just logged in user with username [${validateresult.username}], should not fail to find user with credentials`);
-          return LoginPage();
-        } else {
-          return IndexPage(user);
-        }
+        ctx.set.headers["HX-Trigger"] = ServerHxTriggerEvents.LOGIN_STATUS_CHANGE;
+        return "";
       }
     }).post("/logout", async (ctx) => {
       const { auth } = ctx.cookie;
-
-      console.log(ctx.cookie);
+      console.log("Cookies: ", ctx.cookie);
       auth.remove();
-      console.log("removed auth cookie");
-      console.log(ctx.cookie);
-      //ctx.set.redirect = "/";
+      console.log("Cookies: ", ctx.cookie);
+      ctx.set.headers["HX-Trigger"] = ServerHxTriggerEvents.LOGIN_STATUS_CHANGE;
+      return "";
     })
     // Most of our route handler functions should finally look like below, not too verbose :-)
     .post("/user/create", async (ctx) => {

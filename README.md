@@ -30,14 +30,16 @@ Open http://localhost:3000/ with your browser to see the result.
 - [] State machines for model statuses???
 - [] Proper handling of amounts with decimals
 - [] Fix bug with updated at not correctly propagating on DB level (a workaround is currently being used)
+- [] Remove hardcoding of base url
 
 ## Upcoming features
-- [] Authentication (username & password) to prevent unauthorized access
+- [X] Authentication (username & password) to prevent unauthorized access
 - [] Add staff details to an order to know who completed an order. Staff can log in with their dedicated credentials.
 - [] Restriction of sensitive sections of the service to admin users only i.e Inventory Section (which can change pricing of items)
 - [] Full actions log (i.e who accessed the orders section, who viewed an order details and what time)
 - [] Edit log of all changes to an order, and who made the change (Can be combined with actions log)
 - [] Ability to filter for payments according to date and time interval
+- [] Manual reconciliation via CSV and/or Excel/Google Sheets
 
 ## Would be nice
 - [] IP Address white listing (help for example ensure the service can only be accessed when connected to the store's WiFi)
