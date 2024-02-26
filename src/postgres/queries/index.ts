@@ -408,7 +408,8 @@ export const createNewUser = async (
     .into(UsersEntity)
     .values({
       username: username,
-      is_admin: false
+      is_admin: false,
+      is_active: true
     })
     .execute();
 };

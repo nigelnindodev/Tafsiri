@@ -149,6 +149,10 @@ export class UsersEntity {
   @Column("varchar", { length: 100, nullable: false })
   username: string
 
+  @Index(generateIndexName(TableNames.USERS, "is_active"))
+  @Column("boolean", { nullable: false, default: true })
+  is_active: boolean
+
   @Index(generateIndexName(TableNames.USERS, "is_admin"))
   @Column("boolean", { nullable: false })
   is_admin: boolean
