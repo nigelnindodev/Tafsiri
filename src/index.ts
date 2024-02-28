@@ -7,7 +7,6 @@ import { Logger } from "ts-log"; // Holy crap, this should tslog, not ts-log
 /**
  * Application configuration object. 
  * Values here are to be read from an .env file. Bun has built in support for env files.
- * TODO: Purge the local .env file from source control [IMPORTANT]
  */
 export interface Config {
   postgresUser: string;

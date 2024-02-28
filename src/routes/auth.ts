@@ -1,12 +1,12 @@
 import Elysia from "elysia";
 import { DataSource } from "typeorm";
+import { cookie } from "@elysiajs/cookie";
 import { jwt } from "@elysiajs/jwt";
 import { z } from "zod";
 
 import { processCreateUserRequest, processLoginRequest } from "../services/auth";
 import { MarkedInfoWrapperComponent } from "../components/common/marked_info_wrapper";
 import { ServerHxTriggerEvents } from "../services/common/constants";
-
 
 const authSchemas = {
   processLoginRequestSchema: z.object({
@@ -26,6 +26,7 @@ const authSchemas = {
 export const authRoutes = (dataSource: DataSource) => {
   const app = new Elysia({ prefix: "/auth" });
   app
+    .use(cookie())
     .use(jwt({
       name: "jwt",
       secret: "notSoSecretForTesting"
@@ -37,22 +38,33 @@ export const authRoutes = (dataSource: DataSource) => {
       if (result.success === false) {
         return MarkedInfoWrapperComponent(result.errorMessage);
       } else {
+        console.log(ctx);
         const { auth } = ctx.cookie;
         // TODO: If in production, should also set up the secure attribute
-        auth.set({
+        ctx.setCookie("auth", await ctx.jwt.sign({ username: validateresult.username }), {
+          httpOnly: true,
+          maxAge: 60 * 3,
+          path: "/;/auth;/root"
+        });
+        /*auth.set({
           domain: "localhost",
           httpOnly: true,
           value: await ctx.jwt.sign({ username: validateresult.username }),
           maxAge: 60 * 3, // 3 minute session (short for testing purposes)
           path: "/;/auth;/root;"// we can set multiple cookie paths with a comma separated list
-        });
+        });*/
         ctx.set.headers["HX-Trigger"] = ServerHxTriggerEvents.LOGIN_STATUS_CHANGE;
         return "";
       }
     }).post("/logout", async (ctx) => {
       const { auth } = ctx.cookie;
       console.log("Cookies: ", ctx.cookie);
-      auth.remove();
+      ctx.setCookie("auth", "", {
+        httpOnly: true,
+        maxAge: 60 * 3,
+        path: "/;/auth;/root"
+      });
+      ctx.removeCookie("auth");
       console.log("Cookies: ", ctx.cookie);
       ctx.set.headers["HX-Trigger"] = ServerHxTriggerEvents.LOGIN_STATUS_CHANGE;
       return "";

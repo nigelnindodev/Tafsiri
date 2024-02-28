@@ -1,8 +1,8 @@
-import { InventoryEntity, OrderEntity } from "../../../postgres/entities/index"
+import { InventoryEntity, OrdersEntity } from "../../../postgres/entities/index"
 import { createOrderItemsDescription, getTotalOrderCost } from "../../../services/common";
 import { InfoWrapper } from "../../common/info_wrapper";
 
-export const ViewInventoryItemOrdersComponent = (inventoryItem: InventoryEntity, orders: OrderEntity[]) => {
+export const ViewInventoryItemOrdersComponent = (inventoryItem: InventoryEntity, orders: OrdersEntity[]) => {
     return (
         <div>
             <nav>

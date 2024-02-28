@@ -2,6 +2,7 @@ import "reflect-metadata"; // required for TypeORM
 
 import { DataSource } from "typeorm";
 import { Elysia } from "elysia";
+import { cookie } from "@elysiajs/cookie";
 import { jwt } from "@elysiajs/jwt";
 import { html } from "@elysiajs/html";
 import { staticPlugin } from "@elysiajs/static";
@@ -23,6 +24,7 @@ import { RootPage } from "./components/pages/root_page";
  */
 export const createApplicationServer = (dataSource: DataSource) => {
   const app = new Elysia()
+    .use(cookie())
     .use(swagger())
     .use(staticPlugin())
     .use(jwt({
@@ -46,8 +48,13 @@ export const createApplicationServer = (dataSource: DataSource) => {
       return RootPage();
     })
     .get("/root", async (ctx) => {
+      console.log(ctx);
       const { auth } = ctx.cookie;
-      const authValue = await ctx.jwt.verify(auth.value);
+      if (!auth) {
+        return LoginComponent();
+      }
+      const authValue = await ctx.jwt.verify(auth);
+      console.log("authValue", authValue);
       if (!authValue) {
         return LoginComponent();
       } else {

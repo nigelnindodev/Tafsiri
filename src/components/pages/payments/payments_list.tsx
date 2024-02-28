@@ -1,11 +1,11 @@
-import { OrderEntity } from "../../../postgres/entities";
+import { OrdersEntity } from "../../../postgres/entities";
 import { createOrderItemsDescription, getTotalOrderCost } from "../../../services/common";
 
 /**
  * Remember to pass in an order entiry with full detials. an betched from getCompletedOrders
  * function.
  */
-export const PaymentsListComponent = (orders: OrderEntity[]) => {
+export const PaymentsListComponent = (orders: OrdersEntity[]) => {
     return (
         <div>
             <h6>Payments List</h6>

@@ -196,7 +196,7 @@ export const listUnfinishedOrders = async (dataSource: DataSource) => {
  */
 export const addOrRemoveOrderItem = async (dataSource: DataSource, orderId: number, inventoryId: number) => {
 	try {
-		const orderItem = await queries.getOrderItemWithInventoryDetails(dataSource, orderId, inventoryId);
+		const orderItem = await queries.getOrderItemByInventoryId(dataSource, orderId, inventoryId);
 		console.log(orderItem);
 
 		if (orderItem === null) {

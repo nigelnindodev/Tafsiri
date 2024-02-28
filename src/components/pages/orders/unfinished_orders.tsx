@@ -1,4 +1,4 @@
-import { OrderEntity, OrderItemEntity } from "../../../postgres/entities";
+import { OrdersEntity, OrderItemEntity } from "../../../postgres/entities";
 import { createOrderItemsDescription, filterOrderItemsForActiveItems, getTotalOrderCost } from "../../../services/common";
 
 const unfinishedItemRowDescription = (orderItems: OrderItemEntity[]): string => {
@@ -7,7 +7,7 @@ const unfinishedItemRowDescription = (orderItems: OrderItemEntity[]): string => 
     return createOrderItemsDescription(activeOrderItems);
 };
 
-export const UnfinishedOrdersComponent = (unfinishedOrderitems: OrderEntity[]) => {
+export const UnfinishedOrdersComponent = (unfinishedOrderitems: OrdersEntity[]) => {
     return (
         <div>
             <h6>Latest Unfished Orders</h6>

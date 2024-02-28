@@ -25,7 +25,7 @@ export class PostgresDataSourceSingleton {
         entities: [
           DatabaseEntities.ScaffoldEntity,
           DatabaseEntities.InventoryEntity,
-          DatabaseEntities.OrderEntity,
+          DatabaseEntities.OrdersEntity,
           DatabaseEntities.OrderItemEntity,
           DatabaseEntities.PaymentEntity,
           DatabaseEntities.UsersEntity,

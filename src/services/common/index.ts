@@ -2,11 +2,11 @@
  * setTimeout calls here are only used to slow down requests to simulate network latency, so that progress
  * indicators in the UI can be confrimed to be working.
  *
- * TODO; Add catch all setTimeout middleware when environemnt is dev/local, and disable when prod
+ * TODO; Add catch all setTimeout middleware when environemnt is dev/local, and disable when prod. This can help with simulating network latency.
  */
 import { setTimeout } from "timers/promises";
 
-import { OrderEntity, OrderItemEntity } from "../../postgres/entities";
+import { OrdersEntity, OrderItemEntity } from "../../postgres/entities";
 
 /**
  * Ensure when calling this funtion, the query for fetching order item entities should
@@ -24,7 +24,7 @@ export const getTotalOrderCost = (orderItems: OrderItemEntity[]): number => {
 			totalCost += item.quantity * item.inventory.price;
 		});
 		return totalCost;
-		// above an be simplified with reduce
+		// above forEach can be further simplified with reduce call
 	}
 }
 
@@ -38,7 +38,7 @@ export const getTotalOrderCost = (orderItems: OrderItemEntity[]): number => {
  * TODO: Not very well optimized in the forEach loop. We might be able to early stop as soon as
  * an active order item is found.
  */
-export const filterForOrdersWithActiveOrders = (orders: OrderEntity[]): OrderEntity[] => {
+export const filterForOrdersWithActiveOrders = (orders: OrdersEntity[]): OrdersEntity[] => {
 	return orders.filter(item => {
 		let activeOrderFound = false;
 		item.order_items.forEach(orderItem => {

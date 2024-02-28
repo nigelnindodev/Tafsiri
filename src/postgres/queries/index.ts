@@ -1,5 +1,5 @@
-import { DataSource, InsertResult, InsertResult, UpdateResult } from "typeorm"
-import { InventoryEntity, OrderEntity, OrderItemEntity, PaymentEntity, UsersEntity } from "../entities";
+import { DataSource, InsertResult, UpdateResult } from "typeorm"
+import { InventoryEntity, OrdersEntity, OrderItemEntity, PaymentEntity, UsersEntity } from "../entities";
 import { OrderStatus, PaymentStatus, PaymentTypes, TableNames } from "../common/constants";
 
 export const insertInventoryItem = async (
@@ -24,7 +24,6 @@ export const getInventoryItems = async (
   dataSource: DataSource
 ): Promise<InventoryEntity[]> => {
   //TODO: String interpolation on a JS object key
-  //const orderColumn: string = `${TableNames.INVENTORY}.id`;
   const data: InventoryEntity[] = await dataSource.createQueryBuilder()
     .select(TableNames.INVENTORY)
     .from(InventoryEntity, TableNames.INVENTORY)
@@ -46,7 +45,7 @@ export const getInventoryItemById = async (
 };
 
 /**
- * Query is used to populate the dropdown of inventory items in the create order section of
+ * Query is used to populate the drop-down of inventory items in the create order section of
  * the UI.
  *
  * We could refactor order by as a parameter, but not doing that as of now, still not sure
@@ -56,7 +55,6 @@ export const getInventoryItemsOrderByName = async (
   dataSource: DataSource
 ): Promise<InventoryEntity[]> => {
   //TODO: String interpolation on a JS object key
-  //const orderColumn: string = `${TableNames.INVENTORY}.id`;
   const data: InventoryEntity[] = await dataSource.createQueryBuilder()
     .select(TableNames.INVENTORY)
     .from(InventoryEntity, TableNames.INVENTORY)
@@ -68,7 +66,7 @@ export const getInventoryItemsOrderByName = async (
 
 /**
  * Possibility of SQL injection here in the like part of the query?
- * WOuld also prefer to use Postgres' similarity function instead of a LIKE query here
+ * Would also prefer to use Postgres' similarity function instead of a LIKE query here
  */
 export const getInventoryItemsByName = async (
   dataSource: DataSource,
@@ -107,7 +105,7 @@ export const completeOrder = async (
   orderId: number
 ): Promise<UpdateResult> => {
   return await dataSource.createQueryBuilder()
-    .update(OrderEntity)
+    .update(OrdersEntity)
     .set({
       status: OrderStatus.COMPLETED,
       updated_at: new Date()
@@ -119,24 +117,24 @@ export const completeOrder = async (
 export const getOrderById = async (
   dataSource: DataSource,
   id: number
-): Promise<OrderEntity | null> => {
+): Promise<OrdersEntity | null> => {
   return await dataSource.createQueryBuilder()
     .select(TableNames.ORDERS)
-    .from(OrderEntity, TableNames.ORDERS)
+    .from(OrdersEntity, TableNames.ORDERS)
     .where("orders.id = :id", { id: id })
     .getOne();
 };
 
 /**
- * TODO: Might we need some limit on this. Definitely in the futre we'll also require offsets
+ * TODO: Might we need some limit on this. Definitely in the future we'll also require offsets
  * for pagination
  */
 export const getOrders = async (
   dataSource: DataSource
-): Promise<OrderEntity[]> => {
+): Promise<OrdersEntity[]> => {
   return await dataSource.createQueryBuilder()
     .select(TableNames.ORDERS)
-    .from(OrderEntity, TableNames.ORDERS)
+    .from(OrdersEntity, TableNames.ORDERS)
     .orderBy({ "orders.id": "DESC" }).
     getMany();
 };
@@ -161,8 +159,8 @@ export const getOrderItemsInOrder = async (
  */
 export const getUnfinishedOrderItems = async (
   dataSource: DataSource
-): Promise<OrderEntity[]> => {
-  return await dataSource.getRepository(OrderEntity)
+): Promise<OrdersEntity[]> => {
+  return await dataSource.getRepository(OrdersEntity)
     .createQueryBuilder(TableNames.ORDERS)
     .innerJoinAndSelect("orders.order_items", TableNames.ORDER_ITEM)
     .innerJoinAndSelect("order_item.inventory", TableNames.INVENTORY)
@@ -177,8 +175,8 @@ export const getUnfinishedOrderItems = async (
  */
 export const getCompletedOrders = async (
   dataSource: DataSource
-): Promise<OrderEntity[]> => {
-  return await dataSource.getRepository(OrderEntity)
+): Promise<OrdersEntity[]> => {
+  return await dataSource.getRepository(OrdersEntity)
     .createQueryBuilder(TableNames.ORDERS)
     .innerJoinAndSelect("orders.order_items", TableNames.ORDER_ITEM)
     .innerJoinAndSelect("order_item.inventory", TableNames.INVENTORY)
@@ -198,8 +196,8 @@ export const getCompletedOrders = async (
 export const getCompleteOrdersWithInventoryItems = async (
   dataSource: DataSource,
   inventoryIds: number[]
-): Promise<OrderEntity[]> => {
-  return await dataSource.getRepository(OrderEntity)
+): Promise<OrdersEntity[]> => {
+  return await dataSource.getRepository(OrdersEntity)
     .createQueryBuilder(TableNames.ORDERS)
     .innerJoinAndSelect("orders.order_items", TableNames.ORDER_ITEM)
     .innerJoinAndSelect("order_item.inventory", TableNames.INVENTORY)
@@ -227,10 +225,9 @@ export const getOrderItemById = async (
 };
 
 /**
- * Fetches an inventory item for a specific order.
- * TODO: Method name may be misleading as it shows inventory details are also sent.
+ * Fetches an inventory item for a specific order given its inventoryId.
  */
-export const getOrderItemWithInventoryDetails = async (
+export const getOrderItemByInventoryId = async (
   dataSource: DataSource,
   orderId: number,
   inventoryId: number

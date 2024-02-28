@@ -3,10 +3,26 @@ import * as queries from "../../postgres/queries";
 import { inventoryList } from "../../components/pages/inventory/inventory_list";
 import { ViewInventoryItemOrdersComponent } from "../../components/pages/inventory/view_inventory_orders";
 import { InfoWrapper } from "../../components/common/info_wrapper";
+import { CreateOrUpdateInventoryComponent } from "../../components/pages/inventory/create_or_update_inventory_item";
 
 export const createInventoryItem = async (dataSource: DataSource, name: string, price: number) => {
 	await queries.insertInventoryItem(dataSource, { name, price });
 	return InfoWrapper(`Added ${name} to inventory list`);
+};
+
+export const getInventoryItemForUpdate = async (dataSource: DataSource, inventoryId: number) => {
+	const inventoryItem = await queries.getInventoryItemById(dataSource, inventoryId);
+	if (inventoryItem === null) {
+		const message = `Inventory item with id [${inventoryId}] not found`;
+		console.log(message);
+		throw new Error(message);
+	} else {
+		return CreateOrUpdateInventoryComponent(inventoryItem);
+	}
+};
+
+export const updateInventoryItem = async (dataSource: DataSource, inventoryId: number, name: string, price: number) => {
+
 };
 
 export const listInventoryItems = async (dataSource: DataSource) => {

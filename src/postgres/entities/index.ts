@@ -12,8 +12,8 @@ export class ScaffoldEntity {
 }
 
 /**
- * TODO: Does a many-to-ne column auto generate an index? Most likely not. Same applies to one-to-one
- * with on the joinColumn reletionship.
+ * TODO: Does a many-to-one column auto generate an index? Most likely not. Same applies to one-to-one
+ * with on the joinColumn relationship.
  */
 
 /**
@@ -45,7 +45,8 @@ export class InventoryEntity {
   @Column("timestamptz", { nullable: false, default: () => "CURRENT_TIMESTAMP" })
   created_at: Date
 
-  //TODO: Add updated at (skipped for now as we don't want to lose our inventory items in the DB)
+  @Column("timestamptz", { nullable: false, default: () => "CURRENT_TIMESTAMP" })
+  updated_at: Date
 }
 
 /**
@@ -58,7 +59,7 @@ export class InventoryEntity {
  * TODO: How do we handle changing of an order after it has been created?
  */
 @Entity({ name: TableNames.ORDERS })
-export class OrderEntity { // TODO: Rename to OrdersEntity
+export class OrdersEntity {
   @PrimaryGeneratedColumn()
   id: number
 
@@ -74,7 +75,7 @@ export class OrderEntity { // TODO: Rename to OrdersEntity
   @Column("timestamptz", { nullable: false, default: () => "CURRENT_TIMESTAMP" })
   created_at: Date
 
-  @Column("timestamptz", { nullable: false, default: () => "CURRENT_TIMESTAMP", onUpdate: "CURRENT_TIMESTAMP" })
+  @Column("timestamptz", { nullable: false, default: () => "CURRENT_TIMESTAMP" })
   updated_at: Date
 }
 
@@ -99,8 +100,8 @@ export class OrderItemEntity {
   @ManyToOne(() => InventoryEntity, (inventory) => inventory.order_items, { nullable: false })
   inventory: InventoryEntity
 
-  @ManyToOne(() => OrderEntity, (order) => order.order_items, { nullable: false })
-  orders: OrderEntity
+  @ManyToOne(() => OrdersEntity, (order) => order.order_items, { nullable: false })
+  orders: OrdersEntity
 
   @Column("timestamptz", { nullable: false, default: () => "CURRENT_TIMESTAMP" })
   created_at: Date
@@ -118,9 +119,9 @@ export class PaymentEntity {
   @Column("varchar", { length: 100, nullable: true })
   reference: string
 
-  @OneToOne(() => OrderEntity, (order) => order.payment, { nullable: false })
+  @OneToOne(() => OrdersEntity, (order) => order.payment, { nullable: false })
   @JoinColumn()
-  order_ref: OrderEntity
+  order_ref: OrdersEntity
 
   @Index(generateIndexName(TableNames.PAYMENT, "payment_status"))
   @Column("enum", { enum: PaymentStatus, nullable: false })
@@ -133,7 +134,7 @@ export class PaymentEntity {
   @Column("timestamptz", { nullable: false, default: () => "CURRENT_TIMESTAMP" })
   created_at: Date
 
-  @Column("timestamptz", { nullable: false, default: () => "CURRENT_TIMESTAMP", onUpdate: "CURRENT_TIMESTAMP" })
+  @Column("timestamptz", { nullable: false, default: () => "CURRENT_TIMESTAMP" })
   updated_at: Date
 }
 
@@ -160,7 +161,7 @@ export class UsersEntity {
   @Column("timestamptz", { nullable: false, default: () => "CURRENT_TIMESTAMP" })
   created_at: Date
 
-  @Column("timestamptz", { nullable: false, default: () => "CURRENT_TIMESTAMP", onUpdate: "CURRENT_TIMESTAMP" })
+  @Column("timestamptz", { nullable: false, default: () => "CURRENT_TIMESTAMP" })
   updated_at: Date
 }
 
@@ -179,6 +180,6 @@ export class UserCredentialsEntity {
   @Column("timestamptz", { nullable: false, default: () => "CURRENT_TIMESTAMP" })
   created_at: Date
 
-  @Column("timestamptz", { nullable: false, default: () => "CURRENT_TIMESTAMP", onUpdate: "CURRENT_TIMESTAMP" })
+  @Column("timestamptz", { nullable: false, default: () => "CURRENT_TIMESTAMP" })
   updated_at: Date
 }

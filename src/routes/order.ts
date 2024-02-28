@@ -52,7 +52,6 @@ export const orderRoutes = (dataSource: DataSource) => {
       return ViewOrdersSection;
     })
     .get("/list/all", async () => {
-      //TODO: Change "all" to "unfinished"
       return await listUnfinishedOrders(dataSource);
     })
     .get("/resume/:orderId", async (ctx) => {

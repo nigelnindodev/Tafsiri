@@ -14,13 +14,13 @@ export const inventoryList = (inventoryItems: InventoryEntity[]) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {inventoryItems.map(inventoryItem=> {
+                    {inventoryItems.map(inventoryItem => {
                         return (
                             <tr>
                                 <td>{inventoryItem.id}</td>
                                 <td>{inventoryItem.name}</td>
                                 <td><strong>{inventoryItem.price}.00 KES</strong></td>
-                                <td><button role="button" class="secondary" hx-get={`/inventory/orders/${inventoryItem.id}`} hx-target="#inventory-section">View Orders</button><button role="button" class="contrast outline">Edit</button></td>
+                                <td><button role="button" class="secondary" hx-get={`/inventory/orders/${inventoryItem.id}`} hx-target="#inventory-section">View Orders</button><button role="button" class="contrast outline" hx-get={`/inventory/edit/${inventoryItem.id}`} hx-target="#inventory-section">Edit</button></td>
                             </tr>
                         );
                     })}
