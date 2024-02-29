@@ -49,7 +49,8 @@ export const inventoryRoutes = (dataSource: DataSource) => {
       const validateResult = inventorySchemas.createInventoryItemBody.parse(ctx.body);
       return await createInventoryItem(dataSource, validateResult.name, validateResult.price);
     }).post("/edit/:inventoryId", async (ctx) => {
-
+      const validateResult = inventorySchemas.createInventoryItemBody.parse(ctx.body);
+      return await updateInventoryItem(dataSource, Number(ctx.params.inventoryId), validateResult.name, validateResult.price);
     });
   return app;
 }

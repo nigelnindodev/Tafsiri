@@ -20,6 +20,24 @@ export const insertInventoryItem = async (
     .execute();
 };
 
+export const updateInventoryItem = async (
+  dataSource: DataSource,
+  inventoryId: number,
+  data: {
+    name: string,
+    price: number
+  }
+): Promise<UpdateResult> => {
+  return await dataSource.createQueryBuilder()
+    .update(InventoryEntity)
+    .set({
+      name: data.name.toUpperCase(),
+      price: data.price
+    })
+    .where("inventory.id = :id", { id: inventoryId })
+    .execute();
+}
+
 export const getInventoryItems = async (
   dataSource: DataSource
 ): Promise<InventoryEntity[]> => {
