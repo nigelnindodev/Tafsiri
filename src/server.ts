@@ -10,7 +10,7 @@ import { swagger } from "@elysiajs/swagger";
 
 import { IndexComponent } from "./components/pages/index_component";
 import { inventoryRoutes } from "./routes/inventory";
-import { orderRoutes } from "./routes/orders";
+import { orderRoutes } from "./routes/order";
 import { paymentRoutes } from "./routes/payments";
 import { authRoutes } from "./routes/auth";
 import { LoginComponent } from "./components/pages/auth/login";
@@ -27,15 +27,19 @@ export const createApplicationServer = (dataSource: DataSource) => {
     .use(cookie())
     .use(swagger())
     .use(staticPlugin())
-    .use(jwt({
-      name: "jwt",
-      secret: "notSoSecretForTesting"
-    }))
+    .use(
+      jwt({
+        name: "jwt",
+        secret: "notSoSecretForTesting",
+      }),
+    )
     .use(html())
-    // Ensures that all 500 errors are logged for API routes 
+    // Ensures that all 500 errors are logged for API routes
     // TODO: Should we also log third party errors and add this middleware at the top? Seems like a solid idea.
     .onError(({ code, error }) => {
-      console.error(`API error occured with code [${code}]: ${error.message} ${error.cause} ${error.stack}`);
+      console.error(
+        `API error occured with code [${code}]: ${error.message} ${error.cause} ${error.stack}`,
+      );
     })
     .get("/tailwind", () => {
       return OrderExampleTailwindComponent();
@@ -58,7 +62,10 @@ export const createApplicationServer = (dataSource: DataSource) => {
       if (!authValue) {
         return LoginComponent();
       } else {
-        const user = await getUserByUsernameWithCredentials(dataSource, authValue.username.toString());
+        const user = await getUserByUsernameWithCredentials(
+          dataSource,
+          authValue.username.toString(),
+        );
         if (user === null) {
           return LoginComponent();
         } else {
