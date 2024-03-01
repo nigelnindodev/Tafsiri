@@ -13,6 +13,7 @@ import {
   updateInventoryItem,
 } from "../services/inventory";
 import { InventoryPage } from "../components/pages/inventory";
+import { RequestNumberSchema } from "../services/common/constants";
 
 const inventorySchemas = {
   searchInventoryItemsQuery: z.object({
@@ -20,11 +21,11 @@ const inventorySchemas = {
   }),
   createInventoryItemBody: z.object({
     name: z.string(),
-    price: z.number(),
+    price: RequestNumberSchema,
   }),
   updateInventoryItemBody: z.object({
     name: z.string(),
-    price: z.number(),
+    price: RequestNumberSchema,
   }),
 };
 
