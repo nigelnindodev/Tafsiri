@@ -3,6 +3,6 @@ import { PaymentsListComponent } from "../../components/pages/payments/payments_
 import { getCompletedOrders } from "../../postgres/queries";
 
 export const listPayments = async (dataSource: DataSource) => {
-	const completedOrders = await getCompletedOrders(dataSource);
-	return PaymentsListComponent(completedOrders);
+  const completedOrders = await getCompletedOrders(dataSource);
+  return PaymentsListComponent(completedOrders);
 };

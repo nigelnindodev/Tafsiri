@@ -5,7 +5,7 @@ import { createApplicationServer } from "./server";
 import { Logger } from "ts-log"; // Holy crap, this should tslog, not ts-log
 
 /**
- * Application configuration object. 
+ * Application configuration object.
  * Values here are to be read from an .env file. Bun has built in support for env files.
  */
 export interface Config {
@@ -26,9 +26,9 @@ export function getConfig(): Config {
     postgresPassword: process.env.POSTGRES_PASSWORD || "",
     postgresHost: process.env.POSTGRES_HOST || "",
     postgresPort: Number(process.env.POSTGRES_PORT) || 5432,
-    postgresDatabaseName: process.env.POSTGRES_DATABASE_NAME || ""
-  }
-};
+    postgresDatabaseName: process.env.POSTGRES_DATABASE_NAME || "",
+  };
+}
 
 //export const logger = new Logger({type: "pretty", name: "mainLogger"});
 
@@ -45,5 +45,5 @@ const app = createApplicationServer(dataSource);
 app.listen(3000);
 
 console.log(
-  `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port} with NODE_ENV ${process.env.NODE_ENV}`
+  `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port} with NODE_ENV ${process.env.NODE_ENV}`,
 );

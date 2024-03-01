@@ -6,7 +6,7 @@ const config = getConfig();
 
 export class PostgresDataSourceSingleton {
   private static dataSource: DataSource;
-  private constructor() { }
+  private constructor() {}
 
   public static async getInstance(): Promise<DataSource> {
     if (!PostgresDataSourceSingleton.dataSource) {
@@ -20,7 +20,7 @@ export class PostgresDataSourceSingleton {
         synchronize: true,
         logging: false,
         extra: {
-          ssl: false
+          ssl: false,
         },
         entities: [
           DatabaseEntities.ScaffoldEntity,
@@ -29,8 +29,8 @@ export class PostgresDataSourceSingleton {
           DatabaseEntities.OrderItemEntity,
           DatabaseEntities.PaymentEntity,
           DatabaseEntities.UsersEntity,
-          DatabaseEntities.UserCredentialsEntity
-        ]
+          DatabaseEntities.UserCredentialsEntity,
+        ],
       });
 
       const result = await dataSource.initialize();
