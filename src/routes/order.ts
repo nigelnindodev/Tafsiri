@@ -15,32 +15,35 @@ import {
 } from "../services/orders";
 import { ViewOrdersSection } from "../components/pages/orders/orders";
 import { PaymentTypes } from "../postgres/common/constants";
-import { ServerHxTriggerEvents } from "../services/common/constants";
+import {
+  RequestNumberSchema,
+  ServerHxTriggerEvents,
+} from "../services/common/constants";
 
 const orderSchema = {
   activeOrdersParams: z.object({
-    orderId: z.number(),
+    orderId: RequestNumberSchema,
   }),
   resumeOrderParams: z.object({
-    orderId: z.number(),
+    orderId: RequestNumberSchema,
   }),
   confirmOrderParams: z.object({
-    orderId: z.number(),
-    paymentId: z.number(),
+    orderId: RequestNumberSchema,
+    paymentId: RequestNumberSchema,
   }),
   updateItemCounterParams: z.object({
-    itemId: z.number(),
+    itemId: RequestNumberSchema,
     updateType: z.string().length(3),
   }),
   addOrRemoveItemParams: z.object({
-    orderId: z.number(),
-    inventoryId: z.number(),
+    orderId: RequestNumberSchema,
+    inventoryId: RequestNumberSchema,
   }),
   updatePaymentTypeForOrderBody: z.object({
     paymentType: z.nativeEnum(PaymentTypes),
   }),
   updatePaymentTypeForOrderParams: z.object({
-    paymentId: z.number(),
+    paymentId: RequestNumberSchema,
   }),
 };
 
