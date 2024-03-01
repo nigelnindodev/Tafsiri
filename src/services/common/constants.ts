@@ -6,3 +6,8 @@ export enum ServerHxTriggerEvents {
   GENERAL_ERROR = "generalErrorEvent",
   REFRESH_ORDER = "refreshOrderEvent",
 }
+
+export const CookieConstansts = {
+  maxAge: 60 * 3,
+  path: "/;/auth;/root",
+} as const;

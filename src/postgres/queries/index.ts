@@ -88,8 +88,8 @@ export const getInventoryItemsOrderByName = async (
  */
 export const getInventoryItemsByName = async (
   dataSource: DataSource,
-  name: string)
-  : Promise<InventoryEntity[]> => {
+  name: string
+): Promise<InventoryEntity[]> => {
   try {
     const data: InventoryEntity[] = await dataSource.createQueryBuilder()
       .select(TableNames.INVENTORY)

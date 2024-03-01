@@ -9,7 +9,10 @@ import {
   processLoginRequest,
 } from "../services/auth";
 import { MarkedInfoWrapperComponent } from "../components/common/marked_info_wrapper";
-import { ServerHxTriggerEvents } from "../services/common/constants";
+import {
+  CookieConstansts,
+  ServerHxTriggerEvents,
+} from "../services/common/constants";
 
 const authSchemas = {
   processLoginRequestSchema: z.object({
@@ -23,9 +26,9 @@ const authSchemas = {
 };
 
 /**
- * There's some code duplication with adding JWT middleware in here and in the main server.js file
- * , currently happening to get the Typescript compiler to be happy.
- */
+ * There's some code duplication with adding JWT middleware in here and in the main server.js file,
+ * currently happening to get the Typescript compiler to be happy.
+ **/
 export const authRoutes = (dataSource: DataSource) => {
   const app = new Elysia({ prefix: "/auth" });
   app
@@ -56,8 +59,8 @@ export const authRoutes = (dataSource: DataSource) => {
           await ctx.jwt.sign({ username: validateresult.username }),
           {
             httpOnly: true,
-            maxAge: 60 * 3,
-            path: "/;/auth;/root",
+            maxAge: CookieConstansts.maxAge,
+            path: CookieConstansts.path,
           },
         );
         ctx.set.headers["HX-Trigger"] =
@@ -68,8 +71,8 @@ export const authRoutes = (dataSource: DataSource) => {
     .post("/logout", async (ctx) => {
       ctx.setCookie("auth", "", {
         httpOnly: true,
-        maxAge: 60 * 3,
-        path: "/;/auth;/root",
+        maxAge: 0,
+        path: CookieConstansts.path,
       });
       ctx.set.headers["HX-Trigger"] = ServerHxTriggerEvents.LOGIN_STATUS_CHANGE;
       return "";
