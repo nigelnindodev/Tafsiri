@@ -15,4 +15,4 @@ export const CookieConstansts = {
   path: "/;/auth;/root",
 } as const;
 
-export const RequestNumberSchema = z.string().transform(parseNumber).optional();
+export const RequestNumberSchema = z.string().transform(parseNumber);
