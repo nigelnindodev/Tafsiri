@@ -73,7 +73,6 @@ export const inventoryRoutes = (dataSource: DataSource) => {
     })
     .post("/edit/:inventoryId", async (ctx) => {
       logger.info(ctx);
-      console.log(ctx);
       const validateResult = inventorySchemas.createInventoryItemBody.parse(
         ctx.body,
       );

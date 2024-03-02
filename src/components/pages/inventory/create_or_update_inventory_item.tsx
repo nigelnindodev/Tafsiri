@@ -24,7 +24,7 @@ export const CreateOrUpdateInventoryComponent = (inventoryItem?: InventoryEntity
                         <input value={inventoryItem?.price.toString()} type="number" id="price" name="price" placeholder="Price" required />
                     </label>
                 </div>
-                <button id={HtmxTargets.INVENTORY_SUBMIT_RESULT_VIEW} type="submit" hx-post={inventoryItem === undefined ? "/inventory/create" : `/inventory/edit/{${inventoryItem.id}}`} hx-swap="outerHTML" hx-target={`#${HtmxTargets.INVENTORY_SUBMIT_RESULT_VIEW}`}>Submit</button>
+                <button id={HtmxTargets.INVENTORY_SUBMIT_RESULT_VIEW} type="submit" hx-post={inventoryItem === undefined ? "/inventory/create" : `/inventory/edit/${inventoryItem.id}`} hx-swap="outerHTML" hx-target={`#${HtmxTargets.INVENTORY_SUBMIT_RESULT_VIEW}`}>Submit</button>
             </form>
         </div>
     );
