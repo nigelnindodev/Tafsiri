@@ -7,6 +7,7 @@
 import { setTimeout } from "timers/promises";
 
 import { OrdersEntity, OrderItemEntity } from "../../postgres/entities";
+import { logger } from "../..";
 
 /**
  * Ensure when calling this funtion, the query for fetching order item entities should
@@ -16,12 +17,14 @@ import { OrdersEntity, OrderItemEntity } from "../../postgres/entities";
  * TODO: What if an order is unfinshed and the price changes in the inventory list? We need to handle that as well.
  */
 export const getTotalOrderCost = (orderItems: OrderItemEntity[]): number => {
+  logger.trace("orderItems on getTotalOrderCost", orderItems);
   if (orderItems.length === 0) {
     return 0;
   } else {
     let totalCost = 0;
     orderItems.forEach((item) => {
-      totalCost += item.quantity * item.inventory.price;
+      logger.trace("individual order item on getTotalOrderCost", item);
+      totalCost += item.quantity * item.order_item_price.price;
     });
     return totalCost;
     // above forEach can be further simplified with reduce call

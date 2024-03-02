@@ -1,5 +1,5 @@
 import { DataSource, InsertResult, UpdateResult } from "typeorm"
-import { InventoryEntity, OrdersEntity, OrderItemEntity, PaymentEntity, UsersEntity } from "../entities";
+import { InventoryEntity, OrdersEntity, OrderItemEntity, PaymentEntity, UsersEntity, OrderPriceEntity } from "../entities";
 import { OrderStatus, PaymentStatus, PaymentTypes, TableNames } from "../common/constants";
 import { logger } from "../..";
 
@@ -199,6 +199,7 @@ export const getCompletedOrders = async (
     .createQueryBuilder(TableNames.ORDERS)
     .innerJoinAndSelect("orders.order_items", TableNames.ORDER_ITEM)
     .innerJoinAndSelect("order_item.inventory", TableNames.INVENTORY)
+    .leftJoinAndSelect("order_item.order_item_price", TableNames.ORDER_ITEM_PRICE)
     .innerJoinAndSelect("orders.payment", TableNames.PAYMENT)
     .where("orders.status = :orderStatus", { orderStatus: OrderStatus.COMPLETED })
     .orderBy({ "payment.updated_at": "DESC" }) // TODO: maybe change order criteria i.e when payment was completed?
@@ -220,6 +221,7 @@ export const getCompleteOrdersWithInventoryItems = async (
     .createQueryBuilder(TableNames.ORDERS)
     .innerJoinAndSelect("orders.order_items", TableNames.ORDER_ITEM)
     .innerJoinAndSelect("order_item.inventory", TableNames.INVENTORY)
+    .innerJoinAndSelect("order_item.order_item_price", TableNames.ORDER_ITEM_PRICE)
     .innerJoinAndSelect("orders.payment", TableNames.PAYMENT)
     .where("orders.status = :orderStatus", { orderStatus: OrderStatus.COMPLETED })
     .andWhere("inventory.id IN(:...ids)", { ids: inventoryIds })
@@ -310,6 +312,45 @@ export const insertOrderitem = async (
         inventory: inventoryId,
         quantity: 1,
         active: true
+      })
+      .execute();
+  } catch (e) {
+    logger.error(e);
+    throw (e);
+  }
+};
+
+/**
+ * Use this method to get the immutable price of an order item.
+ */
+export const getOrderPrice = async (
+  dataSource: DataSource,
+  orderItemId: number
+): Promise<OrderPriceEntity | null> => {
+  logger.trace("Calling getOrderPrice method");
+  return await dataSource.createQueryBuilder()
+    .select(TableNames.ORDER_ITEM_PRICE)
+    .from(OrderPriceEntity, TableNames.ORDER_ITEM_PRICE)
+    .where("order_item_price.orderItemId = :orderItemId", { orderItemId: orderItemId})
+    .getOne();
+};
+
+/**
+ * Inserting price separately with the inventoty item and order relation
+ * avoids price updating on an already completed payment.
+ */
+export const insertOrderPrice = async (
+  dataSource: DataSource,
+  orderItemId: number,
+  price: number
+): Promise<InsertResult> => {
+  try {
+    return await dataSource.createQueryBuilder()
+      .insert()
+      .into(TableNames.ORDER_ITEM_PRICE)
+      .values({
+        order_item: orderItemId,
+        price: price
       })
       .execute();
   } catch (e) {

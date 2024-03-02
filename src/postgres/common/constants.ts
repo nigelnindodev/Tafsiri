@@ -6,13 +6,14 @@ export enum TableNames {
   PAYMENT = "payment",
   PAYMENT_TYPE = "payment_type",
   USERS = "users",
-  USER_CREDENTIALS = "user_credentials"
-};
+  USER_CREDENTIALS = "user_credentials",
+  ORDER_ITEM_PRICE = "order_item_price",
+}
 
 export enum PaymentTypes {
   CASH = "CASH",
-  MPESA = "MPESA"
-};
+  MPESA = "MPESA",
+}
 
 export enum OrderStatus {
   INITIALIZED = "INITIALIZED", // Goes into this state on creation of an order
@@ -24,5 +25,5 @@ export enum PaymentStatus {
   INITIALIZED = "INITIALIZED", // Goes into this state on creation of an order
   PAYMENT_PENDING = "PAYMENT_PENDING", // Not currently in use, but may be in the future for defer payments
   PARTIAL_PAYMENT = "PARTIAL_PAYMENT", // Also not in use at the moment, but for orders with partial payments
-  COMPLETED = "COMPLETED" // Full payment made
+  COMPLETED = "COMPLETED", // Full payment made
 }
