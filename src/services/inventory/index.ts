@@ -37,7 +37,25 @@ export const updateInventoryItem = async (
   inventoryId: number,
   name: string,
   price: number,
-) => {};
+) => {
+  logger.trace("Update inventory item endpoint called", {
+    inventoryId,
+    name,
+    price,
+  });
+  const inventoryItem = await queries.getInventoryItemById(
+    dataSource,
+    inventoryId,
+  );
+  if (inventoryItem === null) {
+    const message = `Inventory item with id [${inventoryId}] not found`;
+    logger.warn(message);
+    throw new Error(message);
+  } else {
+    await queries.updateInventoryItem(dataSource, inventoryId, { name, price });
+    return "Updated";
+  }
+};
 
 export const listInventoryItems = async (dataSource: DataSource) => {
   const result = await queries.getInventoryItems(dataSource);
