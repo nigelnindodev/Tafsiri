@@ -9,7 +9,9 @@ import { Logger } from "ts-log"; // Holy crap, this should tslog, not ts-log
  * Values here are to be read from an .env file. Bun has built in support for env files.
  */
 export interface Config {
+  applicationPort: number;
   baseUrl: string;
+  jwtSecret: string;
   postgresUser: string;
   postgresPassword: string;
   postgresHost: string;
@@ -23,7 +25,9 @@ export interface Config {
  */
 export function getConfig(): Config {
   return {
+    applicationPort: Number(process.env.APPLICATION_PORT) || 3000,
     baseUrl: process.env.BASE_URL || "",
+    jwtSecret: process.env.JWT_SECRET || "not_cool",
     postgresUser: process.env.POSTGRES_USER || "",
     postgresPassword: process.env.POSTGRES_PASSWORD || "",
     postgresHost: process.env.POSTGRES_HOST || "",
@@ -44,7 +48,7 @@ const dataSource = await PostgresDataSourceSingleton.getInstance();
  */
 const app = createApplicationServer(dataSource);
 
-app.listen(3000);
+app.listen(getConfig().applicationPort);
 
 console.log(
   `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port} with NODE_ENV ${process.env.NODE_ENV}`,
