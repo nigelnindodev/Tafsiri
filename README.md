@@ -53,6 +53,6 @@ Open http://localhost:3000/ with your browser to see the result.
 - [ ] Mobile App?
 
 ## Remove Packages
-- [ ] tailwindcss
-- [ ] postcss
-- [ ] @gtramontina.com/elysia-tailwind 
+- [X] tailwindcss
+- [X] postcss
+- [X] @gtramontina.com/elysia-tailwind 
