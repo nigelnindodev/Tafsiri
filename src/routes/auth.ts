@@ -13,6 +13,7 @@ import {
   CookieConstansts,
   ServerHxTriggerEvents,
 } from "../services/common/constants";
+import { getConfig } from "..";
 
 const authSchemas = {
   processLoginRequestSchema: z.object({
@@ -36,7 +37,7 @@ export const authRoutes = (dataSource: DataSource) => {
     .use(
       jwt({
         name: "jwt",
-        secret: "notSoSecretForTesting",
+        secret: getConfig().jwtSecret,
       }),
     )
     // TODO: Update to use basic authentication instead of passing username & password in request body?

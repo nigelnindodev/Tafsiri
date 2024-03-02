@@ -17,6 +17,7 @@ import { LoginComponent } from "./components/pages/auth/login";
 import { getUserByUsernameWithCredentials } from "./postgres/queries";
 import { OrderExampleTailwindComponent } from "./components/pages/orders/order_tailwind";
 import { RootPage } from "./components/pages/root_page";
+import { getConfig } from ".";
 
 /**
  * We're initializing the application server with the DataSource as a parameter so that we can
@@ -30,7 +31,7 @@ export const createApplicationServer = (dataSource: DataSource) => {
     .use(
       jwt({
         name: "jwt",
-        secret: "notSoSecretForTesting",
+        secret: getConfig().jwtSecret,
       }),
     )
     .use(html())
@@ -54,7 +55,7 @@ export const createApplicationServer = (dataSource: DataSource) => {
     .get("/root", async (ctx) => {
       console.log(ctx);
       const { auth } = ctx.cookie;
-      if (!auth) {
+     if (!auth) {
         return LoginComponent();
       }
       const authValue = await ctx.jwt.verify(auth);
@@ -74,4 +75,4 @@ export const createApplicationServer = (dataSource: DataSource) => {
       }
     });
   return app;
-};
+}

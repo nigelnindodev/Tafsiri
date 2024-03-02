@@ -1,4 +1,8 @@
+import { getConfig } from "../..";
+import { HtmxTargets } from "../../components/common/constants"
 import { ServerHxTriggerEvents } from "../../services/common/constants";
+
+const config = getConfig();
 
 /**
  * Root page of the application. It's responsible for:
@@ -14,16 +18,16 @@ export const RootPage = () => {
         <html data-theme="dark">
             <head>
                 <title>Business Name</title>
-                <link rel="stylesheet" href="http://localhost:3000/public/pico.min.css" />
-                <link rel="stylesheet" href="http://localhost:3000/public/tailwind.css" />
-                <link rel="stylesheet" href="http://localhost:3000/public/custom.css" />
-                <script src="http://localhost:3000/public/htmx.min.js" />
-                <script src="http://localhost:3000/public/theme_switcher.js" />
+                <link rel="stylesheet" href={`${config.baseUrl}/public/pico.min.css`} />
+                <link rel="stylesheet" href={`${config.baseUrl}/public/tailwind.css`} />
+                <link rel="stylesheet" href={`${config.baseUrl}/public/custom.css`} />
+                <script src={`${config.baseUrl}/public/htmx.min.js`} />
+                <script src={`${config.baseUrl}/public/htmx_debug.js`} />
             </head>
             <body>
-                <div id="root-div" />
-                <div hx-get="/root" hx-trigger={`load, ${ServerHxTriggerEvents.LOGIN_STATUS_CHANGE} from:body`} hx-target="#root-div" />
-                <div hx-get="/todo" hx-trigger={`${ServerHxTriggerEvents.GENERAL_ERROR} from:body`} hx-target="#root-div" />
+                <div id={HtmxTargets.ROOT_DIV} />
+                <div hx-get="/root" hx-trigger={`load, ${ServerHxTriggerEvents.LOGIN_STATUS_CHANGE} from:body`} hx-target={`#${HtmxTargets.ROOT_DIV}`} />
+                <div hx-get="/todo" hx-trigger={`${ServerHxTriggerEvents.GENERAL_ERROR} from:body`} hx-target={`#${HtmxTargets.ROOT_DIV}`} />
             </body>
         </html>
     );

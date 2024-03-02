@@ -1,5 +1,6 @@
 import { DataSource } from "typeorm";
 import * as queries from "../../postgres/queries";
+
 import { InfoWrapper } from "../../components/common/info_wrapper";
 import { CreateOrUpdateOrderSection } from "../../components/pages/orders/create";
 import { ActiveOrderItems } from "../../components/pages/orders/active_order_items";
@@ -14,20 +15,12 @@ import { UnfinishedOrdersComponent } from "../../components/pages/orders/unfinis
  * Initializes a new order and payment in so that we can keep track of the order even after exiting.
  */
 export const createOrder = async (dataSource: DataSource) => {
-	try {
-		const initializeOrderResult = await queries.initializeOrder(dataSource);
-		// We should always have identifiers[0].id from TypeORM
-		await queries.initializePayment(dataSource, initializeOrderResult.identifiers[0].id);
-		const inventoryItems = await queries.getInventoryItemsOrderByName(dataSource);
-		/**
-		 * Return empty array for orderItemsInOrder since ther order was just created.
-		 */
-		return CreateOrUpdateOrderSection(initializeOrderResult.identifiers[0].id, inventoryItems, []);
-
-	} catch (e) {
-		console.log(e);
-		throw (e);
-	}
+	const initializeOrderResult = await queries.initializeOrder(dataSource);
+	// We should always have identifiers[0].id from TypeORM
+	await queries.initializePayment(dataSource, initializeOrderResult.identifiers[0].id);
+	const inventoryItems = await queries.getInventoryItemsOrderByName(dataSource);
+	// Return empty array for orderItemsInOrder since ther order was just created.
+	return CreateOrUpdateOrderSection(initializeOrderResult.identifiers[0].id, inventoryItems, []);
 };
 
 /**
@@ -38,14 +31,9 @@ export const createOrder = async (dataSource: DataSource) => {
  * items form the database.
  */
 export const resumeOrder = async (dataSource: DataSource, orderId: number) => {
-	try {
-		const inventoryItems = await queries.getInventoryItemsOrderByName(dataSource);
-		const orderItems = await queries.getOrderItemsInOrder(dataSource, orderId);
-		return CreateOrUpdateOrderSection(orderId, inventoryItems, filterOrderItemsForActiveItems(orderItems));
-	} catch (e) {
-		console.log(e);
-		throw (e);
-	}
+	const inventoryItems = await queries.getInventoryItemsOrderByName(dataSource);
+	const orderItems = await queries.getOrderItemsInOrder(dataSource, orderId);
+	return CreateOrUpdateOrderSection(orderId, inventoryItems, filterOrderItemsForActiveItems(orderItems));
 };
 
 /**
@@ -57,60 +45,50 @@ export const resumeOrder = async (dataSource: DataSource, orderId: number) => {
  * We will assume that all payments have been completed once an order is confirmed.
  */
 export const confirmOrder = async (dataSource: DataSource, orderId: number, payemntId: number) => {
-	try {
-		await simulateNetworkLatency(2000);
-		const getOrderResult = await queries.getOrderById(dataSource, orderId);
-		const getPaymentResult = await queries.getPaymentByOrderId(dataSource, orderId);
+	await simulateNetworkLatency(2000);
+	const getOrderResult = await queries.getOrderById(dataSource, orderId);
+	const getPaymentResult = await queries.getPaymentByOrderId(dataSource, orderId);
 
-		// ensure that both values are not null
-		if (getOrderResult === null || getPaymentResult === null) {
-			const message = `Missing order or payment. orderId: ${orderId} | paymentId: ${payemntId}`;
-			console.error(message);
-			throw new Error(message);
-		}
-
-		// ensure that payment passed in matches its order
-		if (getPaymentResult.id !== payemntId) {
-			const message = `Payment id in request [${payemntId}] did not match id [${getPaymentResult.id}] for order with identifier: ${orderId}`
-			console.error(message);
-			throw new Error(message);
-		}
-
-		// ensure that order is already not in a completed state
-		if (getOrderResult.status === OrderStatus.COMPLETED) {
-			const message = `Order with id [${orderId}] is already in a completed state`;
-			console.error(message);
-			throw new Error(message);
-		}
-
-		// get all the items in the order
-		// if confirm button is shown in the UI, there should be active items in the order
-		// We can go ahead and complete the order and payment as well
-		const orderItems = await queries.getOrderItemsInOrder(dataSource, orderId);
-
-		await queries.completeOrder(dataSource, orderId);
-		await queries.completePayment(dataSource, payemntId, getTotalOrderCost(filterOrderItemsForActiveItems(orderItems)));
-		return orderCreateSuccess;
-	} catch (e) {
-		console.log(e);
-		throw (e);
+	// ensure that both values are not null
+	if (getOrderResult === null || getPaymentResult === null) {
+		const message = `Missing order or payment. orderId: ${orderId} | paymentId: ${payemntId}`;
+		console.error(message);
+		throw new Error(message);
 	}
+
+	// ensure that payment passed in matches its order
+	if (getPaymentResult.id !== payemntId) {
+		const message = `Payment id in request [${payemntId}] did not match id [${getPaymentResult.id}] for order with identifier: ${orderId}`
+		console.error(message);
+		throw new Error(message);
+	}
+
+	// ensure that order is already not in a completed state
+	if (getOrderResult.status === OrderStatus.COMPLETED) {
+		const message = `Order with id [${orderId}] is already in a completed state`;
+		console.error(message);
+		throw new Error(message);
+	}
+
+	// get all the items in the order
+	// if confirm button is shown in the UI, there should be active items in the order
+	// We can go ahead and complete the order and payment as well
+	const orderItems = await queries.getOrderItemsInOrder(dataSource, orderId);
+
+	await queries.completeOrder(dataSource, orderId);
+	await queries.completePayment(dataSource, payemntId, getTotalOrderCost(filterOrderItemsForActiveItems(orderItems)));
+	return orderCreateSuccess;
 };
 
 export const activeOrders = async (dataSource: DataSource, orderId: number) => {
-	try {
-		const orderItems = await queries.getOrderItemsInOrder(dataSource, orderId);
-		const getPaymentResult = await queries.getPaymentByOrderId(dataSource, orderId);
-		if (getPaymentResult === null) {
-			const message = `Failed to get payment for order with id: ${orderId}`;
-			console.error(message);
-			throw new Error(message);
-		}
-		return ActiveOrderItems(orderId, filterOrderItemsForActiveItems(orderItems), getPaymentResult);
-	} catch (e) {
-		console.error(e);
-		throw (e);
+	const orderItems = await queries.getOrderItemsInOrder(dataSource, orderId);
+	const getPaymentResult = await queries.getPaymentByOrderId(dataSource, orderId);
+	if (getPaymentResult === null) {
+		const message = `Failed to get payment for order with id: ${orderId}`;
+		console.error(message);
+		throw new Error(message);
 	}
+	return ActiveOrderItems(orderId, filterOrderItemsForActiveItems(orderItems), getPaymentResult);
 };
 
 /**
@@ -127,33 +105,27 @@ export const activeOrders = async (dataSource: DataSource, orderId: number) => {
  * 
  */
 export const updateItemCounter = async (dataSource: DataSource, itemId: number, updateType: string) => {
-	try {
-		// ignore unknown actions
-		if (updateType !== "INC" && updateType !== "DEC") {
-			console.warn(`Unkown updateType of ${updateType} passed to updateItemCounter function`);
-			return;
-		}
-
-		const orderItem = await queries.getOrderItemById(dataSource, itemId);
-
-		// ignore if order item is null
-		if (orderItem === null) {
-			console.warn(`Order item with id ${itemId} not found`);
-			return;
-		}
-
-		// ignore if counter already at 1 and decrement action passed in 
-		if (orderItem.quantity === 1 && updateType === "DEC") {
-			console.warn(`Order item with id ${itemId} is already at lowest value`);
-			return;
-		}
-
-		await queries.updateOrderItemCount(dataSource, itemId, updateType === "DEC" ? orderItem.quantity - 1 : orderItem.quantity + 1);
-
-	} catch (e) {
-		console.error(e);
-		throw (e);
+	// ignore unknown actions
+	if (updateType !== "INC" && updateType !== "DEC") {
+		console.warn(`Unkown updateType of ${updateType} passed to updateItemCounter function`);
+		return;
 	}
+
+	const orderItem = await queries.getOrderItemById(dataSource, itemId);
+
+	// ignore if order item is null
+	if (orderItem === null) {
+		console.warn(`Order item with id ${itemId} not found`);
+		return;
+	}
+
+	// ignore if counter already at 1 and decrement action passed in 
+	if (orderItem.quantity === 1 && updateType === "DEC") {
+		console.warn(`Order item with id ${itemId} is already at lowest value`);
+		return;
+	}
+
+	await queries.updateOrderItemCount(dataSource, itemId, updateType === "DEC" ? orderItem.quantity - 1 : orderItem.quantity + 1);
 };
 
 /**
@@ -166,25 +138,19 @@ export const updateItemCounter = async (dataSource: DataSource, itemId: number, 
  * This endpoint returns a list of all unfinished orders, so that it can be resumed.
  */
 export const listUnfinishedOrders = async (dataSource: DataSource) => {
-	try {
-		const result = await queries.getOrders(dataSource);
-		if (result.length === 0) {
-			return InfoWrapper("No orders made yet. Create first order");
-		} else {
-			const unfinishedOrders = await queries.getUnfinishedOrderItems(dataSource);
-			const filteredOrders = filterForOrdersWithActiveOrders(unfinishedOrders);
-			if (filteredOrders.length === 0) {
-				return InfoWrapper("No recent unfinished orders.");
-			}
-			else {
-				return UnfinishedOrdersComponent(filteredOrders);
-			}
+	const result = await queries.getOrders(dataSource);
+	if (result.length === 0) {
+		return InfoWrapper("No orders made yet. Create first order");
+	} else {
+		const unfinishedOrders = await queries.getUnfinishedOrderItems(dataSource);
+		const filteredOrders = filterForOrdersWithActiveOrders(unfinishedOrders);
+		if (filteredOrders.length === 0) {
+			return InfoWrapper("No recent unfinished orders.");
 		}
-	} catch (e) {
-		console.error(e);
-		throw (e);
+		else {
+			return UnfinishedOrdersComponent(filteredOrders);
+		}
 	}
-
 };
 
 /**
@@ -195,20 +161,15 @@ export const listUnfinishedOrders = async (dataSource: DataSource) => {
  * "Remove" in quotes because the backend doesn't actually remove it, just deactivates it. This enables easier addition back if removed errorneously, and also will still contain it's previous context.
  */
 export const addOrRemoveOrderItem = async (dataSource: DataSource, orderId: number, inventoryId: number) => {
-	try {
-		const orderItem = await queries.getOrderItemByInventoryId(dataSource, orderId, inventoryId);
-		console.log(orderItem);
+	const orderItem = await queries.getOrderItemByInventoryId(dataSource, orderId, inventoryId);
+	console.log(orderItem);
 
-		if (orderItem === null) {
-			console.log("Item doesn't exist in order, creating it.");
-			await queries.insertOrderitem(dataSource, orderId, inventoryId);
-		} else {
-			console.log("Item already exists in order. Toggling active state");
-			await queries.toggleOrderItem(dataSource, orderItem.id, !orderItem.active);
-		}
-	} catch (e) {
-		console.error(e);
-		throw (e);
+	if (orderItem === null) {
+		console.log("Item doesn't exist in order, creating it.");
+		await queries.insertOrderitem(dataSource, orderId, inventoryId);
+	} else {
+		console.log("Item already exists in order. Toggling active state");
+		await queries.toggleOrderItem(dataSource, orderItem.id, !orderItem.active);
 	}
 }
 
@@ -216,18 +177,13 @@ export const addOrRemoveOrderItem = async (dataSource: DataSource, orderId: numb
  * Updates the payment type radio buttons to show which payment type (currently CASH & M-Pesa) is to be associated with this transaction.
  */
 export const updatePaymentTypeForOrder = async (dataSource: DataSource, paymentId: number, paymentType: PaymentTypes) => {
-	try {
-		const getPaymentResult = await queries.getPaymentById(dataSource, paymentId);
+	const getPaymentResult = await queries.getPaymentById(dataSource, paymentId);
 
-		if (getPaymentResult === null) {
-			const message = `Cannot update payment type as payment with id: ${paymentId} not found`;
-			console.error(message);
-			throw new Error(message);
-		}
-
-		await queries.updatePaymentType(dataSource, paymentId, paymentType);
-	} catch (e) {
-		console.error(e);
-		throw (e);
+	if (getPaymentResult === null) {
+		const message = `Cannot update payment type as payment with id: ${paymentId} not found`;
+		console.error(message);
+		throw new Error(message);
 	}
+
+	await queries.updatePaymentType(dataSource, paymentId, paymentType);
 };

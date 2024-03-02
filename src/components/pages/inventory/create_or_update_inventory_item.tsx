@@ -1,4 +1,5 @@
 import { InventoryEntity } from "../../../postgres/entities";
+import { HtmxTargets } from "../../common/constants";
 
 export const CreateOrUpdateInventoryComponent = (inventoryItem?: InventoryEntity) => {
     return (
@@ -8,7 +9,7 @@ export const CreateOrUpdateInventoryComponent = (inventoryItem?: InventoryEntity
                     <li><strong>{inventoryItem === undefined ? "Create" : "Update"} Inventory</strong></li>
                 </ul>
                 <ul>
-                    <li><a hx-get="/inventory/list" hx-target="#inventory-section" >&lt Back</a></li>
+                    <li><a hx-get="/inventory/list" hx-target={`#${HtmxTargets.INVENTORY_SECTION}`} >&lt Back</a></li>
                 </ul>
             </nav>
             <form>
@@ -23,7 +24,7 @@ export const CreateOrUpdateInventoryComponent = (inventoryItem?: InventoryEntity
                         <input value={inventoryItem?.price.toString()} type="number" id="price" name="price" placeholder="Price" required />
                     </label>
                 </div>
-                <button id="inventory-submit" type="submit" hx-post={inventoryItem === undefined ? "/inventory/create" : `/inventory/edit/{${inventoryItem.id}}`} hx-swap="outerHTML" hx-target="#inventory-submit">Submit</button>
+                <button id={HtmxTargets.INVENTORY_SUBMIT_RESULT_VIEW} type="submit" hx-post={inventoryItem === undefined ? "/inventory/create" : `/inventory/edit/{${inventoryItem.id}}`} hx-swap="outerHTML" hx-target={`#${HtmxTargets.INVENTORY_SUBMIT_RESULT_VIEW}`}>Submit</button>
             </form>
         </div>
     );

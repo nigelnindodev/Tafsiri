@@ -1,5 +1,6 @@
 import { InventoryEntity, OrdersEntity } from "../../../postgres/entities/index"
 import { createOrderItemsDescription, getTotalOrderCost } from "../../../services/common";
+import { HtmxTargets } from "../../common/constants";
 import { InfoWrapper } from "../../common/info_wrapper";
 
 export const ViewInventoryItemOrdersComponent = (inventoryItem: InventoryEntity, orders: OrdersEntity[]) => {
@@ -10,7 +11,7 @@ export const ViewInventoryItemOrdersComponent = (inventoryItem: InventoryEntity,
                     <li><strong>Orders for: {inventoryItem.name}</strong></li>
                 </ul>
                 <ul>
-                    <li><a hx-get="/inventory/list" hx-target="#inventory-section">&lt Back</a></li>
+                    <li><a hx-get="/inventory/list" hx-target={`#${HtmxTargets.INVENTORY_SECTION}`}>&lt Back</a></li>
                 </ul>
             </nav>
             {
