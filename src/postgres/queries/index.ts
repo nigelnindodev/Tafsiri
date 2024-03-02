@@ -183,6 +183,7 @@ export const getUnfinishedOrderItems = async (
     .createQueryBuilder(TableNames.ORDERS)
     .innerJoinAndSelect("orders.order_items", TableNames.ORDER_ITEM)
     .innerJoinAndSelect("order_item.inventory", TableNames.INVENTORY)
+    .leftJoinAndSelect("order_item.order_item_price", TableNames.ORDER_ITEM_PRICE)
     .where("orders.status != :orderStatus", { orderStatus: OrderStatus.COMPLETED })
     .orderBy({ "orders.id": "DESC" })
     //.limit(10)

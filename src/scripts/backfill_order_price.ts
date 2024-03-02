@@ -1,9 +1,9 @@
 import { logger } from "..";
 import { PostgresDataSourceSingleton } from "../postgres";
 import {
-  getCompletedOrders,
   getOrderItemsInOrder,
   getOrderPrice,
+  getOrders,
   insertOrderPrice,
 } from "../postgres/queries";
 
@@ -18,7 +18,7 @@ const dataSource = await PostgresDataSourceSingleton.getInstance();
 
 const runOrderPriceBackFill = async () => {
   logger.trace("Start order price backfill");
-  const orders = await getCompletedOrders(dataSource);
+  const orders = await getOrders(dataSource);
 
   logger.info("Number of completed orders:", orders.length);
 
