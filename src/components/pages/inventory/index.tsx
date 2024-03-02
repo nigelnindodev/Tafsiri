@@ -1,3 +1,5 @@
+import { HtmxTargets } from "../../common/constants";
+
 export const InventoryPage = (
     <article>
         <header>
@@ -6,7 +8,7 @@ export const InventoryPage = (
             </h1>
         </header>
         <body>
-            <div id="inventory-section" hx-get="/inventory/list" hx-trigger="load" />
+            <div id={HtmxTargets.INVENTORY_SECTION} hx-get="/inventory/list" hx-trigger="load" />
         </body>
     </article>
 );

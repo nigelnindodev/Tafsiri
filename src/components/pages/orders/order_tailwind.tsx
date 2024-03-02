@@ -1,10 +1,12 @@
+import { getConfig } from "../../..";
+
 export const OrderExampleTailwindComponent = () => {
   return (
     <html>
 
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <script src="http://localhost:3000/public/tailwind.js"></script>
+        <script src={`${getConfig().baseUrl}/public/tailwind.js`}></script>
       </head>
 
       <body>

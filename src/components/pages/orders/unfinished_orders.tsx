@@ -1,5 +1,6 @@
 import { OrdersEntity, OrderItemEntity } from "../../../postgres/entities";
 import { createOrderItemsDescription, filterOrderItemsForActiveItems, getTotalOrderCost } from "../../../services/common";
+import { HtmxTargets } from "../../common/constants";
 
 const unfinishedItemRowDescription = (orderItems: OrderItemEntity[]): string => {
     // We should have some active items due to 'getUnfinishedOrderItems' query
@@ -23,7 +24,7 @@ export const UnfinishedOrdersComponent = (unfinishedOrderitems: OrdersEntity[]) 
                             <tr>
                                 <td>{unfinishedItemRowDescription(item.order_items)}</td>
                                 <td><strong>{getTotalOrderCost(filterOrderItemsForActiveItems(item.order_items))}.00 KES</strong></td>
-                                <td><button role="button" class="secondary outline" hx-get={`/orders/resume/${item.id}`} hx-target="#orders-section">Resume</button></td>
+                                <td><button role="button" class="secondary outline" hx-get={`/orders/resume/${item.id}`} hx-target={`#${HtmxTargets.ORDERS_SECTION}`}>Resume</button></td>
                             </tr>
                         )
                     })}

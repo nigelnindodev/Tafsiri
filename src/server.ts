@@ -54,7 +54,7 @@ export const createApplicationServer = (dataSource: DataSource) => {
     .get("/root", async (ctx) => {
       console.log(ctx);
       const { auth } = ctx.cookie;
-      if (!auth) {
+     if (!auth) {
         return LoginComponent();
       }
       const authValue = await ctx.jwt.verify(auth);
@@ -74,4 +74,4 @@ export const createApplicationServer = (dataSource: DataSource) => {
       }
     });
   return app;
-};
+}

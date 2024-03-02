@@ -9,6 +9,7 @@ import { Logger } from "ts-log"; // Holy crap, this should tslog, not ts-log
  * Values here are to be read from an .env file. Bun has built in support for env files.
  */
 export interface Config {
+  baseUrl: string;
   postgresUser: string;
   postgresPassword: string;
   postgresHost: string;
@@ -22,6 +23,7 @@ export interface Config {
  */
 export function getConfig(): Config {
   return {
+    baseUrl: process.env.BASE_URL || "",
     postgresUser: process.env.POSTGRES_USER || "",
     postgresPassword: process.env.POSTGRES_PASSWORD || "",
     postgresHost: process.env.POSTGRES_HOST || "",

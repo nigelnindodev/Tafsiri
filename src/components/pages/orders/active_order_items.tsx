@@ -1,6 +1,7 @@
 import { PaymentTypes } from "../../../postgres/common/constants";
 import { OrderItemEntity, PaymentEntity } from "../../../postgres/entities";
 import { getTotalOrderCost } from "../../../services/common";
+import { HtmxTargets } from "../../common/constants";
 
 export const ActiveOrderItems = (orderId: number, orderItems: OrderItemEntity[], paymentEntity: PaymentEntity) => {
     return (
@@ -75,7 +76,7 @@ export const ActiveOrderItems = (orderId: number, orderItems: OrderItemEntity[],
                 </fieldset>
             </blockquote>
             <progress id="confirm-progress-indicator" class="htmx-indicator" />
-            {orderItems.length === 0 ? "" : <button class="contrast outline" hx-target="#create-order-section" hx-post={`/orders/confirm/${orderId}/${paymentEntity.id}`} hx-indicator="#confirm-progress-indicator">CONFIRM ORDER</button>}
+            {orderItems.length === 0 ? "" : <button class="contrast outline" hx-target={`#${HtmxTargets.CREATE_ORDER_SECTION}`} hx-post={`/orders/confirm/${orderId}/${paymentEntity.id}`} hx-indicator="#confirm-progress-indicator">CONFIRM ORDER</button>}
         </details>
     );
 };
