@@ -15,7 +15,6 @@ import { paymentRoutes } from "./routes/payments";
 import { authRoutes } from "./routes/auth";
 import { LoginComponent } from "./components/pages/auth/login";
 import { getUserByUsernameWithCredentials } from "./postgres/queries";
-import { OrderExampleTailwindComponent } from "./components/pages/orders/order_tailwind";
 import { RootPage } from "./components/pages/root_page";
 import { getConfig } from ".";
 
@@ -42,9 +41,6 @@ export const createApplicationServer = (dataSource: DataSource) => {
         `API error occured with code [${code}]: ${error.message} ${error.cause} ${error.stack}`,
       );
     })
-    .get("/tailwind", () => {
-      return OrderExampleTailwindComponent();
-    })
     .use(authRoutes(dataSource))
     .use(inventoryRoutes(dataSource))
     .use(orderRoutes(dataSource))
@@ -55,7 +51,7 @@ export const createApplicationServer = (dataSource: DataSource) => {
     .get("/root", async (ctx) => {
       console.log(ctx);
       const { auth } = ctx.cookie;
-     if (!auth) {
+      if (!auth) {
         return LoginComponent();
       }
       const authValue = await ctx.jwt.verify(auth);
@@ -75,4 +71,4 @@ export const createApplicationServer = (dataSource: DataSource) => {
       }
     });
   return app;
-}
+};

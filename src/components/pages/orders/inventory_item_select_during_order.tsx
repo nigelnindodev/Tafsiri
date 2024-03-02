@@ -1,4 +1,3 @@
-
 import { InventoryEntity, OrderItemEntity } from "../../../postgres/entities";
 
 const isOrderItemInOrderV2 = (inventoryId: number, orderItemIds: number[]): boolean => {

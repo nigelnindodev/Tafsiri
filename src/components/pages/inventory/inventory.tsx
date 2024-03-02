@@ -1,4 +1,4 @@
-import { HtmxTargets } from "../../common/constants"
+import { HtmxTargets } from "../../common/constants";
 
 export const ViewInventorySection = () => {
     return (
