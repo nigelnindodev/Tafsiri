@@ -1,5 +1,5 @@
 import { getConfig } from "../..";
-import { HtmxTargets } from "../../components/common/constants"
+import { HtmxTargets } from "../../components/common/constants";
 import { ServerHxTriggerEvents } from "../../services/common/constants";
 
 const config = getConfig();
@@ -19,7 +19,6 @@ export const RootPage = () => {
             <head>
                 <title>Business Name</title>
                 <link rel="stylesheet" href={`${config.baseUrl}/public/pico.min.css`} />
-                <link rel="stylesheet" href={`${config.baseUrl}/public/tailwind.css`} />
                 <link rel="stylesheet" href={`${config.baseUrl}/public/custom.css`} />
                 <script src={`${config.baseUrl}/public/htmx.min.js`} />
                 <script src={`${config.baseUrl}/public/htmx_debug.js`} />

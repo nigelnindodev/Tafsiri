@@ -51,3 +51,8 @@ Open http://localhost:3000/ with your browser to see the result.
 - [ ] Add partial and deferred payments, together with tracking of the same
 - [ ] Maybe to be added, but also tracking of how many inventory items are coming in. This together with order tracking can automate knowing how many inventory items are left in stock
 - [ ] Mobile App?
+
+## Remove Packages
+- [X] tailwindcss
+- [X] postcss
+- [X] @gtramontina.com/elysia-tailwind 
