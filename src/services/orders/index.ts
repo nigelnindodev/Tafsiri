@@ -8,6 +8,7 @@ import { OrderStatus, PaymentTypes } from "../../postgres/common/constants";
 import { filterForOrdersWithActiveOrders, filterOrderItemsForActiveItems, getTotalOrderCost, simulateNetworkLatency } from "../common";
 import { orderCreateSuccess } from "../../components/pages/orders/order_create_success";
 import { UnfinishedOrdersComponent } from "../../components/pages/orders/unfinished_orders";
+import { logger } from "../..";
 
 /**
  * Triggered by clicking create new order button in the UI.
@@ -52,21 +53,21 @@ export const confirmOrder = async (dataSource: DataSource, orderId: number, paye
 	// ensure that both values are not null
 	if (getOrderResult === null || getPaymentResult === null) {
 		const message = `Missing order or payment. orderId: ${orderId} | paymentId: ${payemntId}`;
-		console.error(message);
+		logger.error(message);
 		throw new Error(message);
 	}
 
 	// ensure that payment passed in matches its order
 	if (getPaymentResult.id !== payemntId) {
 		const message = `Payment id in request [${payemntId}] did not match id [${getPaymentResult.id}] for order with identifier: ${orderId}`
-		console.error(message);
+		logger.error(message);
 		throw new Error(message);
 	}
 
 	// ensure that order is already not in a completed state
 	if (getOrderResult.status === OrderStatus.COMPLETED) {
 		const message = `Order with id [${orderId}] is already in a completed state`;
-		console.error(message);
+		logger.error(message);
 		throw new Error(message);
 	}
 
@@ -85,7 +86,7 @@ export const activeOrders = async (dataSource: DataSource, orderId: number) => {
 	const getPaymentResult = await queries.getPaymentByOrderId(dataSource, orderId);
 	if (getPaymentResult === null) {
 		const message = `Failed to get payment for order with id: ${orderId}`;
-		console.error(message);
+		logger.error(message);
 		throw new Error(message);
 	}
 	return ActiveOrderItems(orderId, filterOrderItemsForActiveItems(orderItems), getPaymentResult);
@@ -107,7 +108,7 @@ export const activeOrders = async (dataSource: DataSource, orderId: number) => {
 export const updateItemCounter = async (dataSource: DataSource, itemId: number, updateType: string) => {
 	// ignore unknown actions
 	if (updateType !== "INC" && updateType !== "DEC") {
-		console.warn(`Unkown updateType of ${updateType} passed to updateItemCounter function`);
+		logger.warn(`Unkown updateType of ${updateType} passed to updateItemCounter function`);
 		return;
 	}
 
@@ -115,13 +116,13 @@ export const updateItemCounter = async (dataSource: DataSource, itemId: number, 
 
 	// ignore if order item is null
 	if (orderItem === null) {
-		console.warn(`Order item with id ${itemId} not found`);
+		logger.warn(`Order item with id ${itemId} not found`);
 		return;
 	}
 
 	// ignore if counter already at 1 and decrement action passed in 
 	if (orderItem.quantity === 1 && updateType === "DEC") {
-		console.warn(`Order item with id ${itemId} is already at lowest value`);
+		logger.warn(`Order item with id ${itemId} is already at lowest value`);
 		return;
 	}
 
@@ -162,13 +163,12 @@ export const listUnfinishedOrders = async (dataSource: DataSource) => {
  */
 export const addOrRemoveOrderItem = async (dataSource: DataSource, orderId: number, inventoryId: number) => {
 	const orderItem = await queries.getOrderItemByInventoryId(dataSource, orderId, inventoryId);
-	console.log(orderItem);
 
 	if (orderItem === null) {
-		console.log("Item doesn't exist in order, creating it.");
+		logger.trace("Item doesn't exist in order, creating it.");
 		await queries.insertOrderitem(dataSource, orderId, inventoryId);
 	} else {
-		console.log("Item already exists in order. Toggling active state");
+		logger.trace("Item already exists in order. Toggling active state");
 		await queries.toggleOrderItem(dataSource, orderItem.id, !orderItem.active);
 	}
 }
@@ -181,7 +181,7 @@ export const updatePaymentTypeForOrder = async (dataSource: DataSource, paymentI
 
 	if (getPaymentResult === null) {
 		const message = `Cannot update payment type as payment with id: ${paymentId} not found`;
-		console.error(message);
+		logger.error(message);
 		throw new Error(message);
 	}
 

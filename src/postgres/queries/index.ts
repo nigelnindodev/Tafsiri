@@ -1,6 +1,7 @@
 import { DataSource, InsertResult, UpdateResult } from "typeorm"
 import { InventoryEntity, OrdersEntity, OrderItemEntity, PaymentEntity, UsersEntity } from "../entities";
 import { OrderStatus, PaymentStatus, PaymentTypes, TableNames } from "../common/constants";
+import { logger } from "../..";
 
 export const insertInventoryItem = async (
   dataSource: DataSource,
@@ -101,7 +102,7 @@ export const getInventoryItemsByName = async (
       .getMany()
     return data;
   } catch (e) {
-    console.error(e);
+    logger.error(e);
     return [];
   }
 };
@@ -300,7 +301,6 @@ export const insertOrderitem = async (
   orderId: number,
   inventoryId: number
 ): Promise<InsertResult> => {
-  console.log(`orderId = ${orderId} | inventoryId: ${inventoryId}`);
   try {
     return await dataSource.createQueryBuilder()
       .insert()
@@ -313,7 +313,7 @@ export const insertOrderitem = async (
       })
       .execute();
   } catch (e) {
-    console.error(e);
+    logger.error(e);
     throw (e);
   }
 };
