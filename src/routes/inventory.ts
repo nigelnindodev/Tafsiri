@@ -51,7 +51,6 @@ export const inventoryRoutes = (dataSource: DataSource) => {
       if (validateResult.search === "") {
         return await listInventoryItems(dataSource);
       } else {
-        console.log("Schema result:", validateResult);
         return await searchInventoryItems(dataSource, validateResult.search);
       }
     })

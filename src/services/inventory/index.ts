@@ -4,6 +4,7 @@ import { inventoryList } from "../../components/pages/inventory/inventory_list";
 import { ViewInventoryItemOrdersComponent } from "../../components/pages/inventory/view_inventory_orders";
 import { InfoWrapper } from "../../components/common/info_wrapper";
 import { CreateOrUpdateInventoryComponent } from "../../components/pages/inventory/create_or_update_inventory_item";
+import { logger } from "../..";
 
 export const createInventoryItem = async (
   dataSource: DataSource,
@@ -24,7 +25,7 @@ export const getInventoryItemForUpdate = async (
   );
   if (inventoryItem === null) {
     const message = `Inventory item with id [${inventoryId}] not found`;
-    console.log(message);
+    logger.warn(message);
     throw new Error(message);
   } else {
     return CreateOrUpdateInventoryComponent(inventoryItem);
@@ -73,7 +74,7 @@ export const listInventoryItemOrders = async (
 
     if (getInventoryItemResult === null) {
       const message = `Failed to find inventory item with id [${inventoryId}]`;
-      console.error(message);
+      logger.error(message);
       throw new Error(message);
     }
 
@@ -87,7 +88,7 @@ export const listInventoryItemOrders = async (
       ordersWithInventoryItem,
     );
   } catch (e) {
-    console.error(e);
+    logger.error(e);
     throw e;
   }
 };

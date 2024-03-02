@@ -5,8 +5,6 @@ const isOrderItemInOrderV2 = (inventoryId: number, orderItemIds: number[]): bool
 };
 
 export const InventoryItemSelectDuringOrder = (orderId: number, inventoryItems: InventoryEntity[], orderItemsInOrder: OrderItemEntity[]) => {
-    console.log(inventoryItems);
-    console.log(orderItemsInOrder);
     const orderItemIds = orderItemsInOrder.map(item => item.inventory.id);
     return (
         <details role="list">

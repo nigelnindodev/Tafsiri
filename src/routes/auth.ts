@@ -13,7 +13,7 @@ import {
   CookieConstansts,
   ServerHxTriggerEvents,
 } from "../services/common/constants";
-import { getConfig } from "..";
+import { getConfig, logger } from "..";
 
 const authSchemas = {
   processLoginRequestSchema: z.object({
@@ -53,7 +53,7 @@ export const authRoutes = (dataSource: DataSource) => {
       if (result.success === false) {
         return MarkedInfoWrapperComponent(result.errorMessage);
       } else {
-        console.log(ctx);
+        logger.trace(ctx);
         // TODO: If in production, should also set up the secure attribute
         ctx.setCookie(
           "auth",

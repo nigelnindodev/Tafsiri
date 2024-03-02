@@ -2,7 +2,7 @@ import "reflect-metadata"; // required for TypeORM
 
 import { PostgresDataSourceSingleton } from "./postgres";
 import { createApplicationServer } from "./server";
-import { Logger } from "ts-log"; // Holy crap, this should tslog, not ts-log
+import { ILogObj, Logger } from "tslog";
 
 /**
  * Application configuration object.
@@ -36,7 +36,10 @@ export function getConfig(): Config {
   };
 }
 
-//export const logger = new Logger({type: "pretty", name: "mainLogger"});
+export const logger: Logger<ILogObj> = new Logger({
+  type: "pretty",
+  name: "mainLogger",
+});
 
 /**
  * Initialize Postgres database connector, to be passed on to the application server creator.
@@ -50,6 +53,6 @@ const app = createApplicationServer(dataSource);
 
 app.listen(getConfig().applicationPort);
 
-console.log(
+logger.info(
   `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port} with NODE_ENV ${process.env.NODE_ENV}`,
 );
