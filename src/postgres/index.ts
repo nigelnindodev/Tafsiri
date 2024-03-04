@@ -9,7 +9,6 @@ export class PostgresDataSourceSingleton {
   private constructor() {}
 
   public static async getInstance(): Promise<DataSource> {
-    console.log("Getting Postgres data source");
     if (!PostgresDataSourceSingleton.dataSource) {
       const dataSource = new DataSource({
         type: "postgres",

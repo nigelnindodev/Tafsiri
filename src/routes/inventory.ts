@@ -15,6 +15,7 @@ import {
 import { InventoryPage } from "../components/pages/inventory";
 import { RequestNumberSchema } from "../services/common/constants";
 import { logger } from "..";
+import { authPlugin } from "../plugins/auth";
 
 const inventorySchemas = {
   searchInventoryItemsQuery: z.object({
@@ -33,6 +34,7 @@ const inventorySchemas = {
 export const inventoryRoutes = (dataSource: DataSource) => {
   const app = new Elysia({ prefix: "/inventory" });
   app
+    .use(authPlugin())
     .get("/", () => InventoryPage)
     .get("/create", () => CreateOrUpdateInventoryComponent())
     .get("/edit/:inventoryId", async (ctx) => {

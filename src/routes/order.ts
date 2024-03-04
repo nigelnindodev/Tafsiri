@@ -19,6 +19,8 @@ import {
   RequestNumberSchema,
   ServerHxTriggerEvents,
 } from "../services/common/constants";
+import { authPlugin } from "../plugins/auth";
+import { logger } from "..";
 
 const orderSchema = {
   activeOrdersParams: z.object({
@@ -50,6 +52,7 @@ const orderSchema = {
 export const orderRoutes = (dataSource: DataSource) => {
   const app = new Elysia({ prefix: "/orders" });
   app
+    .use(authPlugin())
     .get("/", () => {
       return OrdersPage;
     })
@@ -57,8 +60,14 @@ export const orderRoutes = (dataSource: DataSource) => {
       const validateResult = orderSchema.activeOrdersParams.parse(ctx.params);
       return await activeOrders(dataSource, validateResult.orderId);
     })
-    .get("/create", async () => {
-      return await createOrder(dataSource);
+    .get("/create", async (ctx) => {
+      logger.trace("Create order ctx", ctx);
+      /**
+       * TODO: The destructuring above works, but we need to find a way to add it to the
+       * ctx's type.
+       */
+      const {userId} = ctx;
+      return await createOrder(dataSource, userId);
     })
     .get("/list", () => {
       return ViewOrdersSection;
@@ -68,7 +77,8 @@ export const orderRoutes = (dataSource: DataSource) => {
     })
     .get("/resume/:orderId", async (ctx) => {
       const validateResult = orderSchema.resumeOrderParams.parse(ctx.params);
-      return await resumeOrder(dataSource, validateResult.orderId);
+      const {userId} = ctx;
+      return await resumeOrder(dataSource, validateResult.orderId, userId);
     })
     .post("/confirm/:orderId/:paymentId", async (ctx) => {
       const validateResult = orderSchema.confirmOrderParams.parse(ctx.params);

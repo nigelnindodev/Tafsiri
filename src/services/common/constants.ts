@@ -12,7 +12,7 @@ export enum ServerHxTriggerEvents {
 
 export const CookieConstansts = {
   maxAge: 60 * 3,
-  path: "/;/auth;/root",
+  path: "/;/auth;/root;/orders;/payments;/inventory",
 } as const;
 
 export const RequestNumberSchema = z.string().transform(parseNumber);

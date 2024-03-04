@@ -50,14 +50,14 @@ export const authRoutes = (dataSource: DataSource) => {
         validateresult.username,
         validateresult.password,
       );
-      if (result.success === false) {
+      if (result.userEntity === undefined) {
         return MarkedInfoWrapperComponent(result.errorMessage);
       } else {
         logger.trace(ctx);
         // TODO: If in production, should also set up the secure attribute
         ctx.setCookie(
           "auth",
-          await ctx.jwt.sign({ username: validateresult.username }),
+          await ctx.jwt.sign({ username: validateresult.username, userId: result.userEntity.id }),
           {
             httpOnly: true,
             maxAge: CookieConstansts.maxAge,

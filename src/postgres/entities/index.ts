@@ -1,5 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, Index, ManyToMany } from "typeorm"
 import { TableNames, OrderStatus, PaymentStatus, PaymentTypes } from "../common/constants"
+import { nullable } from "zod";
 
 const generateIndexName = (tableName: TableNames, columnName: string): string => {
   return `${tableName}_${columnName}_idx`;
@@ -68,6 +69,9 @@ export class OrdersEntity {
 
   @OneToMany(() => OrderItemEntity, (orderItem) => orderItem.orders)
   order_items: OrderItemEntity[]
+
+  @ManyToOne(() => UsersEntity, (users) => users.orders, {nullable: true})
+  users: UsersEntity
 
   @Column("enum", { enum: OrderStatus, nullable: false })
   status: OrderStatus
@@ -164,6 +168,9 @@ export class UsersEntity {
 
   @OneToOne(() => UserCredentialsEntity, (userCredentials) => userCredentials.user_ref)
   user_credentials: UserCredentialsEntity
+
+  @OneToMany(() => OrdersEntity, (orders) => orders.users)
+  orders: OrdersEntity[]
 
   @Index(generateIndexName(TableNames.USERS, "username"), { unique: true })
   @Column("varchar", { length: 100, nullable: false })

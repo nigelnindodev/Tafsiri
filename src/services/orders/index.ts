@@ -14,13 +14,15 @@ import { logger } from "../..";
  * Triggered by clicking create new order button in the UI.
  *
  * Initializes a new order and payment in so that we can keep track of the order even after exiting.
+ *
+ * This functions also sets the currently logged in user as the processor of the order.
  */
-export const createOrder = async (dataSource: DataSource) => {
-	const initializeOrderResult = await queries.initializeOrder(dataSource);
+export const createOrder = async (dataSource: DataSource, userId: number) => {
+	const initializeOrderResult = await queries.initializeOrder(dataSource, userId);
 	// We should always have identifiers[0].id from TypeORM
 	await queries.initializePayment(dataSource, initializeOrderResult.identifiers[0].id);
 	const inventoryItems = await queries.getInventoryItemsOrderByName(dataSource);
-	// Return empty array for orderItemsInOrder since ther order was just created.
+	// Return empty array for orderItemsInOrder since their order was just created.
 	return CreateOrUpdateOrderSection(initializeOrderResult.identifiers[0].id, inventoryItems, []);
 };
 
@@ -30,10 +32,14 @@ export const createOrder = async (dataSource: DataSource) => {
  *
  * Order and payment have already been initialized, so we we just need to load the order
  * items form the database.
+ *
+ * If a different user apart from the one who created the order resumes it, the order
+ * will be assigned to them.
  */
-export const resumeOrder = async (dataSource: DataSource, orderId: number) => {
+export const resumeOrder = async (dataSource: DataSource, orderId: number, userId: number) => {
 	const inventoryItems = await queries.getInventoryItemsOrderByName(dataSource);
 	const orderItems = await queries.getOrderItemsInOrder(dataSource, orderId);
+	await queries.updateOrderOwner(dataSource, orderId, userId);
 	return CreateOrUpdateOrderSection(orderId, inventoryItems, filterOrderItemsForActiveItems(orderItems));
 };
 
@@ -159,7 +165,7 @@ export const listUnfinishedOrders = async (dataSource: DataSource) => {
  *
  * Adds an item to the order if doesn't already exist, or toggles its active state to "remove" it from the order.
  *
- * "Remove" in quotes because the backend doesn't actually remove it, just deactivates it. This enables easier addition back if removed errorneously, and also will still contain it's previous context.
+ * "Remove" in quotes because the backend doesn't actually remove it, just deactivates it. This enables easier addition back if removed by mistake, and also will still contain it's previous context.
  */
 export const addOrRemoveOrderItem = async (dataSource: DataSource, orderId: number, inventoryId: number) => {
 	const orderItem = await queries.getOrderItemByInventoryId(dataSource, orderId, inventoryId);
