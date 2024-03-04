@@ -21,16 +21,15 @@ Open http://localhost:3000/ with your browser to see the result.
 - [X] Use snake_case for all DB columns (Untested across the board, unit tests would have been nice right now :-))
 - [ ] Return BAD REQUEST on failed Zod validations
 - [X] Add DB indexes
-- [ ] Improve logging with ts-log and create standard semantics for logs
-- [ ] For HTMX sections where we replace all content(hx-target="outerHTML"), would be a good practice to place these sections in constants sine they are referenced in multiple locations. Should we then choose to rename them, we'll then just need to change once reference (DRY)
+- [X] Improve logging with ts-log and create standard semantics for logs
+- [X] For HTMX sections where we replace all content(hx-target="outerHTML"), would be a good practice to place these sections in constants sine they are referenced in multiple locations. Should we then choose to rename them, we'll then just need to change once reference (DRY)
 - [ ] Ensure once order item added to an order, it's price is immutable
 - [ ] API tests
 - [ ] HTMX input white listing (Maybe important to avoid XSS attacks)
 - [ ] Timezone awareness
-- [ ] State machines for model statuses???
 - [ ] Proper handling of amounts with decimals
-- [ ] Fix bug with updated at not correctly propagating on DB level (a workaround is currently being used)
-- [ ] Remove hardcoding of base url
+- [X] Fix bug with updated at not correctly propagating on DB level (a workaround is currently being used). Was not working because updated_at on date functionality is only supported on Postgres for TypeORM. So the workaround is the solution.
+- [X] Remove hardcoding of base url
 
 ## Upcoming features
 - [X] Authentication (username & password) to prevent unauthorized access

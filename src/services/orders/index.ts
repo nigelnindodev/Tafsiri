@@ -163,10 +163,18 @@ export const listUnfinishedOrders = async (dataSource: DataSource) => {
  */
 export const addOrRemoveOrderItem = async (dataSource: DataSource, orderId: number, inventoryId: number) => {
 	const orderItem = await queries.getOrderItemByInventoryId(dataSource, orderId, inventoryId);
+	const inventory = await queries.getInventoryItemById(dataSource, inventoryId);
 
 	if (orderItem === null) {
-		logger.trace("Item doesn't exist in order, creating it.");
-		await queries.insertOrderitem(dataSource, orderId, inventoryId);
+		if (inventory === null) {
+			const message = `Cannot create order item with a missing inventory item. Passed in inventory id is [${inventoryId}]`;
+			logger.error(message);
+			throw new Error(message);
+		} else {
+			logger.trace("Item doesn't exist in order, creating it.");
+			const insertOrderItemResult = await queries.insertOrderitem(dataSource, orderId, inventoryId);
+			await queries.insertOrderPrice(dataSource, insertOrderItemResult.identifiers[0].id, inventory.price);
+		}
 	} else {
 		logger.trace("Item already exists in order. Toggling active state");
 		await queries.toggleOrderItem(dataSource, orderItem.id, !orderItem.active);

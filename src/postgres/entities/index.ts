@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, Index } from "typeorm"
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, Index, ManyToMany } from "typeorm"
 import { TableNames, OrderStatus, PaymentStatus, PaymentTypes } from "../common/constants"
 
 const generateIndexName = (tableName: TableNames, columnName: string): string => {
@@ -103,7 +103,26 @@ export class OrderItemEntity {
   @ManyToOne(() => OrdersEntity, (order) => order.order_items, { nullable: false })
   orders: OrdersEntity
 
+  @OneToOne(() => OrderPriceEntity, (orderPrice) => orderPrice.order_item)
+  order_item_price: OrderPriceEntity
+
   @Column("timestamptz", { nullable: false, default: () => "CURRENT_TIMESTAMP" })
+  created_at: Date
+}
+
+@Entity({name: TableNames.ORDER_ITEM_PRICE})
+export class OrderPriceEntity {
+  @PrimaryGeneratedColumn()
+  id: number
+
+  @OneToOne(() => OrderItemEntity, (orderItem) => orderItem.order_item_price, {nullable: false})
+  @JoinColumn()
+  order_item: OrderItemEntity 
+
+  @Column("decimal", {nullable: false })
+  price: number
+
+  @Column("timestamptz", {nullable: false, default: () => "CURRENT_TIMESTAMP"})
   created_at: Date
 }
 

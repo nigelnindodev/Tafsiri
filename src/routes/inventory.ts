@@ -14,6 +14,7 @@ import {
 } from "../services/inventory";
 import { InventoryPage } from "../components/pages/inventory";
 import { RequestNumberSchema } from "../services/common/constants";
+import { logger } from "..";
 
 const inventorySchemas = {
   searchInventoryItemsQuery: z.object({
@@ -71,6 +72,7 @@ export const inventoryRoutes = (dataSource: DataSource) => {
       );
     })
     .post("/edit/:inventoryId", async (ctx) => {
+      logger.info(ctx);
       const validateResult = inventorySchemas.createInventoryItemBody.parse(
         ctx.body,
       );

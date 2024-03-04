@@ -9,6 +9,7 @@ export class PostgresDataSourceSingleton {
   private constructor() {}
 
   public static async getInstance(): Promise<DataSource> {
+    console.log("Getting Postgres data source");
     if (!PostgresDataSourceSingleton.dataSource) {
       const dataSource = new DataSource({
         type: "postgres",
@@ -30,6 +31,7 @@ export class PostgresDataSourceSingleton {
           DatabaseEntities.PaymentEntity,
           DatabaseEntities.UsersEntity,
           DatabaseEntities.UserCredentialsEntity,
+          DatabaseEntities.OrderPriceEntity,
         ],
       });
 
@@ -41,7 +43,7 @@ export class PostgresDataSourceSingleton {
         throw new Error("Failed to initialize Postgres Datasource");
       }
     } else {
-      return PostgresDataSourceSingleton.getInstance();
+      return PostgresDataSourceSingleton.dataSource;
     }
   }
 }
