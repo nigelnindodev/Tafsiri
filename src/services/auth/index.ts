@@ -1,5 +1,6 @@
 import { DataSource } from "typeorm";
 import * as queries from "../../postgres/queries";
+import { UsersEntity } from "../../postgres/entities";
 
 /**
  * Processes a login request.
@@ -11,7 +12,7 @@ export const processLoginRequest = async (
   dataSource: DataSource,
   username: string,
   possiblePassword: string,
-): Promise<{ success: boolean; errorMessage: string }> => {
+): Promise<{ errorMessage: string; userEntity?: UsersEntity }> => {
   const user = await queries.getUserByUsernameWithCredentials(
     dataSource,
     username,
@@ -20,7 +21,6 @@ export const processLoginRequest = async (
   if (user === null) {
     // return unknown user error message back to the UI
     return {
-      success: false,
       errorMessage: `No user exists with username ${username}. Please try again.`,
     };
   }
@@ -33,12 +33,11 @@ export const processLoginRequest = async (
   if (isMatch === false) {
     // return incorrect credentials message back to the user
     return {
-      success: false,
       errorMessage: `Invalid password entered for user ${username}.`,
     };
   }
 
-  return { success: true, errorMessage: "" };
+  return { errorMessage: "", userEntity: user };
 };
 
 /**

@@ -108,13 +108,15 @@ export const getInventoryItemsByName = async (
 };
 
 export const initializeOrder = async (
-  dataSource: DataSource
+  dataSource: DataSource,
+  userId: number 
 ): Promise<InsertResult> => {
   return await dataSource.createQueryBuilder()
     .insert()
     .into(TableNames.ORDERS)
     .values({
-      status: OrderStatus.INITIALIZED
+      status: OrderStatus.INITIALIZED,
+      users: userId
     })
     .execute();
 };
@@ -127,6 +129,21 @@ export const completeOrder = async (
     .update(OrdersEntity)
     .set({
       status: OrderStatus.COMPLETED,
+      updated_at: new Date()
+    })
+    .where("orders.id = :id", { id: orderId })
+    .execute();
+};
+
+export const updateOrderOwner = async (
+  dataSource: DataSource,
+  orderId: number,
+  userId: number
+): Promise<UpdateResult> => {
+  return await dataSource.createQueryBuilder()
+    .update(OrdersEntity)
+    .set({
+      users: userId,
       updated_at: new Date()
     })
     .where("orders.id = :id", { id: orderId })
@@ -203,6 +220,7 @@ export const getCompletedOrders = async (
     .innerJoinAndSelect("order_item.inventory", TableNames.INVENTORY)
     .leftJoinAndSelect("order_item.order_item_price", TableNames.ORDER_ITEM_PRICE)
     .innerJoinAndSelect("orders.payment", TableNames.PAYMENT)
+    .leftJoinAndSelect("orders.users", TableNames.USERS)
     .where("orders.status = :orderStatus", { orderStatus: OrderStatus.COMPLETED })
     .orderBy({ "payment.updated_at": "DESC" }) // TODO: maybe change order criteria i.e when payment was completed?
     //.limit(50)
