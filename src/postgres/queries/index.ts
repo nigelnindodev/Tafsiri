@@ -167,6 +167,7 @@ export const getOrderItemsInOrder = async (
 ): Promise<OrderItemEntity[]> => {
   return await dataSource.getRepository(OrderItemEntity).createQueryBuilder(TableNames.ORDER_ITEM)
     .innerJoinAndSelect("order_item.inventory", TableNames.INVENTORY)
+    .innerJoinAndSelect("order_item.order_item_price", TableNames.ORDER_ITEM_PRICE)
     .where("order_item.ordersId = :orderId", { orderId })
     .orderBy({ "order_item.id": "DESC" })
     .getMany();
