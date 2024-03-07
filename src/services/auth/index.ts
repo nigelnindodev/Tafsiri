@@ -25,6 +25,13 @@ export const processLoginRequest = async (
     };
   }
 
+  if (!user.is_active) {
+    return {
+      errorMessage:
+        "This account is currently inactive. Contact administrator.",
+    };
+  }
+
   const isMatch = await Bun.password.verify(
     possiblePassword,
     user.user_credentials.encrypted_password,
