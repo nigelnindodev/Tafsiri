@@ -23,7 +23,11 @@ export const UsersListComponent = (users: UsersEntity[]) => {
                                 <td>{user.username}</td>
                                 <td>{user.is_admin ? "✅" : ""}</td>
                                 <td>{user.is_active ? "✅" : ""}</td>
-                                <td><button role="button" class="secondary outline" hx-get={`/users/${user.id}`} hx-target={`#${HtmxTargets.USERS_SECTION}`}>Edit</button></td>
+                                {
+                                    user.is_admin ?
+                                        <td><button disabled role="button" class="secondary outline" hx-get={`/users/${user.id}`} hx-target={`#${HtmxTargets.USERS_SECTION}`}>Edit</button></td> :
+                                        <td><button role="button" class="secondary outline" hx-get={`/users/${user.id}`} hx-target={`#${HtmxTargets.USERS_SECTION}`}>Edit</button></td>
+                                }
                             </tr>
                         )
                     })}
