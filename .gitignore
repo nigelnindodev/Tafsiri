@@ -43,3 +43,6 @@ package-lock.json
 
 # remove .env files
 .env
+
+# Ignore built dist files
+build/**/*
