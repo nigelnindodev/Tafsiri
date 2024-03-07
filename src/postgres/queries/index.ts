@@ -519,7 +519,8 @@ export const toggleUserActiveState = async (dataSource: DataSource, userId: numb
   return await dataSource.createQueryBuilder()
     .update(UsersEntity)
     .set({
-      is_active: active
+      is_active: active,
+      updated_at: new Date()
     })
     .where("users.id = :id", {id: userId})
     .execute();

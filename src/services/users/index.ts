@@ -3,6 +3,7 @@ import * as queries from "../../postgres/queries";
 import { UsersListComponent } from "../../components/pages/users/users_list";
 import { ViewUserComponent } from "../../components/pages/users/view_user";
 import { logger } from "../..";
+import { UserUpdateResultComponent } from "../../components/pages/users/user_update_result";
 
 export const listUsers = async (dataSource: DataSource) => {
   const users = await queries.getAllUsers(dataSource);
@@ -43,5 +44,5 @@ export const toggleUserActiveState = async (
   logger.info(
     `Toggled user with id [${userId}] ${!user.is_active} to active state.`,
   );
-  return "";
+  return UserUpdateResultComponent();
 };

@@ -54,12 +54,13 @@ export const ViewUserComponent = (userEntity: UsersEntity) => {
 					</div>
 				</div>
 			</div>
+			<progress id="confirm-progress-indicator" class="htmx-indicator" />
 
 			{
 				userEntity.is_active ?
-					<button hx-post={`/users/toggleActive/${userEntity.id}`} class="contrast">Deactivate Account</button>
+					<button hx-target={`#${HtmxTargets.USERS_SECTION}`} hx-indicator="#confirm-progress-indicator" hx-post={`/users/toggleActive/${userEntity.id}`} class="contrast">Deactivate Account</button>
 					:
-					<button hx-post={`/users/toggleActive/${userEntity.id}`}>Activate Account</button>
+					<button hx-target={`#${HtmxTargets.USERS_SECTION}`} hx-indicator="#confirm-progress-indicator" hx-post={`/users/toggleActive/${userEntity.id}`}>Activate Account</button>
 			}
 		</div>
 	);
