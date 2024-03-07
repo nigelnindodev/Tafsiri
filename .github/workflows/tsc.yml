@@ -16,5 +16,3 @@ jobs:
         bun-version: latest
     - name: bun install
       run: bun install
-    - name: bun run build 
-      run: bun run build
