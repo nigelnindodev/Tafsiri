@@ -6,6 +6,7 @@ import { authPlugin } from "../plugins/auth";
 import { getUser, listUsers, updateUser } from "../services/users";
 import { RequestNumberSchema } from "../services/common/constants";
 import { UsersPage } from "../components/pages/users";
+import { logger } from "..";
 
 const usersSchema = {
   getuserParams: z.object({
@@ -28,6 +29,7 @@ export const usersRoutes = (dataSource: DataSource) => {
       return await listUsers(dataSource);
     })
     .get("/:userId", async (ctx) => {
+      logger.trace("Get user by id endpoint called");
       const validateResult = usersSchema.getuserParams.parse(ctx.params);
       return await getUser(dataSource, validateResult.userId);
     })
