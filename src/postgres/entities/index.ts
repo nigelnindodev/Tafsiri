@@ -1,6 +1,5 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, Index, ManyToMany } from "typeorm"
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, Index} from "typeorm"
 import { TableNames, OrderStatus, PaymentStatus, PaymentTypes } from "../common/constants"
-import { nullable } from "zod";
 
 const generateIndexName = (tableName: TableNames, columnName: string): string => {
   return `${tableName}_${columnName}_idx`;

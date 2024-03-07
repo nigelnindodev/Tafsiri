@@ -1,0 +1,21 @@
+name: Build Typescript 
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  tsc:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        cache: 'npm'
+    - name: npm install
+      run: npm install
+    - name: tsc
+      uses: icrawl/action-tsc@v1
