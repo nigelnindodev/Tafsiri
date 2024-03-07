@@ -17,6 +17,7 @@ import { LoginComponent } from "./components/pages/auth/login";
 import { getUserByUsernameWithCredentials } from "./postgres/queries";
 import { RootPage } from "./components/pages/root_page";
 import { getConfig, logger } from ".";
+import { usersRoutes } from "./routes/users";
 
 /**
  * We're initializing the application server with the DataSource as a parameter so that we can
@@ -45,6 +46,7 @@ export const createApplicationServer = (dataSource: DataSource) => {
     .use(inventoryRoutes(dataSource))
     .use(orderRoutes(dataSource))
     .use(paymentRoutes(dataSource))
+    .use(usersRoutes(dataSource))
     .get("/", () => {
       return RootPage();
     })

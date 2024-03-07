@@ -8,7 +8,7 @@ import { createOrderItemsDescription, getTotalOrderCost } from "../../../service
 export const PaymentsListComponent = (orders: OrdersEntity[]) => {
     return (
         <div>
-            <h6>Payments List</h6>
+            <h6>Payments</h6>
             <table role="grid">
                 <thead>
                     <tr>

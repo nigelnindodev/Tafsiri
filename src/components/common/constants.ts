@@ -7,4 +7,5 @@ export enum HtmxTargets {
   MAIN_SECTION = "main-section",
   ORDERS_SECTION = "orders-section",
   ROOT_DIV = "root-div",
+  USERS_SECTION = "users-section",
 }
