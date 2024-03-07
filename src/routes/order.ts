@@ -63,11 +63,17 @@ export const orderRoutes = (dataSource: DataSource) => {
     .get("/create", async (ctx) => {
       logger.trace("Create order ctx", ctx);
       /**
-       * TODO: The destructuring above works, but we need to find a way to add it to the
-       * ctx's type.
+       * If userId is in the ctx, it should be a number.
+       * If type guard fails, then throw an error.
        */
-      const {userId} = ctx;
-      return await createOrder(dataSource, userId);
+      if ("userId" in ctx) {
+        const { userId } = ctx;
+        return await createOrder(dataSource, userId as number);
+      } else {
+        const message = "Failed to get userId of currently logged in user";
+        logger.error(message);
+        throw new Error(message);
+      }
     })
     .get("/list", () => {
       return ViewOrdersSection;
@@ -77,8 +83,18 @@ export const orderRoutes = (dataSource: DataSource) => {
     })
     .get("/resume/:orderId", async (ctx) => {
       const validateResult = orderSchema.resumeOrderParams.parse(ctx.params);
-      const {userId} = ctx;
-      return await resumeOrder(dataSource, validateResult.orderId, userId);
+      if ("userId" in ctx) {
+        const { userId } = ctx;
+        return await resumeOrder(
+          dataSource,
+          validateResult.orderId,
+          userId as number,
+        );
+      } else {
+        const message = "Failed to get userId of currently logged in user";
+        logger.error(message);
+        throw new Error(message);
+      }
     })
     .post("/confirm/:orderId/:paymentId", async (ctx) => {
       const validateResult = orderSchema.confirmOrderParams.parse(ctx.params);
