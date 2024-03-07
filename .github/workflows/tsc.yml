@@ -14,5 +14,7 @@ jobs:
     - uses: oven-sh/setup-bun@v1
       with:
         bun-version: latest
+    - name: bun install
+      run: bun install
     - name: tsc
       run: tsc 
