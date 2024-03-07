@@ -3,7 +3,7 @@ import { DataSource } from "typeorm";
 import { z } from "zod";
 
 import { authPlugin } from "../plugins/auth";
-import { getUser, listUsers, updateUser } from "../services/users";
+import { getUser, listUsers, toggleUserActiveState } from "../services/users";
 import { RequestNumberSchema } from "../services/common/constants";
 import { UsersPage } from "../components/pages/users";
 import { logger } from "..";
@@ -12,10 +12,7 @@ const usersSchema = {
   getuserParams: z.object({
     userId: RequestNumberSchema,
   }),
-  updateUserParams: z.object({
-    userId: RequestNumberSchema,
-  }),
-  updateUserBody: z.object({
+  toggleUserActiveStateParams: z.object({
     userId: RequestNumberSchema,
   }),
 };
@@ -33,8 +30,11 @@ export const usersRoutes = (dataSource: DataSource) => {
       const validateResult = usersSchema.getuserParams.parse(ctx.params);
       return await getUser(dataSource, validateResult.userId);
     })
-    .post("/:userId", async (ctx) => {
-      return await updateUser(dataSource, 1);
+    .post("/toggleActive/:userId", async (ctx) => {
+      const validateResult = usersSchema.toggleUserActiveStateParams.parse(
+        ctx.params,
+      );
+      return await toggleUserActiveState(dataSource, validateResult.userId);
     });
   return app;
 };

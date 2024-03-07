@@ -21,4 +21,27 @@ export const getUser = async (dataSource: DataSource, userId: number) => {
   }
 };
 
-export const updateUser = async (dataSource: DataSource, userId: number) => {};
+export const toggleUserActiveState = async (
+  dataSource: DataSource,
+  userId: number,
+) => {
+  const user = await queries.getUserById(dataSource, userId);
+  if (user === null) {
+    const message = `Failed to get user with id [${userId}]`;
+    logger.error(message);
+    throw new Error(message);
+  }
+
+  if (user.is_admin) {
+    const message = `Attempt to deactivate admin account with id [${userId}] denied.`;
+    logger.error(message);
+    throw new Error(message);
+  }
+
+  await queries.toggleUserActiveState(dataSource, userId, !user.is_active);
+
+  logger.info(
+    `Toggled user with id [${userId}] ${!user.is_active} to active state.`,
+  );
+  return "";
+};

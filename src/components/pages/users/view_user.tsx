@@ -57,7 +57,9 @@ export const ViewUserComponent = (userEntity: UsersEntity) => {
 
 			{
 				userEntity.is_active ?
-					<button class="contrast">Deactivate Account</button> : <button>Activate Account</button>
+					<button hx-post={`/users/toggleActive/${userEntity.id}`} class="contrast">Deactivate Account</button>
+					:
+					<button hx-post={`/users/toggleActive/${userEntity.id}`}>Activate Account</button>
 			}
 		</div>
 	);

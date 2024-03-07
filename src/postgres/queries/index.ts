@@ -1,4 +1,4 @@
-import { DataSource, InsertResult, UpdateResult } from "typeorm"
+import { DataSource, InsertResult, UpdateResult, UpdateResult } from "typeorm"
 import { InventoryEntity, OrdersEntity, OrderItemEntity, PaymentEntity, UsersEntity, OrderPriceEntity } from "../entities";
 import { OrderStatus, PaymentStatus, PaymentTypes, TableNames } from "../common/constants";
 import { logger } from "../..";
@@ -512,5 +512,15 @@ export const createUserCredentials = async (
       user_ref: userId,
       encrypted_password: encryptedPassword
     })
+    .execute();
+};
+
+export const toggleUserActiveState = async (dataSource: DataSource, userId: number, active: boolean): Promise<UpdateResult> => {
+  return await dataSource.createQueryBuilder()
+    .update(UsersEntity)
+    .set({
+      is_active: active
+    })
+    .where("users.id = :id", {id: userId})
     .execute();
 };
