@@ -1,4 +1,4 @@
-import { DataSource, InsertResult, UpdateResult, UpdateResult } from "typeorm"
+import { DataSource, InsertResult, UpdateResult } from "typeorm"
 import { InventoryEntity, OrdersEntity, OrderItemEntity, PaymentEntity, UsersEntity, OrderPriceEntity } from "../entities";
 import { OrderStatus, PaymentStatus, PaymentTypes, TableNames } from "../common/constants";
 import { logger } from "../..";
