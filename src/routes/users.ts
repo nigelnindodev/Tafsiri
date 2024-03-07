@@ -1,10 +1,11 @@
 import Elysia from "elysia";
 import { DataSource } from "typeorm";
-import { number, z } from "zod";
+import { z } from "zod";
 
 import { authPlugin } from "../plugins/auth";
 import { getUser, listUsers, updateUser } from "../services/users";
 import { RequestNumberSchema } from "../services/common/constants";
+import { UsersPage } from "../components/pages/users";
 
 const usersSchema = {
   getuserParams: z.object({
@@ -22,7 +23,8 @@ export const usersRoutes = (dataSource: DataSource) => {
   const app = new Elysia({ prefix: "/users" });
   app
     .use(authPlugin())
-    .get("/", async () => {
+    .get("/", () => UsersPage)
+    .get("/list", async () => {
       return await listUsers(dataSource);
     })
     .get("/:userId", async (ctx) => {

@@ -443,6 +443,15 @@ export const updatePaymentType = async (
     .execute();
 };
 
+export const getAllUsers = async (
+  dataSource: DataSource
+): Promise<UsersEntity[]> => {
+  return await dataSource.createQueryBuilder()
+    .select(TableNames.USERS)
+    .from(UsersEntity, TableNames.USERS)
+    .getMany();
+}
+
 /**
  * Fetches a user using their database id. Does not return encrypted user credentials.
  */
