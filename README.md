@@ -37,6 +37,7 @@ Open http://localhost:3000/ with your browser to see the result.
 - [ ] Ability to filter for payments according to date and time interval
 
 ## Would be nice
+- [ ] Store when a user last logged in
 - [ ] Manual reconciliation via CSV and/or Excel/Google Sheets
 - [ ] IP Address white listing (help for example ensure the service can only be accessed when connected to the store's WiFi)
 - [ ] End to end tests with Puppeteer

@@ -21,8 +21,8 @@ export const UsersListComponent = (users: UsersEntity[]) => {
                             <tr>
                                 <td>{user.id}</td>
                                 <td>{user.username}</td>
-                                <td>{user.is_admin ? "✅" : ""}</td>
-                                <td>{user.is_active ? "✅" : ""}</td>
+                                <td>{user.is_admin ? "✅" : "❌"}</td>
+                                <td>{user.is_active ? "✅" : "❌"}</td>
                                 {
                                     user.is_admin ?
                                         <td><button disabled role="button" class="secondary outline" hx-get={`/users/${user.id}`} hx-target={`#${HtmxTargets.USERS_SECTION}`}>Edit</button></td> :

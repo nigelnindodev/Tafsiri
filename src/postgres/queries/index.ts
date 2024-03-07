@@ -449,6 +449,7 @@ export const getAllUsers = async (
   return await dataSource.createQueryBuilder()
     .select(TableNames.USERS)
     .from(UsersEntity, TableNames.USERS)
+    .orderBy({"users.id": "ASC"})
     .getMany();
 }
 
