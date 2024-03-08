@@ -1,5 +1,5 @@
 import { DataSource } from "typeorm";
-import { getConfig } from "../index";
+import { getConfig, logger } from "../index";
 import * as DatabaseEntities from "./entities";
 
 const config = getConfig();
@@ -9,6 +9,7 @@ export class PostgresDataSourceSingleton {
   private constructor() {}
 
   public static async getInstance(): Promise<DataSource> {
+    logger.info("Fetching postgres datasource instance");
     if (!PostgresDataSourceSingleton.dataSource) {
       const dataSource = new DataSource({
         type: "postgres",
