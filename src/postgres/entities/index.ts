@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, Index} from "typeorm"
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, Index, type Relation} from "typeorm"
 import { TableNames, OrderStatus, PaymentStatus, PaymentTypes } from "../common/constants"
 
 const generateIndexName = (tableName: TableNames, columnName: string): string => {
@@ -40,7 +40,7 @@ export class InventoryEntity {
   active: boolean
 
   @OneToMany(() => OrderItemEntity, (orderItem) => orderItem.inventory)
-  order_items: OrderItemEntity[]
+  order_items: Relation<OrderItemEntity[]>
 
   @Column("timestamptz", { nullable: false, default: () => "CURRENT_TIMESTAMP" })
   created_at: Date
@@ -64,13 +64,13 @@ export class OrdersEntity {
   id: number
 
   @OneToOne(() => PaymentEntity, (payment) => payment.order_ref)
-  payment: PaymentEntity
+  payment: Relation<PaymentEntity>
 
   @OneToMany(() => OrderItemEntity, (orderItem) => orderItem.orders)
-  order_items: OrderItemEntity[]
+  order_items: Relation<OrderItemEntity[]>
 
   @ManyToOne(() => UsersEntity, (users) => users.orders, {nullable: true})
-  users: UsersEntity
+  users: Relation<UsersEntity>
 
   @Column("enum", { enum: OrderStatus, nullable: false })
   status: OrderStatus
@@ -101,13 +101,13 @@ export class OrderItemEntity {
   quantity: number
 
   @ManyToOne(() => InventoryEntity, (inventory) => inventory.order_items, { nullable: false })
-  inventory: InventoryEntity
+  inventory: Relation<InventoryEntity>
 
   @ManyToOne(() => OrdersEntity, (order) => order.order_items, { nullable: false })
-  orders: OrdersEntity
+  orders: Relation<OrdersEntity>
 
   @OneToOne(() => OrderPriceEntity, (orderPrice) => orderPrice.order_item)
-  order_item_price: OrderPriceEntity
+  order_item_price: Relation<OrderPriceEntity>
 
   @Column("timestamptz", { nullable: false, default: () => "CURRENT_TIMESTAMP" })
   created_at: Date
@@ -120,7 +120,7 @@ export class OrderPriceEntity {
 
   @OneToOne(() => OrderItemEntity, (orderItem) => orderItem.order_item_price, {nullable: false})
   @JoinColumn()
-  order_item: OrderItemEntity 
+  order_item: Relation<OrderItemEntity>
 
   @Column("decimal", {nullable: false })
   price: number
@@ -143,7 +143,7 @@ export class PaymentEntity {
 
   @OneToOne(() => OrdersEntity, (order) => order.payment, { nullable: false })
   @JoinColumn()
-  order_ref: OrdersEntity
+  order_ref: Relation<OrdersEntity>
 
   @Index(generateIndexName(TableNames.PAYMENT, "payment_status"))
   @Column("enum", { enum: PaymentStatus, nullable: false })
@@ -166,10 +166,10 @@ export class UsersEntity {
   id: number
 
   @OneToOne(() => UserCredentialsEntity, (userCredentials) => userCredentials.user_ref)
-  user_credentials: UserCredentialsEntity
+  user_credentials: Relation<UserCredentialsEntity>
 
   @OneToMany(() => OrdersEntity, (orders) => orders.users)
-  orders: OrdersEntity[]
+  orders: Relation<OrdersEntity[]>
 
   @Index(generateIndexName(TableNames.USERS, "username"), { unique: true })
   @Column("varchar", { length: 100, nullable: false })
@@ -197,7 +197,7 @@ export class UserCredentialsEntity {
 
   @OneToOne(() => UsersEntity, (users) => users.user_credentials, { nullable: false })
   @JoinColumn()
-  user_ref: UsersEntity
+  user_ref: Relation<UsersEntity>
 
   @Column("varchar")
   encrypted_password: string

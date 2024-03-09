@@ -41,6 +41,9 @@ export const logger: Logger<ILogObj> = new Logger({
   name: "mainLogger",
 });
 
+// Bun automatically masks sensitive password fields
+logger.info("App Configuration", getConfig());
+
 /**
  * Initialize Postgres database connector, to be passed on to the application server creator.
  */
