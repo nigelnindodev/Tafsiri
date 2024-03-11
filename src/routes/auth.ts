@@ -57,7 +57,10 @@ export const authRoutes = (dataSource: DataSource) => {
         // TODO: If in production, should also set up the secure attribute
         ctx.setCookie(
           "auth",
-          await ctx.jwt.sign({ username: validateresult.username, userId: result.userEntity.id }),
+          await ctx.jwt.sign({
+            username: validateresult.username,
+            userId: result.userEntity.id,
+          }),
           {
             httpOnly: true,
             maxAge: CookieConstansts.maxAge,
