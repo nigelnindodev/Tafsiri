@@ -3,9 +3,10 @@ import jwt from "@elysiajs/jwt";
 import Elysia from "elysia";
 
 import { getConfig, logger } from "..";
+import { CookieConstansts } from "../services/common/constants";
 
 export interface AuthVaules {
-  userId: number | undefined
+  userId: number | undefined;
 }
 
 /**
@@ -15,9 +16,9 @@ export interface AuthVaules {
  * The implication is we can add authentication in a particular route application,
  * without the authPlugin affecting any other applications defined after it.
  */
-export const authPlugin = (options: AuthVaules = {userId: undefined}) => {
+export const authPlugin = (options: AuthVaules = { userId: undefined }) => {
   const app = new Elysia({
-    seed: options 
+    seed: options,
   });
   app
     .use(cookie())
@@ -36,6 +37,18 @@ export const authPlugin = (options: AuthVaules = {userId: undefined}) => {
         ctx.set.status = "Unauthorized";
         ctx.set.redirect = "/";
       } else {
+        ctx.setCookie(
+          "auth",
+          await ctx.jwt.sign({
+            username: authValue.username,
+            userId: authValue.userId,
+          }),
+          {
+            httpOnly: true,
+            maxAge: CookieConstansts.maxAge,
+            path: CookieConstansts.path,
+          },
+        );
         logger.trace("authValueUserId", authValue.userId);
         app.state("userId", authValue.userId);
       }
