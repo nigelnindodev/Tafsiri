@@ -83,43 +83,79 @@ export const inventoryRoutes = (dataSource: DataSource) => {
         },
       },
     )
-    .get("/list/search", async (ctx) => {
-      const validateResult = inventorySchemas.searchInventoryItemsQuery.parse(
-        ctx.query,
-      );
-      if (validateResult.search === "") {
-        return await listInventoryItems(dataSource);
-      } else {
-        return await searchInventoryItems(dataSource, validateResult.search);
-      }
-    })
-    .get("/orders/:inventoryId", async (ctx) => {
-      return await listInventoryItemOrders(
-        dataSource,
-        Number(ctx.params.inventoryId),
-      );
-    })
-    .post("/create", async (ctx) => {
-      const validateResult = inventorySchemas.createInventoryItemBody.parse(
-        ctx.body,
-      );
-      return await createInventoryItem(
-        dataSource,
-        validateResult.name,
-        validateResult.price,
-      );
-    })
-    .post("/edit/:inventoryId", async (ctx) => {
-      logger.info(ctx);
-      const validateResult = inventorySchemas.createInventoryItemBody.parse(
-        ctx.body,
-      );
-      return await updateInventoryItem(
-        dataSource,
-        Number(ctx.params.inventoryId),
-        validateResult.name,
-        validateResult.price,
-      );
-    });
+    .get(
+      "/list/search",
+      async (ctx) => {
+        const validateResult = inventorySchemas.searchInventoryItemsQuery.parse(
+          ctx.query,
+        );
+        if (validateResult.search === "") {
+          return await listInventoryItems(dataSource);
+        } else {
+          return await searchInventoryItems(dataSource, validateResult.search);
+        }
+      },
+      {
+        detail: {
+          summary: "",
+          description: "",
+        },
+      },
+    )
+    .get(
+      "/orders/:inventoryId",
+      async (ctx) => {
+        return await listInventoryItemOrders(
+          dataSource,
+          Number(ctx.params.inventoryId),
+        );
+      },
+      {
+        detail: {
+          summary: "",
+          description: "",
+        },
+      },
+    )
+    .post(
+      "/create",
+      async (ctx) => {
+        const validateResult = inventorySchemas.createInventoryItemBody.parse(
+          ctx.body,
+        );
+        return await createInventoryItem(
+          dataSource,
+          validateResult.name,
+          validateResult.price,
+        );
+      },
+      {
+        detail: {
+          summary: "",
+          description: "",
+        },
+      },
+    )
+    .post(
+      "/edit/:inventoryId",
+      async (ctx) => {
+        logger.info(ctx);
+        const validateResult = inventorySchemas.createInventoryItemBody.parse(
+          ctx.body,
+        );
+        return await updateInventoryItem(
+          dataSource,
+          Number(ctx.params.inventoryId),
+          validateResult.name,
+          validateResult.price,
+        );
+      },
+      {
+        detail: {
+          summary: "",
+          description: "",
+        },
+      },
+    );
   return app;
 };
