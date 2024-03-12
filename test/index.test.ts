@@ -16,7 +16,4 @@ describe("Server Testing", async () => {
       .then((res) => res.status);
     expect(response).toBe(200);
   });
-  it("Fails", async () => {
-    expect(1).toBe(2);
-  });
 });
