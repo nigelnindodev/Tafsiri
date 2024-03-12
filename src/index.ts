@@ -43,4 +43,4 @@ export const logger: Logger<ILogObj> = new Logger({
 // Bun automatically masks sensitive password fields
 logger.info("App Configuration", getConfig());
 
-startServer();
+await startServer();
