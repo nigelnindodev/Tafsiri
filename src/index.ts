@@ -43,4 +43,7 @@ export const logger: Logger<ILogObj> = new Logger({
 // Bun automatically masks sensitive password fields
 logger.info("App Configuration", getConfig());
 
-await startServer();
+// TODO: Must be a beeter way to prevent duplicate server start for testing.
+if (process.env.NODE_ENV !== "test") {
+  await startServer();
+}
