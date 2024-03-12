@@ -1,4 +1,4 @@
-import Elysia from "elysia";
+import {Elysia,t} from "elysia";
 import { DataSource } from "typeorm";
 import { cookie } from "@elysiajs/cookie";
 import { jwt } from "@elysiajs/jwt";
@@ -16,9 +16,9 @@ import {
 import { getConfig, logger } from "..";
 
 const authSchemas = {
-  processLoginRequestSchema: z.object({
-    username: z.string(),
-    password: z.string(),
+  processLoginRequestSchema: t.Object({
+    username: t.String(),
+    password: t.String(),
   }),
   processCreateuserRequestSchema: z.object({
     username: z.string(),
@@ -71,7 +71,7 @@ export const authRoutes = (dataSource: DataSource) => {
           ServerHxTriggerEvents.LOGIN_STATUS_CHANGE;
         return "";
       }
-    })
+    }, {body: authSchemas.processLoginRequestSchema})
     .post("/logout", async (ctx) => {
       ctx.setCookie("auth", "", {
         httpOnly: true,
