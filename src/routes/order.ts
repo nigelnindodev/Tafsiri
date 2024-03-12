@@ -1,5 +1,4 @@
 import {Elysia,t} from "elysia";
-import { z } from "zod";
 
 import { DataSource } from "typeorm";
 import { OrdersPage } from "../components/pages/orders";
@@ -16,7 +15,6 @@ import {
 import { ViewOrdersSection } from "../components/pages/orders/orders";
 import { PaymentTypes } from "../postgres/common/constants";
 import {
-  RequestNumberSchema,
   ServerHxTriggerEvents,
   SwaggerTags,
 } from "../services/common/constants";
@@ -27,26 +25,26 @@ const orderSchema = {
   activeOrdersParams: t.Object({
     orderId: t.Number(),
   }),
-  resumeOrderParams: z.object({
-    orderId: RequestNumberSchema,
+  resumeOrderParams: t.Object({
+    orderId: t.Number(),
   }),
-  confirmOrderParams: z.object({
-    orderId: RequestNumberSchema,
-    paymentId: RequestNumberSchema,
+  confirmOrderParams: t.Object({
+    orderId: t.Number(),
+    paymentId: t.Number(),
   }),
-  updateItemCounterParams: z.object({
-    itemId: RequestNumberSchema,
-    updateType: z.string().length(3),
+  updateItemCounterParams: t.Object({
+    itemId: t.Number(),
+    updateType: t.String(),
   }),
-  addOrRemoveItemParams: z.object({
-    orderId: RequestNumberSchema,
-    inventoryId: RequestNumberSchema,
+  addOrRemoveItemParams: t.Object({
+    orderId: t.Number(),
+    inventoryId: t.Number(),
   }),
-  updatePaymentTypeForOrderBody: z.object({
-    paymentType: z.nativeEnum(PaymentTypes),
+  updatePaymentTypeForOrderBody: t.Object({
+    paymentType:  t.String() // z.nativeEnum(PaymentTypes),
   }),
-  updatePaymentTypeForOrderParams: z.object({
-    paymentId: RequestNumberSchema,
+  updatePaymentTypeForOrderParams: t.Object({
+    paymentId: t.Number(),
   }),
 };
 
@@ -57,7 +55,7 @@ export const orderRoutes = (dataSource: DataSource) => {
     .get("/", () =>  OrdersPage, {
       detail: {
         summary: "Get Orders Page",
-        description: "TBA",
+        description: "Return HTMX markup for the main orders page, which by default will load the latest unfinished orders from the /orders/list component",
         tags: [SwaggerTags.Orders.name]
       } 
     })
@@ -88,7 +86,7 @@ export const orderRoutes = (dataSource: DataSource) => {
     }, {
         detail: {
           summary: "Get Create Order Component",
-          description: "TBA",
+          description: "Returns HTMX markup on clicking of create new order button in the UI. Creates a new order in an initialized state, and if not completed, will be immediately available in the lst of recent unfinished orders",
           tags: [SwaggerTags.Orders.name]
         }
       })
@@ -97,7 +95,7 @@ export const orderRoutes = (dataSource: DataSource) => {
     }, {
         detail: {
           summary: "Get Orders View Component",
-          description: "TBA",
+          description: "Returns HTMX view markup for the latest unfinshed orders. On load, makes a request to /orders/list/all component to fetch the list view markup for unfinshed orders",
           tags: [SwaggerTags.Orders.name]
         }
       })
@@ -106,17 +104,16 @@ export const orderRoutes = (dataSource: DataSource) => {
     }, {
         detail: {
           summary: "Get Orders List Component",
-          description: "TBA",
+          description: "Returns HTMX list view markup for the latest unfinshed orders",
           tags: [SwaggerTags.Orders.name]
         }
       })
     .get("/resume/:orderId", async (ctx) => {
-      const validateResult = orderSchema.resumeOrderParams.parse(ctx.params);
       if ("userId" in ctx) {
         const { userId } = ctx;
         return await resumeOrder(
           dataSource,
-          validateResult.orderId,
+          ctx.params.orderId,
           userId as number,
         );
       } else {
@@ -125,62 +122,75 @@ export const orderRoutes = (dataSource: DataSource) => {
         throw new Error(message);
       }
     }, {
+        params: orderSchema.resumeOrderParams,
         detail: {
           summary: "Get Resume Order Component",
-          description: "TBA",
+          description: "From the list view of unfinshed orders, this endpoint call be called by pressing the resume button, which then loads HTMX markup to resume the order",
           tags: [SwaggerTags.Orders.name]
         }
       })
     .post("/confirm/:orderId/:paymentId", async (ctx) => {
-      const validateResult = orderSchema.confirmOrderParams.parse(ctx.params);
       return await confirmOrder(
         dataSource,
-        validateResult.orderId,
-        validateResult.paymentId,
+        ctx.params.orderId,
+        ctx.params.paymentId,
       );
     }, {
+        params: orderSchema.confirmOrderParams,
         detail: {
           summary: "Confirm Order",
-          description: "TBA",
+          description: "Endpoint is called by pressing the confirm button on an order. This returns HTMX success/error markup, which will the load back to the main orders screen after a preconfigured delay",
           tags: [SwaggerTags.Orders.name]
         }
       })
     .post("/item/updateQuantity/:itemId/:updateType", async (ctx) => {
-      const validateResult = orderSchema.updateItemCounterParams.parse(
-        ctx.params,
-      );
       const result = await updateItemCounter(
         dataSource,
-        validateResult.itemId,
-        validateResult.updateType,
+        ctx.params.itemId,
+        ctx.params.updateType,
       );
       ctx.set.headers["HX-Trigger"] = ServerHxTriggerEvents.REFRESH_ORDER;
       return result;
-    })
+    }, {
+        params: orderSchema.updateItemCounterParams,
+        detail: {
+          summary: "Update Item Quantity In Order",
+          description: "Endpoint is called from the UI during an active order processing. This updates the items quantity and sends a HTMX refresh order event to get the updated counters and total amount due",
+          tags: [SwaggerTags.Orders.name]
+        } 
+      })
     .post("/item/change/:orderId/:inventoryId", async (ctx) => {
-      const validateResult = orderSchema.addOrRemoveItemParams.parse(
-        ctx.params,
-      );
       const result = await addOrRemoveOrderItem(
         dataSource,
-        validateResult.orderId,
-        validateResult.inventoryId,
+        ctx.params.orderId,
+        ctx.params.inventoryId,
       );
       ctx.set.headers["HX-Trigger"] = ServerHxTriggerEvents.REFRESH_ORDER;
       return result;
-    })
+    }, {
+        params: orderSchema.addOrRemoveItemParams,
+        detail: {
+          summary: "Add/Remove Item In Order",
+          description: "Endpoint is called from the UI during active order processing, This is updates the items to add or remove an inventory item and the sends a HTMX refresh order event to  get updated order items and amount due",
+          tags: [SwaggerTags.Orders.name]
+        }
+      })
     .post("/payment/updateType/:paymentId", async (ctx) => {
-      const validateBodyResult =
-        orderSchema.updatePaymentTypeForOrderBody.parse(ctx.body);
-      const validateParamsResult =
-        orderSchema.updatePaymentTypeForOrderParams.parse(ctx.params);
       const result = await updatePaymentTypeForOrder(
         dataSource,
-        validateParamsResult.paymentId,
-        validateBodyResult.paymentType,
+        ctx.params.paymentId,
+        ctx.body.paymentType as PaymentTypes, // TODO: Get rid of this type coercion before merging
       );
       ctx.set.headers["HX-Trigger"] = ServerHxTriggerEvents.REFRESH_ORDER;
       return result;
-    });
+    }, {
+        body: orderSchema.updatePaymentTypeForOrderBody,
+        params: orderSchema.updatePaymentTypeForOrderParams,
+        detail: {
+          summary: "Update Payment Type",
+          description: "Updates the payment type for the Order. In the UI, this endpoint is called by selecting the payment type radio button during an active order. Also sends a HTMX refresh order event to update the UI with the correct payment type.",
+          tags: [SwaggerTags.Orders.name]
+        }
+      });
   return app;
 };

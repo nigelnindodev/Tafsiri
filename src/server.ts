@@ -32,6 +32,7 @@ export const createApplicationServer = (dataSource: DataSource) => {
           info: {
             title: "Tafsiri Swagger Specification",
             version: "0.0.2-alpha",
+            description: "Documentation for the Tafsiri API.",
           },
           tags: [
             SwaggerTags.Auth,
