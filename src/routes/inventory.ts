@@ -35,18 +35,54 @@ export const inventoryRoutes = (dataSource: DataSource) => {
   const app = new Elysia({ prefix: "/inventory" });
   app
     .use(authPlugin())
-    .get("/", () => InventoryPage)
-    .get("/create", () => CreateOrUpdateInventoryComponent())
-    .get("/edit/:inventoryId", async (ctx) => {
-      return await getInventoryItemForUpdate(
-        dataSource,
-        Number(ctx.params.inventoryId),
-      );
+    .get("/", () => InventoryPage, {
+      detail: {
+        summary: "Get Inventory Page",
+        description:
+          "Returns HTMX markup for the main inventory page, which by default loads a searchable list of inventory items by calling the /inventory/list endpoint.",
+      },
     })
-    .get("/list", () => ViewInventorySection)
-    .get("/list/all", async () => {
-      return await listInventoryItems(dataSource);
+    .get("/create", () => CreateOrUpdateInventoryComponent(), {
+      detail: {
+        summary: "Get Create Inventory Section",
+        description:
+          "Returns HTMX markup for adding a new item in the inventory",
+      },
     })
+    .get(
+      "/edit/:inventoryId",
+      async (ctx) => {
+        return await getInventoryItemForUpdate(
+          dataSource,
+          Number(ctx.params.inventoryId),
+        );
+      },
+      {
+        detail: {
+          summary: "Get Edit Inventory Item Section",
+          description:
+            "Returns HTMX markup for editing an inventory item  after fetching it's details",
+        },
+      },
+    )
+    .get("/list", () => ViewInventorySection, {
+      detail: {
+        summary: "",
+        description: "",
+      },
+    })
+    .get(
+      "/list/all",
+      async () => {
+        return await listInventoryItems(dataSource);
+      },
+      {
+        detail: {
+          summary: "",
+          description: "",
+        },
+      },
+    )
     .get("/list/search", async (ctx) => {
       const validateResult = inventorySchemas.searchInventoryItemsQuery.parse(
         ctx.query,
