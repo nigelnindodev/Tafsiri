@@ -7,6 +7,7 @@ import { PostgresDataSourceSingleton } from "../src/postgres/index.ts";
 
 describe("Server Testing", async () => {
   it("Correcly loads up the test server", async () => {
+    console.log("NODE_ENV: ", process.env.NODE_ENV);
     const dataSource = await PostgresDataSourceSingleton.getInstance();
     console.log("Fetched postgres datasource");
     const app = createApplicationServer(dataSource);

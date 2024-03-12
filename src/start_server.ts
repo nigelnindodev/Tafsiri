@@ -1,0 +1,13 @@
+import { logger } from ".";
+import { PostgresDataSourceSingleton } from "./postgres";
+import { createApplicationServer } from "./server";
+
+export const startServer = async () => {
+  const dataSource = await PostgresDataSourceSingleton.getInstance();
+
+  const app = createApplicationServer(dataSource);
+
+  logger.info(
+    `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port} with NODE_ENV ${process.env.NODE_ENV}`,
+  );
+};
