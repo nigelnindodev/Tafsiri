@@ -2,10 +2,11 @@
   "name": "elysia",
   "version": "1.0.50",
   "scripts": {
-    "test": "source .env.test && bun test",
+    "build": "tsc",
     "dev": "bun run --watch src/index.ts",
-    "test-server": "source .env.test && bun run --watch src/index.ts",
-    "build": "tsc"
+    "setup-run-test": "bun run test_script.ts",
+    "test": "source .env.test && bun test",
+    "test-run-server": "source .env.test && bun run --watch src/index.ts"
   },
   "dependencies": {
     "@elysiajs/cookie": "^0.8.0",
