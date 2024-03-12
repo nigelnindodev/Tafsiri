@@ -1,4 +1,4 @@
-import Elysia from "elysia";
+import {Elysia,t} from "elysia";
 import { z } from "zod";
 
 import { DataSource } from "typeorm";
@@ -18,13 +18,14 @@ import { PaymentTypes } from "../postgres/common/constants";
 import {
   RequestNumberSchema,
   ServerHxTriggerEvents,
+  SwaggerTags,
 } from "../services/common/constants";
 import { authPlugin } from "../plugins/auth";
 import { logger } from "..";
 
 const orderSchema = {
-  activeOrdersParams: z.object({
-    orderId: RequestNumberSchema,
+  activeOrdersParams: t.Object({
+    orderId: t.Number(),
   }),
   resumeOrderParams: z.object({
     orderId: RequestNumberSchema,
@@ -53,13 +54,23 @@ export const orderRoutes = (dataSource: DataSource) => {
   const app = new Elysia({ prefix: "/orders" });
   app
     .use(authPlugin())
-    .get("/", () => {
-      return OrdersPage;
+    .get("/", () =>  OrdersPage, {
+      detail: {
+        summary: "Get Orders Page",
+        description: "TBA",
+        tags: [SwaggerTags.Orders.name]
+      } 
     })
     .get("/active/:orderId", async (ctx) => {
-      const validateResult = orderSchema.activeOrdersParams.parse(ctx.params);
-      return await activeOrders(dataSource, validateResult.orderId);
-    })
+      return await activeOrders(dataSource, ctx.params.orderId);
+    }, {
+        params: orderSchema.activeOrdersParams, 
+        detail: {
+          summary: "Get Active Order Component",
+          description: "TBA",
+          tags: [SwaggerTags.Orders.name]
+        }
+      })
     .get("/create", async (ctx) => {
       logger.trace("Create order ctx", ctx);
       /**
@@ -74,13 +85,31 @@ export const orderRoutes = (dataSource: DataSource) => {
         logger.error(message);
         throw new Error(message);
       }
-    })
+    }, {
+        detail: {
+          summary: "Get Create Order Component",
+          description: "TBA",
+          tags: [SwaggerTags.Orders.name]
+        }
+      })
     .get("/list", () => {
       return ViewOrdersSection;
-    })
+    }, {
+        detail: {
+          summary: "Get Orders View Component",
+          description: "TBA",
+          tags: [SwaggerTags.Orders.name]
+        }
+      })
     .get("/list/all", async () => {
       return await listUnfinishedOrders(dataSource);
-    })
+    }, {
+        detail: {
+          summary: "Get Orders List Component",
+          description: "TBA",
+          tags: [SwaggerTags.Orders.name]
+        }
+      })
     .get("/resume/:orderId", async (ctx) => {
       const validateResult = orderSchema.resumeOrderParams.parse(ctx.params);
       if ("userId" in ctx) {
@@ -95,7 +124,13 @@ export const orderRoutes = (dataSource: DataSource) => {
         logger.error(message);
         throw new Error(message);
       }
-    })
+    }, {
+        detail: {
+          summary: "Get Resume Order Component",
+          description: "TBA",
+          tags: [SwaggerTags.Orders.name]
+        }
+      })
     .post("/confirm/:orderId/:paymentId", async (ctx) => {
       const validateResult = orderSchema.confirmOrderParams.parse(ctx.params);
       return await confirmOrder(
@@ -103,7 +138,13 @@ export const orderRoutes = (dataSource: DataSource) => {
         validateResult.orderId,
         validateResult.paymentId,
       );
-    })
+    }, {
+        detail: {
+          summary: "Confirm Order",
+          description: "TBA",
+          tags: [SwaggerTags.Orders.name]
+        }
+      })
     .post("/item/updateQuantity/:itemId/:updateType", async (ctx) => {
       const validateResult = orderSchema.updateItemCounterParams.parse(
         ctx.params,

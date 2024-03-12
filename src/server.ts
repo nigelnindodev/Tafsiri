@@ -16,6 +16,7 @@ import { getUserByUsernameWithCredentials } from "./postgres/queries";
 import { RootPage } from "./components/pages/root_page";
 import { getConfig, logger } from ".";
 import { usersRoutes } from "./routes/users";
+import { SwaggerTags } from "./services/common/constants";
 
 /**
  * We're initializing the application server with the DataSource as a parameter so that we can
@@ -24,7 +25,24 @@ import { usersRoutes } from "./routes/users";
 export const createApplicationServer = (dataSource: DataSource) => {
   const app = new Elysia()
     .use(cookie())
-    .use(swagger())
+    .use(
+      // Maybe move the swagger plugin into its own file?
+      swagger({
+        documentation: {
+          info: {
+            title: "Tafsiri Swagger Specification",
+            version: "0.0.2-alpha",
+          },
+          tags: [
+            SwaggerTags.Auth,
+            SwaggerTags.Inventory,
+            SwaggerTags.Orders,
+            SwaggerTags.Payments,
+            SwaggerTags.Users,
+          ],
+        },
+      }),
+    )
     .use(staticPlugin())
     .use(
       jwt({

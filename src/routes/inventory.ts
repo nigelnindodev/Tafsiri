@@ -1,8 +1,7 @@
-import Elysia from "elysia";
-import { z } from "zod";
+import { Elysia, t } from "elysia";
 
 import { CreateOrUpdateInventoryComponent } from "../components/pages/inventory/create_or_update_inventory_item";
-import { ViewInventorySection } from "../components/pages/inventory/inventory";
+import { ViewInventoryComponent } from "../components/pages/inventory/inventory";
 import { DataSource } from "typeorm";
 import {
   createInventoryItem,
@@ -13,21 +12,20 @@ import {
   updateInventoryItem,
 } from "../services/inventory";
 import { InventoryPage } from "../components/pages/inventory";
-import { RequestNumberSchema } from "../services/common/constants";
-import { logger } from "..";
 import { authPlugin } from "../plugins/auth";
+import { SwaggerTags } from "../services/common/constants";
 
 const inventorySchemas = {
-  searchInventoryItemsQuery: z.object({
-    search: z.string(),
+  searchInventoryItemsQuery: t.Object({
+    search: t.String(),
   }),
-  createInventoryItemBody: z.object({
-    name: z.string(),
-    price: RequestNumberSchema,
+  createInventoryItemBody: t.Object({
+    name: t.String(),
+    price: t.Number(),
   }),
-  updateInventoryItemBody: z.object({
-    name: z.string(),
-    price: RequestNumberSchema,
+  updateInventoryItemBody: t.Object({
+    name: t.String(),
+    price: t.Number(),
   }),
 };
 
@@ -39,14 +37,16 @@ export const inventoryRoutes = (dataSource: DataSource) => {
       detail: {
         summary: "Get Inventory Page",
         description:
-          "Returns HTMX markup for the main inventory page, which by default loads a searchable list of inventory items by calling the /inventory/list endpoint.",
+          "Returns HTMX markup for the main inventory page, which by default loads a searchable list of inventory items by calling the /inventory/list endpoint",
+        tags: [SwaggerTags.Inventory.name],
       },
     })
     .get("/create", () => CreateOrUpdateInventoryComponent(), {
       detail: {
-        summary: "Get Create Inventory Section",
+        summary: "Get Create Inventory Component",
         description:
           "Returns HTMX markup for adding a new item in the inventory",
+        tags: [SwaggerTags.Inventory.name],
       },
     })
     .get(
@@ -54,21 +54,27 @@ export const inventoryRoutes = (dataSource: DataSource) => {
       async (ctx) => {
         return await getInventoryItemForUpdate(
           dataSource,
-          Number(ctx.params.inventoryId),
+          ctx.params.inventoryId,
         );
       },
       {
+        params: t.Object({
+          inventoryId: t.Number(),
+        }),
         detail: {
-          summary: "Get Edit Inventory Item Section",
+          summary: "Get Update Inventory Item Component",
           description:
-            "Returns HTMX markup for editing an inventory item  after fetching it's details",
+            "Returns HTMX markup for updating an inventory item after fetching its details",
+          tags: [SwaggerTags.Inventory.name],
         },
       },
     )
-    .get("/list", () => ViewInventorySection, {
+    .get("/list", () => ViewInventoryComponent(), {
       detail: {
-        summary: "",
-        description: "",
+        summary: "Get Inventory View Componenet",
+        description:
+          "Returns HTMX markup that includes views for searching inventory, and where on loaded call /list/all endpoint to display the inventory items",
+        tags: [SwaggerTags.Inventory.name],
       },
     })
     .get(
@@ -78,8 +84,10 @@ export const inventoryRoutes = (dataSource: DataSource) => {
       },
       {
         detail: {
-          summary: "",
-          description: "",
+          summary: "Get Inventory Items List Component",
+          description:
+            "Returns HTMX list items markup for displaying inventory items",
+          tags: [SwaggerTags.Inventory.name],
         },
       },
     )
@@ -97,8 +105,10 @@ export const inventoryRoutes = (dataSource: DataSource) => {
       },
       {
         detail: {
-          summary: "",
-          description: "",
+          summary: "Get Inventory Search Results Component",
+          description:
+            "Returns HTMX markup with filtered inventory items. If search is empty, returns all the inventory items.",
+          tags: [SwaggerTags.Inventory.name],
         },
       },
     )
@@ -107,53 +117,60 @@ export const inventoryRoutes = (dataSource: DataSource) => {
       async (ctx) => {
         return await listInventoryItemOrders(
           dataSource,
-          Number(ctx.params.inventoryId),
+          ctx.params.inventoryId,
         );
       },
       {
+        params: t.Object({
+          inventoryId: t.Number(),
+        }),
         detail: {
-          summary: "",
-          description: "",
+          summary: "Get Inventory Orders Component",
+          description:
+            "Returns HTMX markup that displays all the orders that a particular inventory item has been added to",
+          tags: [SwaggerTags.Inventory.name],
         },
       },
     )
     .post(
       "/create",
       async (ctx) => {
-        const validateResult = inventorySchemas.createInventoryItemBody.parse(
-          ctx.body,
-        );
         return await createInventoryItem(
           dataSource,
-          validateResult.name,
-          validateResult.price,
+          ctx.body.name,
+          ctx.body.price,
         );
       },
       {
+        body: inventorySchemas.createInventoryItemBody,
         detail: {
-          summary: "",
-          description: "",
+          summary: "Create Inventory Item",
+          description:
+            "Adds a new inventory item, and returns HTMX markup indicating success or error",
+          tags: [SwaggerTags.Inventory.name],
         },
       },
     )
     .post(
       "/edit/:inventoryId",
       async (ctx) => {
-        logger.info(ctx);
-        const validateResult = inventorySchemas.createInventoryItemBody.parse(
-          ctx.body,
-        );
         return await updateInventoryItem(
           dataSource,
           Number(ctx.params.inventoryId),
-          validateResult.name,
-          validateResult.price,
+          ctx.body.name,
+          ctx.body.price,
         );
       },
       {
+        body: inventorySchemas.updateInventoryItemBody,
+        params: t.Object({
+          inventoryId: t.Number(),
+        }),
         detail: {
-          summary: "",
-          description: "",
+          summary: "Edit Inventory Item",
+          description:
+            "Edits a inventory item, and returns HTMX markup indicating success or error",
+          tags: [SwaggerTags.Inventory.name],
         },
       },
     );
