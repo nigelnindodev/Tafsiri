@@ -10,6 +10,7 @@ export class PostgresDataSourceSingleton {
 
   public static async getInstance(): Promise<DataSource> {
     logger.info("Fetching postgres datasource instance");
+    logger.trace("Config", config);
     if (!PostgresDataSourceSingleton.dataSource) {
       const dataSource = new DataSource({
         type: "postgres",
@@ -37,6 +38,7 @@ export class PostgresDataSourceSingleton {
 
       const result = await dataSource.initialize();
       if (result.isInitialized) {
+        logger.trace("Postgres dataSource successfully initialized");
         PostgresDataSourceSingleton.dataSource = result;
         return PostgresDataSourceSingleton.dataSource;
       } else {

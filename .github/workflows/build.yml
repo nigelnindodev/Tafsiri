@@ -7,12 +7,12 @@ on:
     branches: [ "master" ]
 
 jobs:
-  tsc:
+  build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
     - uses: oven-sh/setup-bun@v1
       with:
-        bun-version: latest
+        bun-version: 1.0.30 
     - name: bun install
       run: bun install

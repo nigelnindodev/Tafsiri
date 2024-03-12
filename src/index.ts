@@ -1,8 +1,7 @@
 import "reflect-metadata"; // required for TypeORM
 
-import { PostgresDataSourceSingleton } from "./postgres";
-import { createApplicationServer } from "./server";
 import { ILogObj, Logger } from "tslog";
+import { startServer } from "./start_server";
 
 /**
  * Application configuration object.
@@ -20,7 +19,7 @@ export interface Config {
 }
 
 /**
- * Helper function that fetches reads applicaion config values and returns it as a `Config`
+ * Helper function that fetches reads application config values and returns it as a `Config`
  * object.
  */
 export function getConfig(): Config {
@@ -44,18 +43,4 @@ export const logger: Logger<ILogObj> = new Logger({
 // Bun automatically masks sensitive password fields
 logger.info("App Configuration", getConfig());
 
-/**
- * Initialize Postgres database connector, to be passed on to the application server creator.
- */
-const dataSource = await PostgresDataSourceSingleton.getInstance();
-
-/**
- * Create the application server, passing in the TypeORM data source.
- */
-const app = createApplicationServer(dataSource);
-
-app.listen(getConfig().applicationPort);
-
-logger.info(
-  `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port} with NODE_ENV ${process.env.NODE_ENV}`,
-);
+startServer();

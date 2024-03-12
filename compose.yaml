@@ -1,0 +1,9 @@
+services:
+  postgres:
+    image: "postgres:14-alpine"
+    ports: 
+      - "5000:5432"
+    environment:
+      - POSTGRES_DB=testing_db
+      - POSTGRES_USER=testing_user
+      - POSTGRES_PASSWORD=testing_password

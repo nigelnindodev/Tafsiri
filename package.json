@@ -2,8 +2,9 @@
   "name": "elysia",
   "version": "1.0.50",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "source .env.test && bun test",
     "dev": "bun run --watch src/index.ts",
+    "test-server": "source .env.test && bun run --watch src/index.ts",
     "build": "tsc"
   },
   "dependencies": {

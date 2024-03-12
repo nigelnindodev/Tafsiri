@@ -1,5 +1,3 @@
-import "reflect-metadata"; // required for TypeORM
-
 import { DataSource } from "typeorm";
 import { Elysia } from "elysia";
 import { cookie } from "@elysiajs/cookie";
