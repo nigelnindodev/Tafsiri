@@ -29,11 +29,11 @@ const orderSchema = {
     orderId: t.Numeric(),
   }),
   confirmOrderParams: t.Object({
-    orderId: t.Number(),
+    orderId: t.Numeric(),
     paymentId: t.Numeric(),
   }),
   updateItemCounterParams: t.Object({
-    itemId: t.Number(),
+    itemId: t.Numeric(),
     updateType: t.String(),
   }),
   addOrRemoveItemParams: t.Object({
