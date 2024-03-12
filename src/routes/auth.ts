@@ -2,7 +2,6 @@ import {Elysia,t} from "elysia";
 import { DataSource } from "typeorm";
 import { cookie } from "@elysiajs/cookie";
 import { jwt } from "@elysiajs/jwt";
-import { z } from "zod";
 
 import {
   processCreateUserRequest,
@@ -20,9 +19,9 @@ const authSchemas = {
     username: t.String(),
     password: t.String(),
   }),
-  processCreateuserRequestSchema: z.object({
-    username: z.string(),
-    password: z.string(),
+  processCreateuserRequestSchema: t.Object({
+    username: t.String(),
+    password: t.String(),
   }),
 };
 
@@ -71,7 +70,13 @@ export const authRoutes = (dataSource: DataSource) => {
           ServerHxTriggerEvents.LOGIN_STATUS_CHANGE;
         return "";
       }
-    }, {body: authSchemas.processLoginRequestSchema})
+    }, {
+        body: authSchemas.processLoginRequestSchema,
+        detail: {
+          summary: "Log in",
+          description: "Log in to the application"
+        }
+      })
     .post("/logout", async (ctx) => {
       ctx.setCookie("auth", "", {
         httpOnly: true,
@@ -80,7 +85,12 @@ export const authRoutes = (dataSource: DataSource) => {
       });
       ctx.set.headers["HX-Trigger"] = ServerHxTriggerEvents.LOGIN_STATUS_CHANGE;
       return "";
-    })
+    }, {
+        detail: {
+          summary: "Log out",
+          description: "Endpoint is called by from the UI to log out the current user"
+        } 
+      })
     // Most of our route handler functions should finally look like below, not too verbose :-)
     .post("/user/create", async (ctx) => {
       const validateResult = authSchemas.processCreateuserRequestSchema.parse(
@@ -91,6 +101,12 @@ export const authRoutes = (dataSource: DataSource) => {
         validateResult.username,
         validateResult.password,
       );
-    });
+    }, {
+        body: authSchemas.processCreateuserRequestSchema, 
+        detail: {
+          summary: "Create a new user",
+          description: "Use this endpoint to create a new user in the system. By default, the user will not be an admin user."
+        }
+      });
   return app;
 };
