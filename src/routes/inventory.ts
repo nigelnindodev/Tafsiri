@@ -21,11 +21,11 @@ const inventorySchemas = {
   }),
   createInventoryItemBody: t.Object({
     name: t.String(),
-    price: t.Number(),
+    price: t.Numeric(),
   }),
   updateInventoryItemBody: t.Object({
     name: t.String(),
-    price: t.Number(),
+    price: t.Numeric(),
   }),
 };
 
@@ -156,7 +156,7 @@ export const inventoryRoutes = (dataSource: DataSource) => {
       async (ctx) => {
         return await updateInventoryItem(
           dataSource,
-          Number(ctx.params.inventoryId),
+          ctx.params.inventoryId,
           ctx.body.name,
           ctx.body.price,
         );
