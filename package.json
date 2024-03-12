@@ -4,7 +4,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "bun run --watch src/index.ts",
-    "setup-run-test": "bun run test_script.ts",
+    "setup-run-test": "bun run setup_and_run_tests.ts",
     "test": "source .env.test && bun test",
     "test-run-server": "source .env.test && bun run --watch src/index.ts"
   },
