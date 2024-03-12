@@ -9,10 +9,10 @@ import { SwaggerTags } from "../services/common/constants";
 
 const usersSchema = {
   getuserParams: t.Object({
-    userId: t.Number(),
+    userId: t.Numeric(),
   }),
   toggleUserActiveStateParams: t.Object({
-    userId: t.Number(),
+    userId: t.Numeric(),
   }),
 };
 

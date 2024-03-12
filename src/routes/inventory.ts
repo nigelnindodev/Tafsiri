@@ -59,7 +59,7 @@ export const inventoryRoutes = (dataSource: DataSource) => {
       },
       {
         params: t.Object({
-          inventoryId: t.Number(),
+          inventoryId: t.Numeric(),
         }),
         detail: {
           summary: "Get Update Inventory Item Component",
@@ -122,7 +122,7 @@ export const inventoryRoutes = (dataSource: DataSource) => {
       },
       {
         params: t.Object({
-          inventoryId: t.Number(),
+          inventoryId: t.Numeric(),
         }),
         detail: {
           summary: "Get Inventory Orders Component",
@@ -164,7 +164,7 @@ export const inventoryRoutes = (dataSource: DataSource) => {
       {
         body: inventorySchemas.updateInventoryItemBody,
         params: t.Object({
-          inventoryId: t.Number(),
+          inventoryId: t.Numeric(),
         }),
         detail: {
           summary: "Edit Inventory Item",

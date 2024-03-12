@@ -23,28 +23,28 @@ import { logger } from "..";
 
 const orderSchema = {
   activeOrdersParams: t.Object({
-    orderId: t.Number(),
+    orderId: t.Numeric(),
   }),
   resumeOrderParams: t.Object({
-    orderId: t.Number(),
+    orderId: t.Numeric(),
   }),
   confirmOrderParams: t.Object({
     orderId: t.Number(),
-    paymentId: t.Number(),
+    paymentId: t.Numeric(),
   }),
   updateItemCounterParams: t.Object({
     itemId: t.Number(),
     updateType: t.String(),
   }),
   addOrRemoveItemParams: t.Object({
-    orderId: t.Number(),
-    inventoryId: t.Number(),
+    orderId: t.Numeric(),
+    inventoryId: t.Numeric(),
   }),
   updatePaymentTypeForOrderBody: t.Object({
     paymentType:  t.String() // z.nativeEnum(PaymentTypes),
   }),
   updatePaymentTypeForOrderParams: t.Object({
-    paymentId: t.Number(),
+    paymentId: t.Numeric(),
   }),
 };
 
