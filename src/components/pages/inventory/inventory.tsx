@@ -1,6 +1,6 @@
 import { HtmxTargets } from "../../common/constants";
 
-export const ViewInventorySection = () => {
+export const ViewInventoryComponent = () => {
     return (
         <div>
             <div class="grid">

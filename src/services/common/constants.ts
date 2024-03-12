@@ -16,3 +16,11 @@ export const CookieConstansts = {
 } as const;
 
 export const RequestNumberSchema = z.string().transform(parseNumber);
+
+export const SwaggerTags = {
+  Auth: { name: "Auth", description: "Authentication Endpoints" },
+  Inventory: { name: "Inventory", description: "Inventory Endpoints" },
+  Orders: { name: "Orders", description: "Orders Endpoints" },
+  Payments: { name: "Payments", description: "Payments Endpoints" },
+  Users: { name: "Users", description: "Users Endpoints" },
+} as const;

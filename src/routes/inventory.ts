@@ -1,8 +1,7 @@
-import Elysia from "elysia";
-import { z } from "zod";
+import { Elysia, t } from "elysia";
 
 import { CreateOrUpdateInventoryComponent } from "../components/pages/inventory/create_or_update_inventory_item";
-import { ViewInventorySection } from "../components/pages/inventory/inventory";
+import { ViewInventoryComponent } from "../components/pages/inventory/inventory";
 import { DataSource } from "typeorm";
 import {
   createInventoryItem,
@@ -13,21 +12,20 @@ import {
   updateInventoryItem,
 } from "../services/inventory";
 import { InventoryPage } from "../components/pages/inventory";
-import { RequestNumberSchema } from "../services/common/constants";
-import { logger } from "..";
 import { authPlugin } from "../plugins/auth";
+import { SwaggerTags } from "../services/common/constants";
 
 const inventorySchemas = {
-  searchInventoryItemsQuery: z.object({
-    search: z.string(),
+  searchInventoryItemsQuery: t.Object({
+    search: t.String(),
   }),
-  createInventoryItemBody: z.object({
-    name: z.string(),
-    price: RequestNumberSchema,
+  createInventoryItemBody: t.Object({
+    name: t.String(),
+    price: t.Numeric(),
   }),
-  updateInventoryItemBody: z.object({
-    name: z.string(),
-    price: RequestNumberSchema,
+  updateInventoryItemBody: t.Object({
+    name: t.String(),
+    price: t.Numeric(),
   }),
 };
 
@@ -35,55 +33,146 @@ export const inventoryRoutes = (dataSource: DataSource) => {
   const app = new Elysia({ prefix: "/inventory" });
   app
     .use(authPlugin())
-    .get("/", () => InventoryPage)
-    .get("/create", () => CreateOrUpdateInventoryComponent())
-    .get("/edit/:inventoryId", async (ctx) => {
-      return await getInventoryItemForUpdate(
-        dataSource,
-        Number(ctx.params.inventoryId),
-      );
+    .get("/", () => InventoryPage, {
+      detail: {
+        summary: "Get Inventory Page",
+        description:
+          "Returns HTMX markup for the main inventory page, which by default loads a searchable list of inventory items by calling the /inventory/list endpoint",
+        tags: [SwaggerTags.Inventory.name],
+      },
     })
-    .get("/list", () => ViewInventorySection)
-    .get("/list/all", async () => {
-      return await listInventoryItems(dataSource);
+    .get("/create", () => CreateOrUpdateInventoryComponent(), {
+      detail: {
+        summary: "Get Create Inventory Component",
+        description:
+          "Returns HTMX markup for adding a new item in the inventory",
+        tags: [SwaggerTags.Inventory.name],
+      },
     })
-    .get("/list/search", async (ctx) => {
-      const validateResult = inventorySchemas.searchInventoryItemsQuery.parse(
-        ctx.query,
-      );
-      if (validateResult.search === "") {
+    .get(
+      "/edit/:inventoryId",
+      async (ctx) => {
+        return await getInventoryItemForUpdate(
+          dataSource,
+          ctx.params.inventoryId,
+        );
+      },
+      {
+        params: t.Object({
+          inventoryId: t.Numeric(),
+        }),
+        detail: {
+          summary: "Get Update Inventory Item Component",
+          description:
+            "Returns HTMX markup for updating an inventory item after fetching its details",
+          tags: [SwaggerTags.Inventory.name],
+        },
+      },
+    )
+    .get("/list", () => ViewInventoryComponent(), {
+      detail: {
+        summary: "Get Inventory View Componenet",
+        description:
+          "Returns HTMX markup that includes views for searching inventory, and where on loaded call /list/all endpoint to display the inventory items",
+        tags: [SwaggerTags.Inventory.name],
+      },
+    })
+    .get(
+      "/list/all",
+      async () => {
         return await listInventoryItems(dataSource);
-      } else {
-        return await searchInventoryItems(dataSource, validateResult.search);
-      }
-    })
-    .get("/orders/:inventoryId", async (ctx) => {
-      return await listInventoryItemOrders(
-        dataSource,
-        Number(ctx.params.inventoryId),
-      );
-    })
-    .post("/create", async (ctx) => {
-      const validateResult = inventorySchemas.createInventoryItemBody.parse(
-        ctx.body,
-      );
-      return await createInventoryItem(
-        dataSource,
-        validateResult.name,
-        validateResult.price,
-      );
-    })
-    .post("/edit/:inventoryId", async (ctx) => {
-      logger.info(ctx);
-      const validateResult = inventorySchemas.createInventoryItemBody.parse(
-        ctx.body,
-      );
-      return await updateInventoryItem(
-        dataSource,
-        Number(ctx.params.inventoryId),
-        validateResult.name,
-        validateResult.price,
-      );
-    });
+      },
+      {
+        detail: {
+          summary: "Get Inventory Items List Component",
+          description:
+            "Returns HTMX list items markup for displaying inventory items",
+          tags: [SwaggerTags.Inventory.name],
+        },
+      },
+    )
+    .get(
+      "/list/search",
+      async (ctx) => {
+        const validateResult = inventorySchemas.searchInventoryItemsQuery.parse(
+          ctx.query,
+        );
+        if (validateResult.search === "") {
+          return await listInventoryItems(dataSource);
+        } else {
+          return await searchInventoryItems(dataSource, validateResult.search);
+        }
+      },
+      {
+        detail: {
+          summary: "Get Inventory Search Results Component",
+          description:
+            "Returns HTMX markup with filtered inventory items. If search is empty, returns all the inventory items.",
+          tags: [SwaggerTags.Inventory.name],
+        },
+      },
+    )
+    .get(
+      "/orders/:inventoryId",
+      async (ctx) => {
+        return await listInventoryItemOrders(
+          dataSource,
+          ctx.params.inventoryId,
+        );
+      },
+      {
+        params: t.Object({
+          inventoryId: t.Numeric(),
+        }),
+        detail: {
+          summary: "Get Inventory Orders Component",
+          description:
+            "Returns HTMX markup that displays all the orders that a particular inventory item has been added to",
+          tags: [SwaggerTags.Inventory.name],
+        },
+      },
+    )
+    .post(
+      "/create",
+      async (ctx) => {
+        return await createInventoryItem(
+          dataSource,
+          ctx.body.name,
+          ctx.body.price,
+        );
+      },
+      {
+        body: inventorySchemas.createInventoryItemBody,
+        detail: {
+          summary: "Create Inventory Item",
+          description:
+            "Adds a new inventory item, and returns HTMX markup indicating success or error",
+          tags: [SwaggerTags.Inventory.name],
+        },
+      },
+    )
+    .post(
+      "/edit/:inventoryId",
+      async (ctx) => {
+        return await updateInventoryItem(
+          dataSource,
+          ctx.params.inventoryId,
+          ctx.body.name,
+          ctx.body.price,
+        );
+      },
+      {
+        body: inventorySchemas.updateInventoryItemBody,
+        params: t.Object({
+          inventoryId: t.Numeric(),
+        }),
+        detail: {
+          summary: "Edit Inventory Item",
+          description:
+            "Edits a inventory item, and returns HTMX markup indicating success or error",
+          tags: [SwaggerTags.Inventory.name],
+        },
+      },
+    );
   return app;
 };

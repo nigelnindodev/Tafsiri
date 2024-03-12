@@ -16,5 +16,5 @@ jobs:
         bun-version: 1.0.30 
     - name: bun install
       run: bun install
-    - name: bun run test_script
-      run: bun run test_script.ts
+    - name: bun run setup-run-test 
+      run: bun run setup-run-test 
