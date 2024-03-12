@@ -9,7 +9,14 @@ await $`docker compose up -d`;
 await setTimeout(5000);
 
 // Run tests
-await $`bun run test`;
+const testResult = await $`bun run test`;
+if (testResult.exitCode !== 0) {
+  console.error(
+    "An error occured while running bun tests",
+    testResult.stderr.toString(),
+  );
+  throw new Error(testResult.stderr.toString());
+}
 
 // Destroy the postgres instance and ensure any created volumes are removed as well
 await $`docker compose down --volumes`;
