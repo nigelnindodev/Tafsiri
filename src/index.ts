@@ -1,7 +1,5 @@
 import "reflect-metadata"; // required for TypeORM
 
-import { PostgresDataSourceSingleton } from "./postgres";
-import { createApplicationServer } from "./server";
 import { ILogObj, Logger } from "tslog";
 import { startServer } from "./start_server";
 
