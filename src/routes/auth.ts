@@ -39,15 +39,11 @@ export const authRoutes = (dataSource: DataSource) => {
         secret: getConfig().jwtSecret,
       }),
     )
-    // TODO: Update to use basic authentication instead of passing username & password in request body?
     .post("/login", async (ctx) => {
-      const validateresult = authSchemas.processLoginRequestSchema.parse(
-        ctx.body,
-      );
       const result = await processLoginRequest(
         dataSource,
-        validateresult.username,
-        validateresult.password,
+        ctx.body.username,
+        ctx.body.password,
       );
       if (result.userEntity === undefined) {
         return MarkedInfoWrapperComponent(result.errorMessage);
@@ -57,7 +53,7 @@ export const authRoutes = (dataSource: DataSource) => {
         ctx.setCookie(
           "auth",
           await ctx.jwt.sign({
-            username: validateresult.username,
+            username: ctx.body.username,
             userId: result.userEntity.id,
           }),
           {
@@ -76,7 +72,8 @@ export const authRoutes = (dataSource: DataSource) => {
           summary: "Log in",
           description: "Log in to the application"
         }
-      })
+      }
+    )
     .post("/logout", async (ctx) => {
       ctx.setCookie("auth", "", {
         httpOnly: true,
@@ -90,16 +87,14 @@ export const authRoutes = (dataSource: DataSource) => {
           summary: "Log out",
           description: "Endpoint is called by from the UI to log out the current user"
         } 
-      })
+      }
+    )
     // Most of our route handler functions should finally look like below, not too verbose :-)
     .post("/user/create", async (ctx) => {
-      const validateResult = authSchemas.processCreateuserRequestSchema.parse(
-        ctx.body,
-      );
       return await processCreateUserRequest(
         dataSource,
-        validateResult.username,
-        validateResult.password,
+        ctx.body.username,
+        ctx.body.password,
       );
     }, {
         body: authSchemas.processCreateuserRequestSchema, 
@@ -107,6 +102,7 @@ export const authRoutes = (dataSource: DataSource) => {
           summary: "Create a new user",
           description: "Use this endpoint to create a new user in the system. By default, the user will not be an admin user."
         }
-      });
+      }
+    );
   return app;
 };
