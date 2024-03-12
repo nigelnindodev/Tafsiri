@@ -4,6 +4,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "bun run --watch src/index.ts",
+    "testing": "source .env.test && bun run --watch src/index.ts",
     "build": "tsc"
   },
   "dependencies": {
