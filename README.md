@@ -24,27 +24,27 @@ Open http://localhost:3000/ with your browser to see the result.
 - [X] Ensure once order item added to an order, it's price is immutable
 - [X] Fix bug with updated at not correctly propagating on DB level (a workaround is currently being used). Was not working because updated_at on date functionality is only supported on Postgres for TypeORM. So the workaround is the solution.
 - [X] Remove hardcoding of base url
+- [X] Return BAD REQUEST on failed Zod validations
 - [ ] API tests
 - [ ] HTMX input white listing (Maybe important to avoid XSS attacks)
 - [ ] Timezone awareness
 - [ ] Proper handling of amounts with decimals
-- [ ] Return BAD REQUEST on failed Zod validations
 
 ## Upcoming features
 - [X] Authentication (username & password) to prevent unauthorized access
 - [X] Add staff details to an order to know who completed an order. Staff can log in with their dedicated credentials.
 - [X] Restriction of sensitive sections of the service to admin users only i.e Inventory Section (which can change pricing of items)
 - [ ] Ability to filter for payments according to date and time interval
-
-## Would be nice
+- [ ] Pagination of data (currently fetching all rows from the DB, this isn't feasible for a real world project)
 - [ ] Store when a user last logged in
 - [ ] Manual reconciliation via CSV and/or Excel/Google Sheets
 - [ ] IP Address white listing (help for example ensure the service can only be accessed when connected to the store's WiFi)
+
+## Would be nice
 - [ ] End to end tests with Puppeteer
 - [ ] MetaBase for more in depth BI analysis
 - [ ] Automated daily backups of all transactions to CSV files (stored on S3 buckets)
 - [ ] Allow for changes to a confirmed order
-- [ ] Pagination of data (currently fetching all rows from the DB, this isn't feasible for a real world project)
 - [ ] Add partial and deferred payments, together with tracking of the same
 - [ ] Maybe to be added, but also tracking of how many inventory items are coming in. This together with order tracking can automate knowing how many inventory items are left in stock
 - [ ] Mobile App?
