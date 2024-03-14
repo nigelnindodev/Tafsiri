@@ -48,6 +48,12 @@ describe("Root server", async () => {
     });
   });
 
+  /**
+   * No need to add HTMX validations for the endpoints called here. This
+   * will be comprehensively covered in the specific endpoint tests.
+   *
+   * Simply ensure correct view are called for logged in and out states.
+   */
   describe("GET on /root endpoint", () => {
     describe("When logged out", async () => {
       const response = await app.handle(
@@ -59,19 +65,12 @@ describe("Root server", async () => {
       });
 
       describe("GET on /root HTMX markup response", async () => {
-        const $ = cheerio.load(await response.text());
-
-        test("Returns the login markup", () => {});
+        test("Returns the login markup", async () => {
+          expect(await response.text()).toInclude("Log in to get started");
+        });
       });
     });
 
-    /**
-     * No need to add HTMX validations for the endpoint called here. This will be
-     * comprehensively covered in the specific endpoint tests.
-     *
-     * It may be that we may want to change the view and hence the API route to be
-     * called on successful log in, and specifying them here leads to coupling.
-     */
     describe("When logged in", async () => {
       const response = await app.handle(
         new Request("http://localhost:3000/root", {
@@ -87,7 +86,11 @@ describe("Root server", async () => {
       });
 
       describe("GET on /root HTMX markup response", async () => {
-        test("Returns the main application markup", () => {});
+        test("Returns the main application markup", async () => {
+          const $ = cheerio.load(await response.text());
+          const mainSectionDiv = $(`#${HtmxTargets.MAIN_SECTION}`);
+          expect(mainSectionDiv.length).toBe(1);
+        });
       });
     });
   });
