@@ -6,6 +6,7 @@ import { createApplicationServer } from "../src/server.ts";
 import { PostgresDataSourceSingleton } from "../src/postgres/index.ts";
 import { ServerHxTriggerEvents } from "../src/services/common/constants.ts";
 import { HtmxTargets } from "../src/components/common/constants.ts";
+import { testUser } from "./test_constants.ts";
 
 describe("Root server", async () => {
   const dataSource = await PostgresDataSourceSingleton.getInstance();
@@ -22,7 +23,7 @@ describe("Root server", async () => {
       expect(response.headers.get("content-type")).toInclude("text/html");
     });
 
-    describe("GET on / response HTMX markup", async () => {
+    describe("GET on / HTMX markup response", async () => {
       const $ = cheerio.load(await response.text());
       const elementsWithHxGet = $("div[hx-get]");
 
@@ -34,13 +35,39 @@ describe("Root server", async () => {
       test("GET request on /root endpoint is made on content load & login status change HTMX event", () => {
         const hxTriggerValue = $(elementsWithHxGet.first()).attr("hx-trigger");
         expect(hxTriggerValue).toInclude("load");
-        expect(hxTriggerValue).toInclude(ServerHxTriggerEvents.LOGIN_STATUS_CHANGE);
+        expect(hxTriggerValue).toInclude(
+          ServerHxTriggerEvents.LOGIN_STATUS_CHANGE,
+        );
       });
 
       test("GET request on /root endpoint targets the root-div", () => {
         const hxTargetValue = $(elementsWithHxGet.first()).attr("hx-target");
         expect(hxTargetValue).toInclude(HtmxTargets.ROOT_DIV);
       });
+    });
+  });
+
+  describe("GET on /root endpoint", () => {
+    describe("When logged out", async () => {
+      const response = await app.handle(
+        new Request("http://localhost:3000/root"),
+      );
+
+      test("Returns a 200 response", () => {
+        expect(response.status).toBe(200);
+      });
+
+      test("GET on /root HTMX markup response", async () => {
+        console.log("Response text", await response.text());
+      });
+    });
+    describe("When logged in", async () => {
+      const response = await app.handle(
+        new Request("http://localhost:3000/", {
+          method: "POST",
+          body: JSON.stringify(testUser),
+        }),
+      );
     });
   });
 });
