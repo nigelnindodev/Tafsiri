@@ -6,11 +6,12 @@ import { createApplicationServer } from "../src/server.ts";
 import { PostgresDataSourceSingleton } from "../src/postgres/index.ts";
 import { ServerHxTriggerEvents } from "../src/services/common/constants.ts";
 import { HtmxTargets } from "../src/components/common/constants.ts";
-import { testUser } from "./test_constants.ts";
+import { loginTestUser } from "./test_utils.ts";
 
 describe("Root server", async () => {
   const dataSource = await PostgresDataSourceSingleton.getInstance();
   const app = createApplicationServer(dataSource);
+  const loggedInCookie = await loginTestUser(app);
 
   describe("GET on / endpoint", async () => {
     const response = await app.handle(new Request("http://localhost:3000"));
@@ -57,17 +58,37 @@ describe("Root server", async () => {
         expect(response.status).toBe(200);
       });
 
-      test("GET on /root HTMX markup response", async () => {
-        console.log("Response text", await response.text());
+      describe("GET on /root HTMX markup response", async () => {
+        const $ = cheerio.load(await response.text());
+
+        test("Returns the login markup", () => {});
       });
     });
+
+    /**
+     * No need to add HTMX validations for the endpoint called here. This will be
+     * comprehensively covered in the specific endpoint tests.
+     *
+     * It may be that we may want to change the view and hence the API route to be
+     * called on successful log in, and specifying them here leads to coupling.
+     */
     describe("When logged in", async () => {
       const response = await app.handle(
-        new Request("http://localhost:3000/", {
-          method: "POST",
-          body: JSON.stringify(testUser),
+        new Request("http://localhost:3000/root", {
+          method: "GET",
+          headers: {
+            Cookie: loggedInCookie,
+          },
         }),
       );
+
+      test("Returns a 200 response", () => {
+        expect(response.status).toBe(200);
+      });
+
+      describe("GET on /root HTMX markup response", async () => {
+        test("Returns the main application markup", () => {});
+      });
     });
   });
 });
