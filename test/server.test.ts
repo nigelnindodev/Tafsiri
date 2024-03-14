@@ -8,7 +8,7 @@ import { ServerHxTriggerEvents } from "../src/services/common/constants.ts";
 import { HtmxTargets } from "../src/components/common/constants.ts";
 import { loginTestUser } from "./test_utils.ts";
 
-describe("Root server", async () => {
+describe("Main routes file endpoints", async () => {
   const dataSource = await PostgresDataSourceSingleton.getInstance();
   const app = createApplicationServer(dataSource);
   const loggedInCookie = await loginTestUser(app);
@@ -24,7 +24,7 @@ describe("Root server", async () => {
       expect(response.headers.get("content-type")).toInclude("text/html");
     });
 
-    describe("GET on / HTMX markup response", async () => {
+    describe("HTMX markup response", async () => {
       const $ = cheerio.load(await response.text());
       const elementsWithHxGet = $("div[hx-get]");
 
@@ -64,7 +64,7 @@ describe("Root server", async () => {
         expect(response.status).toBe(200);
       });
 
-      describe("GET on /root HTMX markup response", async () => {
+      describe("HTMX markup response", () => {
         test("Returns the login markup", async () => {
           expect(await response.text()).toInclude("Log in to get started");
         });
@@ -85,7 +85,7 @@ describe("Root server", async () => {
         expect(response.status).toBe(200);
       });
 
-      describe("GET on /root HTMX markup response", async () => {
+      describe("HTMX markup response", () => {
         test("Returns the main application markup", async () => {
           const $ = cheerio.load(await response.text());
           const mainSectionDiv = $(`#${HtmxTargets.MAIN_SECTION}`);
