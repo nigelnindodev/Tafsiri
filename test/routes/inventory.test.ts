@@ -12,7 +12,7 @@ describe("Inventory routes file endpoints", async () => {
   const loggedInCookie = await loginTestUser(app);
 
   describe("GET on /inventory endpoint", () => {
-    describe("When user session inactive", async () => {
+    describe("User session inactive", async () => {
       const response = await app.handle(new Request(`${baseUrl}/inventory`));
 
       test("Returns a 401 status code", async () => {
@@ -20,7 +20,7 @@ describe("Inventory routes file endpoints", async () => {
       });
     });
 
-    describe("When user session active", async () => {
+    describe("User session active", async () => {
       const response = await app.handle(
         new Request(`${baseUrl}/inventory`, {
           method: "GET",
@@ -66,44 +66,129 @@ describe("Inventory routes file endpoints", async () => {
   });
 
   describe("GET on /inventory/list endpoint", () => {
-    describe("When user session inactive", () => {});
+    describe("User session inactive", async () => {
+      const response = await app.handle(
+        new Request(`${baseUrl}/inventory/list`),
+      );
 
-    describe("When user session active", () => {});
+      test("Returns a 401 status code", () => {
+        expect(response.status).toBe(401);
+      });
+    });
+
+    describe("User session active", () => {
+      describe("Non-admin user", () => {
+
+      });
+      describe("Admin user", () => {
+
+      });
+    });
   });
 
   describe("GET on /inventory/list/all endpoint", () => {
-    describe("When user session inactive", () => {});
+    describe("User session inactive", async () => {
+      const response = await app.handle(
+        new Request(`${baseUrl}/inventory/list/all`),
+      );
 
-    describe("When user session active", () => {});
+      test("Returns a 401 status code", () => {
+        expect(response.status).toBe(401);
+      });
+    });
+
+    describe("User session active", () => {
+      describe("Non-admin user", () => {
+
+      });
+      describe("Admin user", () => {
+
+      });
+    });
   });
 
   describe("GET on /inventory/list/search endpoint", () => {
-    describe("When user session inactive", () => {});
+    describe("User session inactive", async () => {
+      const response = await app.handle(
+        new Request(`${baseUrl}/inventory/list/search`),
+      );
 
-    describe("When user session active", () => {});
+      test("Returns a 401 status code", () => {
+        expect(response.status).toBe(401);
+      });
+    });
+
+    describe("User session active", () => {
+      describe("Non-admin user", () => {
+
+      });
+      describe("Admin user", () => {
+
+      });
+    });
   });
 
   describe("GET on /inventory/create endpoint", () => {
-    describe("When user session inactive", () => {});
+    describe("User session inactive", async () => {
+      const response = await app.handle(new Request(`${baseUrl}/inventory/create`));
 
-    describe("When user session active", () => {});
+      test("Returns a 401 status code", () => {
+        expect(response.status).toBe(401);
+      });
+    });
+
+    describe("User session active", () => {
+      describe("Non-admin user", () => {
+
+      });
+      describe("Admin user", () => {
+
+      });
+    });
   });
 
   describe("GET on /inventory/edit/:inventoryId endpoint", () => {
-    describe("When user session inactive", () => {});
+    describe("User session inactive", async () => {
+      const response = await app.handle(new Request(`${baseUrl}/inventory/edit/1`));
 
-    describe("When user session active", () => {});
+      test("Returns a 401 status code", () => {
+        expect(response.status).toBe(401);
+      });
+    });
+
+    describe("User session active", () => {
+      describe("Non-admin user", () => {
+
+      });
+      describe("Admin user", () => {
+
+      });
+    });
   });
 
   describe("POST on /inventory/create endpoint", () => {
-    describe("When user session inactive", () => {});
+    describe("User session inactive", () => {});
 
-    describe("When user session active", () => {});
+    describe("User session active", () => {
+      describe("Non-admin user", () => {
+
+      });
+      describe("Admin user", () => {
+
+      });
+    });
   });
 
   describe("POST on /inventory/edit/:inventoryId endpoint", () => {
-    describe("When user session inactive", () => {});
+    describe("User session inactive", () => {});
 
-    describe("When user session active", () => {});
+    describe("User session active", () => {
+      describe("Non-admin user", () => {
+
+      });
+      describe("Admin user", () => {
+
+      });
+    });
   });
 });

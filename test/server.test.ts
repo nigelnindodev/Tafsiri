@@ -55,7 +55,7 @@ describe("Main routes file endpoints", async () => {
    * Simply ensure correct view are called for logged in and out states.
    */
   describe("GET on /root endpoint", () => {
-    describe("When user session inactive", async () => {
+    describe("User session inactive", async () => {
       const response = await app.handle(new Request(`${baseUrl}/root`));
 
       test("Returns a 200 status code", () => {
@@ -70,7 +70,7 @@ describe("Main routes file endpoints", async () => {
       });
     });
 
-    describe("When user session active", async () => {
+    describe("User session active", async () => {
       const response = await app.handle(
         new Request(`${baseUrl}/root`, {
           method: "GET",
