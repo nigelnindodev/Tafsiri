@@ -5,8 +5,8 @@ import { setTimeout } from "timers/promises";
 await $`docker compose up -d`;
 
 // We might be running tests much faster than when our postgres container is ready to handle
-// them. Set up a 5 second delay before starting testing.
-await setTimeout(5000);
+// them. Set up a 10 second delay before starting testing.
+await setTimeout(10000);
 
 // Run tests
 const testResult = await $`bun run test`;
