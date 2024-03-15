@@ -59,11 +59,6 @@ export const createApplicationServer = (dataSource: DataSource) => {
         `API error occured with code [${code}]: ${error.message} ${error.cause} ${error.stack}`,
       );
     })
-    .use(authRoutes(dataSource))
-    .use(inventoryRoutes(dataSource))
-    .use(orderRoutes(dataSource))
-    .use(paymentRoutes(dataSource))
-    .use(usersRoutes(dataSource))
     .get("/", () => {
       return RootPage();
     })
@@ -88,6 +83,11 @@ export const createApplicationServer = (dataSource: DataSource) => {
           return IndexComponent(user);
         }
       }
-    });
+    })
+    .use(authRoutes(dataSource))
+    .use(inventoryRoutes(dataSource))
+    .use(orderRoutes(dataSource))
+    .use(paymentRoutes(dataSource))
+    .use(usersRoutes(dataSource));
   return app;
 };

@@ -1,9 +1,9 @@
 import cookie from "@elysiajs/cookie";
 import jwt from "@elysiajs/jwt";
-import Elysia from "elysia";
+import {Elysia } from "elysia";
 
 import { getConfig, logger } from "..";
-import { CookieConstansts } from "../services/common/constants";
+import { CookieConstansts, ServerAuthenticationError } from "../services/common/constants";
 
 export interface AuthVaules {
   userId: number | undefined;
@@ -33,8 +33,7 @@ export const authPlugin = (options: AuthVaules = { userId: undefined }) => {
       const authValue = await ctx.jwt.verify(auth);
 
       if (!authValue) {
-        ctx.set.status = "Unauthorized";
-        ctx.set.redirect = "/";
+        throw new ServerAuthenticationError();
       } else {
         ctx.setCookie(
           "auth",

@@ -1,22 +1,22 @@
 import { describe, expect, test } from "bun:test";
 import * as cheerio from "cheerio";
-import "reflect-metadata"; // required for TypeORM
 
 import { createApplicationServer } from "../src/server.ts";
 import { PostgresDataSourceSingleton } from "../src/postgres/index.ts";
 import { ServerHxTriggerEvents } from "../src/services/common/constants.ts";
 import { HtmxTargets } from "../src/components/common/constants.ts";
-import { loginTestUser } from "./test_utils.ts";
+import { getTestBaseUrl, loginTestUser } from "./test_utils.ts";
 
 describe("Main routes file endpoints", async () => {
   const dataSource = await PostgresDataSourceSingleton.getInstance();
   const app = createApplicationServer(dataSource);
+  const baseUrl = getTestBaseUrl(app);
   const loggedInCookie = await loginTestUser(app);
 
   describe("GET on / endpoint", async () => {
-    const response = await app.handle(new Request("http://localhost:3000"));
+    const response = await app.handle(new Request(baseUrl));
 
-    test("Returns 200 response", () => {
+    test("Returns 200 status code", () => {
       expect(response.status).toBe(200);
     });
 
@@ -55,25 +55,24 @@ describe("Main routes file endpoints", async () => {
    * Simply ensure correct view are called for logged in and out states.
    */
   describe("GET on /root endpoint", () => {
-    describe("When logged out", async () => {
-      const response = await app.handle(
-        new Request("http://localhost:3000/root"),
-      );
+    describe("When user session inactive", async () => {
+      const response = await app.handle(new Request(`${baseUrl}/root`));
 
-      test("Returns a 200 response", () => {
+      test("Returns a 200 status code", () => {
         expect(response.status).toBe(200);
       });
 
       describe("HTMX markup response", () => {
         test("Returns the login markup", async () => {
-          expect(await response.text()).toInclude("Log in to get started");
+          const responseText = await response.text();
+          expect(responseText).toInclude("Log in to get started");
         });
       });
     });
 
-    describe("When logged in", async () => {
+    describe("When user session active", async () => {
       const response = await app.handle(
-        new Request("http://localhost:3000/root", {
+        new Request(`${baseUrl}/root`, {
           method: "GET",
           headers: {
             Cookie: loggedInCookie,
@@ -81,7 +80,7 @@ describe("Main routes file endpoints", async () => {
         }),
       );
 
-      test("Returns a 200 response", () => {
+      test("Returns a 200 status code", () => {
         expect(response.status).toBe(200);
       });
 
