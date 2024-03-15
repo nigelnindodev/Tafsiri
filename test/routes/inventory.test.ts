@@ -57,11 +57,53 @@ describe("Inventory routes file endpoints", async () => {
           expect(hxTriggerValue).toBe("load");
         });
 
-        test("GET on /inventory/list has no hx-target (targets innerHTML of cotaining div)", () => {
+        test("GET on /inventory/list has no hx-target (targets innerHTML of containing div)", () => {
           const hxTargetValue = $(elementsWithHxGet.first()).attr("hx-target");
           expect(hxTargetValue).toBeUndefined();
         });
       });
     });
+  });
+
+  describe("GET on /inventory/list endpoint", () => {
+    describe("When user session inactive", () => {});
+
+    describe("When user session active", () => {});
+  });
+
+  describe("GET on /inventory/list/all endpoint", () => {
+    describe("When user session inactive", () => {});
+
+    describe("When user session active", () => {});
+  });
+
+  describe("GET on /inventory/list/search endpoint", () => {
+    describe("When user session inactive", () => {});
+
+    describe("When user session active", () => {});
+  });
+
+  describe("GET on /inventory/create endpoint", () => {
+    describe("When user session inactive", () => {});
+
+    describe("When user session active", () => {});
+  });
+
+  describe("GET on /inventory/edit/:inventoryId endpoint", () => {
+    describe("When user session inactive", () => {});
+
+    describe("When user session active", () => {});
+  });
+
+  describe("POST on /inventory/create endpoint", () => {
+    describe("When user session inactive", () => {});
+
+    describe("When user session active", () => {});
+  });
+
+  describe("POST on /inventory/edit/:inventoryId endpoint", () => {
+    describe("When user session inactive", () => {});
+
+    describe("When user session active", () => {});
   });
 });
