@@ -3,6 +3,7 @@ import * as cheerio from "cheerio";
 import { PostgresDataSourceSingleton } from "../../src/postgres";
 import { createApplicationServer } from "../../src/server";
 import { getTestBaseUrl, loginTestUser } from "../test_utils";
+import { HtmxTargets } from "../../src/components/common/constants";
 
 describe("Inventory routes file endpoints", async () => {
   const dataSource = await PostgresDataSourceSingleton.getInstance();
@@ -33,7 +34,34 @@ describe("Inventory routes file endpoints", async () => {
         expect(response.status).toBe(200);
       });
 
-      describe("HTMX markup response", () => {});
+      describe("HTMX markup response", async () => {
+        const $ = cheerio.load(await response.text());
+        const elementsWithHxGet = $("div[hx-get]");
+
+        test("Returns the main inventory page", async () => {
+          const inventoryPageIdentifierDiv = $(
+            `#${HtmxTargets.INVENTORY_SECTION}`,
+          );
+          expect(inventoryPageIdentifierDiv.length).toBe(1);
+        });
+
+        test("Calls GET on /inventory/list endpoint", () => {
+          const hxGetValue = $(elementsWithHxGet.first()).attr("hx-get");
+          expect(hxGetValue).toBe("/inventory/list");
+        });
+
+        test("GET on /inventory/list is made on content load only", () => {
+          const hxTriggerValue = $(elementsWithHxGet.first()).attr(
+            "hx-trigger",
+          );
+          expect(hxTriggerValue).toBe("load");
+        });
+
+        test("GET on /inventory/list has no hx-target (targets innerHTML of cotaining div)", () => {
+          const hxTargetValue = $(elementsWithHxGet.first()).attr("hx-target");
+          expect(hxTargetValue).toBeUndefined();
+        });
+      });
     });
   });
 });

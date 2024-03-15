@@ -33,7 +33,7 @@ describe("Main routes file endpoints", async () => {
         expect(hxGetValue).toBe("/root");
       });
 
-      test("GET request on /root endpoint is made on content load & login status change HTMX event", () => {
+      test("GET on /root endpoint is made on content load & login status change HTMX event", () => {
         const hxTriggerValue = $(elementsWithHxGet.first()).attr("hx-trigger");
         expect(hxTriggerValue).toInclude("load");
         expect(hxTriggerValue).toInclude(
