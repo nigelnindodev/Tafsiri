@@ -161,7 +161,7 @@ describe("Inventory routes file endpoints", async () => {
             expect(hxTriggerValue).toContain("delay");
           });
 
-          test("Can create a new inventory item via GET /inventory/create with correct hx-target", () => {
+          test("Can open create inventory item view via GET /inventory/create with correct hx-target", () => {
             const targetElement = $('[hx-get="/inventory/create"]');
             const hxTargetValue = targetElement.attr("hx-target");
             expect(targetElement.length).toBe(1);
@@ -354,8 +354,39 @@ describe("Inventory routes file endpoints", async () => {
           expect(response.status).toBe(403);
         });
       });
-      describe("Admin user", () => {
+      describe("Admin user", async () => {
+        const response = await app.handle(new Request(`${baseUrl}/inventory/create`, {
+          method: "GET",
+          headers: {
+            Cookie: loggedInCookieAdmin
+          } 
+        }));
 
+        test("Returns 200 status code", () => {
+          expect(response.status).toBe(200);
+        });
+
+        describe("HTMX markup response", async() => {
+          const $ = cheerio.load(await response.text());
+          console.log("Create inventory item HTMX: ", await response.text());
+
+          // Should we also check for:
+          // - Correct input attributes, to ensure HTMX is sending the correct data to the backend? I think so.
+          // - Ensure we're opening with create view and not update? We already do this by verifying hx-post attribute
+          // - Loading succes and failure views? Not too bothered with this as this is an area we'll be improving on later.
+
+          test("Contains navigation to go back to main inventory screen with corret hx-target", () => {
+            const targetElement = $('[hx-get="/inventory/list"]');
+            const hxTargetValue = targetElement.attr("hx-target");
+            expect(targetElement.length).toBe(1);
+            expect(hxTargetValue).toBe(`#${HtmxTargets.INVENTORY_SECTION}`);
+          });
+
+          test("Can create inventory item via POST /inventory/create", () => {
+            const targetElement = $('[hx-post="/inventory/create"]');
+            expect(targetElement.length).toBe(1);
+          });
+        });
       });
     });
   });
