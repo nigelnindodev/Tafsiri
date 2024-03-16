@@ -18,7 +18,8 @@ describe("Inventory routes file endpoints", async () => {
   const loggedInCookieAdmin = await loginUserAdmin(dataSource, app, testAdminUser);
 
   // Add some inventory items to the test database
-  const inventoryItems = generateInventoryItems(10);
+  const numInitialInventoryItems = 10;
+  const inventoryItems = generateInventoryItems(numInitialInventoryItems);
   await createInventoryItems(app, inventoryItems, loggedInCookieAdmin);
 
   describe("GET on /inventory endpoint", () => {
@@ -224,10 +225,26 @@ describe("Inventory routes file endpoints", async () => {
         describe("HTMX markup response", async () => {
           const responseText = await response.text();
           const $ = cheerio.load(responseText);
+          const rows = $("tbody tr");
+          const firstRow = rows.first();
 
-          test("", () => {
-            console.log("/inventory/list/all response: ", responseText);
-          })
+          test(`Should contain ${numInitialInventoryItems} already created inventory items as rows`, () => {
+            expect(rows.length).toBe(numInitialInventoryItems);
+          });
+
+          test("Row can get inventory item orders via GET  with correct hx-target value", () => {
+            const targetElement = firstRow.find('[hx-get="/inventory/orders/1"]');
+            const hxTargetValue = targetElement.attr("hx-target");
+            expect(targetElement.length).toBe(1);
+            expect(hxTargetValue).toBe(`#${HtmxTargets.INVENTORY_SECTION}`);
+          });
+
+          test("Row can open edit view via GET /inventory/edit/:inventoryId with correct hx-target value", () => {
+            const targetElement = firstRow.find('[hx-get="/inventory/edit/1"]');
+            const hxTargetValue = targetElement.attr("hx-target");
+            expect(targetElement.length).toBe(1);
+            expect(hxTargetValue).toBe(`#${HtmxTargets.INVENTORY_SECTION}`);
+          });
         });
       });
     });
