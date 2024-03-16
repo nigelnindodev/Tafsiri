@@ -42,7 +42,7 @@ describe("Main routes file endpoints", async () => {
         );
       });
 
-      test("GET request on /root endpoint targets the root-div", () => {
+      test("GET request on /root endpoint has correct hx-target", () => {
         const hxTargetValue = $(elementsWithHxGet.first()).attr("hx-target");
         expect(hxTargetValue).toInclude(HtmxTargets.ROOT_DIV);
       });
