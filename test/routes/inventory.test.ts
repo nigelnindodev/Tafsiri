@@ -152,7 +152,7 @@ describe("Inventory routes file endpoints", async () => {
   describe("GET on /inventory/list/search endpoint", () => {
     describe("User session inactive", async () => {
       const response = await app.handle(
-        new Request(`${baseUrl}/inventory/list/search`),
+        new Request(`${baseUrl}/inventory/list/search?search="searchTerm"`),
       );
 
       test("Returns a 401 status code", () => {
@@ -163,7 +163,7 @@ describe("Inventory routes file endpoints", async () => {
     describe("User session active", () => {
       describe("Non-admin user", async () => {
         const response = await app.handle(
-          new Request(`${baseUrl}/inventory/list/search`, {
+          new Request(`${baseUrl}/inventory/list/search?search="searchTerm`, {
             method: "GET",
             headers: {
               Cookie: loggedInCookie

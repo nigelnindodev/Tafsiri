@@ -101,14 +101,14 @@ export const inventoryRoutes = (dataSource: DataSource) => {
         .get(
           "/list/search",
           async (ctx) => {
-            if (ctx.params.search === "") {
+            if (ctx.query.search === "") {
               return await listInventoryItems(dataSource);
             } else {
-              return await searchInventoryItems(dataSource, ctx.params.search);
+              return await searchInventoryItems(dataSource, ctx.query.search);
             }
           },
           {
-            params: inventorySchemas.searchInventoryItemsQuery,
+            query: inventorySchemas.searchInventoryItemsQuery,
             detail: {
               summary: "Get Inventory Search Results Component",
               description:
