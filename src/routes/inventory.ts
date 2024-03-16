@@ -14,6 +14,7 @@ import {
 import { InventoryPage } from "../components/pages/inventory";
 import { authPlugin } from "../plugins/auth";
 import { SwaggerTags } from "../services/common/constants";
+import { forbidIfNotAdmin } from "./utils";
 
 const inventorySchemas = {
   searchInventoryItemsQuery: t.Object({
@@ -34,6 +35,9 @@ export const inventoryRoutes = (dataSource: DataSource) => {
   app
     .use(authPlugin())
     .get("/", () => InventoryPage, {
+      beforeHandle: async (ctx) => {
+        await forbidIfNotAdmin(dataSource, ctx);
+      },
       detail: {
         summary: "Get Inventory Page",
         description:
@@ -42,6 +46,9 @@ export const inventoryRoutes = (dataSource: DataSource) => {
       },
     })
     .get("/create", () => CreateOrUpdateInventoryComponent(), {
+      beforeHandle: async (ctx) => {
+        await forbidIfNotAdmin(dataSource, ctx);
+      },
       detail: {
         summary: "Get Create Inventory Component",
         description:
@@ -58,6 +65,9 @@ export const inventoryRoutes = (dataSource: DataSource) => {
         );
       },
       {
+beforeHandle: async (ctx) => {
+        await forbidIfNotAdmin(dataSource, ctx);
+      },
         params: t.Object({
           inventoryId: t.Numeric(),
         }),
@@ -70,6 +80,9 @@ export const inventoryRoutes = (dataSource: DataSource) => {
       },
     )
     .get("/list", () => ViewInventoryComponent(), {
+beforeHandle: async (ctx) => {
+        await forbidIfNotAdmin(dataSource, ctx);
+      },
       detail: {
         summary: "Get Inventory View Componenet",
         description:
@@ -83,6 +96,9 @@ export const inventoryRoutes = (dataSource: DataSource) => {
         return await listInventoryItems(dataSource);
       },
       {
+beforeHandle: async (ctx) => {
+        await forbidIfNotAdmin(dataSource, ctx);
+      },
         detail: {
           summary: "Get Inventory Items List Component",
           description:
@@ -94,16 +110,17 @@ export const inventoryRoutes = (dataSource: DataSource) => {
     .get(
       "/list/search",
       async (ctx) => {
-        const validateResult = inventorySchemas.searchInventoryItemsQuery.parse(
-          ctx.query,
-        );
-        if (validateResult.search === "") {
+        if (ctx.params.search === "") {
           return await listInventoryItems(dataSource);
         } else {
-          return await searchInventoryItems(dataSource, validateResult.search);
+          return await searchInventoryItems(dataSource, ctx.params.search);
         }
       },
       {
+beforeHandle: async (ctx) => {
+        await forbidIfNotAdmin(dataSource, ctx);
+      },
+        params: inventorySchemas.searchInventoryItemsQuery,
         detail: {
           summary: "Get Inventory Search Results Component",
           description:
@@ -121,6 +138,9 @@ export const inventoryRoutes = (dataSource: DataSource) => {
         );
       },
       {
+beforeHandle: async (ctx) => {
+        await forbidIfNotAdmin(dataSource, ctx);
+      },
         params: t.Object({
           inventoryId: t.Numeric(),
         }),
@@ -142,6 +162,9 @@ export const inventoryRoutes = (dataSource: DataSource) => {
         );
       },
       {
+beforeHandle: async (ctx) => {
+        await forbidIfNotAdmin(dataSource, ctx);
+      },
         body: inventorySchemas.createInventoryItemBody,
         detail: {
           summary: "Create Inventory Item",
@@ -162,6 +185,9 @@ export const inventoryRoutes = (dataSource: DataSource) => {
         );
       },
       {
+beforeHandle: async (ctx) => {
+        await forbidIfNotAdmin(dataSource, ctx);
+      },
         body: inventorySchemas.updateInventoryItemBody,
         params: t.Object({
           inventoryId: t.Numeric(),

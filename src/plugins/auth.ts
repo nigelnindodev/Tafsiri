@@ -1,9 +1,12 @@
 import cookie from "@elysiajs/cookie";
 import jwt from "@elysiajs/jwt";
-import {Elysia } from "elysia";
+import { Elysia } from "elysia";
 
 import { getConfig, logger } from "..";
-import { CookieConstansts, ServerAuthenticationError } from "../services/common/constants";
+import {
+  CookieConstansts,
+  ServerAuthenticationError,
+} from "../services/common/constants";
 
 export interface AuthVaules {
   userId: number | undefined;

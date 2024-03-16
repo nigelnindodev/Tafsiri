@@ -11,6 +11,16 @@ export class ServerAuthenticationError extends Error {
   }
 }
 
+export class ServerForbiddenError extends Error {
+  code: string;
+  status: number;
+  constructor(message?: string) {
+    super(message);
+    this.code = "Forbidden";
+    this.status = 403;
+  }
+}
+
 /**
  * Contains commands that will trigger actions on the front end once an API request has been completed.
  */
