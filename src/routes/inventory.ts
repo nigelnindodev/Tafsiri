@@ -13,7 +13,7 @@ import {
 } from "../services/inventory";
 import { InventoryPage } from "../components/pages/inventory";
 import { SwaggerTags } from "../services/common/constants";
-import { forbidIfNotAdmin } from "./utils";
+import { forbidIfNotAdmin, unauthorizedIfNotLoggedIn } from "./utils";
 
 const inventorySchemas = {
   searchInventoryItemsQuery: t.Object({
@@ -34,6 +34,7 @@ export const inventoryRoutes = (dataSource: DataSource) => {
   app.guard(
     {
       beforeHandle: async (ctx) => {
+        unauthorizedIfNotLoggedIn(ctx);
         await forbidIfNotAdmin(dataSource, ctx);
       },
     },

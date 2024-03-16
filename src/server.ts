@@ -17,7 +17,7 @@ import { RootPage } from "./components/pages/root_page";
 import { getConfig, logger } from ".";
 import { usersRoutes } from "./routes/users";
 import { SwaggerTags } from "./services/common/constants";
-import { authPlugin } from "./plugins/auth";
+import { deriveUserId } from "./plugins/derive_user_id";
 
 /**
  * We're initializing the application server with the DataSource as a parameter so that we can
@@ -87,8 +87,8 @@ export const createApplicationServer = (dataSource: DataSource) => {
         }
       }
     })
+    .use(deriveUserId())
     .use(authRoutes(dataSource))
-    //.use(authPlugin())
     .use(inventoryRoutes(dataSource))
     .use(orderRoutes(dataSource))
     .use(paymentRoutes(dataSource))
