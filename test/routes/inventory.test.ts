@@ -372,7 +372,7 @@ describe("Inventory routes file endpoints", async () => {
           // Should we also check for:
           // - Correct input attributes, to ensure HTMX is sending the correct data to the backend? I think so.
           // - Ensure we're opening with create view and not update? We already do this by verifying hx-post attribute
-          // - Loading succes and failure views? Not too bothered with this as this is an area we'll be improving on later.
+          // - Loading succes and failure views? Not too bothered with this as this is an area we'll be improving on later
           test("Contains navigation to go back to main inventory screen with corret hx-target", () => {
             const targetElement = $('[hx-get="/inventory/list"]');
             const hxTargetValue = targetElement.attr("hx-target");
@@ -411,8 +411,58 @@ describe("Inventory routes file endpoints", async () => {
           expect(response.status).toBe(403);
         });
       });
-      describe("Admin user", () => {
+      describe("Admin user", async () => {
+        //first search for a specific item to run tests on
+        const searchInventoryItemResponse = await app.handle(
+          new Request(`${baseUrl}/inventory/list/search?search=${inventoryItems[0].name}`, {
+            method: "GET",
+            headers: {
+              Cookie: loggedInCookieAdmin
+            }
+          }),
+        );
 
+        const $ = cheerio.load(await searchInventoryItemResponse.text());
+        const editButton = $('button[hx-get^="/inventory/edit"]');
+        expect(editButton.length).toBe(1);
+
+        const hxGetValue = editButton.attr("hx-get");
+        const getEditInventoryItemResponse = await app.handle(
+          new Request(`${baseUrl}${hxGetValue}`, {
+            method: "GET",
+            headers: {
+              Cookie: loggedInCookieAdmin
+            }
+          })
+        );
+
+        test("Returns 200 status code", () => {
+          expect(getEditInventoryItemResponse.status).toBe(200);
+        });
+
+        describe("HTMX markup response", async () => {
+          const responseText = await getEditInventoryItemResponse.text();
+          const $ = cheerio.load(responseText);
+
+          test("Contains navigation to go back to main inventory screen with corret hx-target", () => {
+            const targetElement = $('[hx-get="/inventory/list"]');
+            const hxTargetValue = targetElement.attr("hx-target");
+            expect(targetElement.length).toBe(1);
+            expect(hxTargetValue).toBe(`#${HtmxTargets.INVENTORY_SECTION}`);
+          });
+
+          test("Can edit inventory item via POST /inventory/edit", () => {
+            const targetElement = $('[hx-post^="/inventory/edit"]');
+            expect(targetElement.length).toBe(1);
+          });
+
+          test("Input and Price pre-populated with existing values", () => {
+            const nameInputValue = $('input[name="name"]');
+            const priceInputValue = $('input[name="price"]');
+            expect(nameInputValue.val()).toBe(inventoryItems[0].name.toUpperCase());
+            expect(priceInputValue.val()).toBe(inventoryItems[0].price.toString());
+          });
+        });
       });
     });
   });
