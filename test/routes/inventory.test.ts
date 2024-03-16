@@ -6,13 +6,20 @@ import { createApplicationServer } from "../../src/server";
 import { getTestBaseUrl, loginUser, loginUserAdmin } from "../test_utils";
 import { HtmxTargets } from "../../src/components/common/constants";
 import { testAdminUser, testUser } from "../test_constants";
+import { createInventoryItems, generateInventoryItems } from "../fixtures";
 
 describe("Inventory routes file endpoints", async () => {
   const dataSource = await PostgresDataSourceSingleton.getInstance();
   const app = createApplicationServer(dataSource);
   const baseUrl = getTestBaseUrl(app);
+
+  // Create an admin and non-admin users
   const loggedInCookie = await loginUser(app, testUser);
   const loggedInCookieAdmin = await loginUserAdmin(dataSource, app, testAdminUser);
+
+  // Add some inventory items to the test database
+  const inventoryItems = generateInventoryItems(10);
+  await createInventoryItems(app, inventoryItems, loggedInCookieAdmin);
 
   describe("GET on /inventory endpoint", () => {
     describe("User session inactive", async () => {
@@ -199,8 +206,29 @@ describe("Inventory routes file endpoints", async () => {
           expect(response.status).toBe(403);
         });
       });
-      describe("Admin user", () => {
 
+      describe("Admin user", async () => {
+        const response = await app.handle(
+          new Request(`${baseUrl}/inventory/list/all`, {
+            method: "GET",
+            headers: {
+              Cookie: loggedInCookieAdmin
+            }
+          }),
+        );
+
+        test("Returns 200 status code", () => {
+          expect(response.status).toBe(200);
+        });
+
+        describe("HTMX markup response", async () => {
+          const responseText = await response.text();
+          const $ = cheerio.load(responseText);
+
+          test("", () => {
+            console.log("/inventory/list/all response: ", responseText);
+          })
+        });
       });
     });
   });
