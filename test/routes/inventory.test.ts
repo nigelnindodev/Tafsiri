@@ -368,13 +368,11 @@ describe("Inventory routes file endpoints", async () => {
 
         describe("HTMX markup response", async() => {
           const $ = cheerio.load(await response.text());
-          console.log("Create inventory item HTMX: ", await response.text());
 
           // Should we also check for:
           // - Correct input attributes, to ensure HTMX is sending the correct data to the backend? I think so.
           // - Ensure we're opening with create view and not update? We already do this by verifying hx-post attribute
           // - Loading succes and failure views? Not too bothered with this as this is an area we'll be improving on later.
-
           test("Contains navigation to go back to main inventory screen with corret hx-target", () => {
             const targetElement = $('[hx-get="/inventory/list"]');
             const hxTargetValue = targetElement.attr("hx-target");
