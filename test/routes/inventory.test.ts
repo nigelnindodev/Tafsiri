@@ -223,8 +223,7 @@ describe("Inventory routes file endpoints", async () => {
         });
 
         describe("HTMX markup response", async () => {
-          const responseText = await response.text();
-          const $ = cheerio.load(responseText);
+          const $ = cheerio.load(await response.text());
           const rows = $("tbody tr");
           const firstRow = rows.first();
 
@@ -256,7 +255,7 @@ describe("Inventory routes file endpoints", async () => {
         new Request(`${baseUrl}/inventory/list/search?search="searchTerm"`),
       );
 
-      test("Returns a 401 status code", () => {
+      test("Returns 401 status code", () => {
         expect(response.status).toBe(401);
       });
     });
@@ -276,8 +275,59 @@ describe("Inventory routes file endpoints", async () => {
           expect(response.status).toBe(403);
         });
       });
-      describe("Admin user", () => {
 
+      describe("Admin user and search term in inventory items", async () => {
+        /**
+         * Use on of the rows from the already inserted inventory items to public get a positive
+         * search result.
+         }
+          */
+        const response = await app.handle(
+          new Request(`${baseUrl}/inventory/list/search?search=${inventoryItems[0].name}`, {
+            method: "GET",
+            headers: {
+              Cookie: loggedInCookieAdmin
+            }
+          }),
+        );
+
+        test("Returns 200 status code", () => {
+          expect(response.status).toBe(200);
+        });
+
+        describe("HTMX markup response", async () => {
+          const $ = cheerio.load(await response.text());
+          const rows = $("tbody tr");
+          test("Contains one row with searched inventory item", () => {
+            expect(rows.length).toBe(1);
+            // toUpperCase as all inventory items are uppercased on the backend 
+            expect(rows.first().text()).toContain(inventoryItems[0].name.toUpperCase());
+          });
+
+        });
+      });
+
+      describe("Admin user and empty string as search term", async () => {
+        const response = await app.handle(
+          new Request(`${baseUrl}/inventory/list/search?search=`, {
+            method: "GET",
+            headers: {
+              Cookie: loggedInCookieAdmin
+            }
+          }),
+        );
+
+        test("Returns 200 status code", () => {
+          expect(response.status).toBe(200);
+        });
+
+        describe("HTMX markup response", async () => {
+          const $ = cheerio.load(await response.text());
+          const rows = $("tbody tr");
+          test("Contains all rows as no search term provided", () => {
+            expect(rows.length).toBe(numInitialInventoryItems);
+          });
+        });
       });
     });
   });
