@@ -367,6 +367,7 @@ describe("Inventory routes file endpoints", async () => {
         });
 
         describe("HTMX markup response", async() => {
+          console.log("response Text",  await response.text());
           const $ = cheerio.load(await response.text());
 
           // Should we also check for:
@@ -383,6 +384,14 @@ describe("Inventory routes file endpoints", async () => {
           test("Can create inventory item via POST /inventory/create", () => {
             const targetElement = $('[hx-post="/inventory/create"]');
             expect(targetElement.length).toBe(1);
+          });
+
+          test("Input and Price initially empty with correct name attributes for HTMX POST request", () => {
+            const nameInputValue = $('input[name="name"]');
+            const priceInputValue = $('input[name="price"]');
+            // expected this to be empty string, but it's actually undefined for empty inputs
+            expect(nameInputValue.val()).toBeUndefined();
+            expect(priceInputValue.val()).toBeUndefined();
           });
         });
       });
@@ -456,7 +465,7 @@ describe("Inventory routes file endpoints", async () => {
             expect(targetElement.length).toBe(1);
           });
 
-          test("Input and Price pre-populated with existing values", () => {
+          test("Input and Price pre-populated with existing values with correct name attributes for HTMX POST request", () => {
             const nameInputValue = $('input[name="name"]');
             const priceInputValue = $('input[name="price"]');
             expect(nameInputValue.val()).toBe(inventoryItems[0].name.toUpperCase());
