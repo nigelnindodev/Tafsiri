@@ -32,6 +32,7 @@ export const authPlugin = (options: AuthVaules = { userId: undefined }) => {
       }),
     )
     .onBeforeHandle(async (ctx) => {
+      logger.trace("onBeforeHandle Called");
       const { auth } = ctx.cookie;
       const authValue = await ctx.jwt.verify(auth);
 

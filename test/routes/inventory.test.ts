@@ -1,16 +1,18 @@
 import { describe, expect, test } from "bun:test";
 import * as cheerio from "cheerio";
+
 import { PostgresDataSourceSingleton } from "../../src/postgres";
 import { createApplicationServer } from "../../src/server";
-import { getTestBaseUrl, loginTestUser } from "../test_utils";
+import { getTestBaseUrl, loginUser, loginUserAdmin } from "../test_utils";
 import { HtmxTargets } from "../../src/components/common/constants";
-import { Cookie } from "elysia";
+import { testAdminUser, testUser } from "../test_constants";
 
 describe("Inventory routes file endpoints", async () => {
   const dataSource = await PostgresDataSourceSingleton.getInstance();
   const app = createApplicationServer(dataSource);
   const baseUrl = getTestBaseUrl(app);
-  const loggedInCookie = await loginTestUser(app);
+  const loggedInCookie = await loginUser(app, testUser);
+  const loggedInCookieAdmin = await loginUserAdmin(dataSource, app, testAdminUser);
 
   describe("GET on /inventory endpoint", () => {
     describe("User session inactive", async () => {
@@ -42,7 +44,7 @@ describe("Inventory routes file endpoints", async () => {
           new Request(`${baseUrl}/inventory`, {
             method: "GET",
             headers: {
-              Cookie: loggedInCookie,
+              Cookie: loggedInCookieAdmin,
             },
           }),
         );
@@ -86,14 +88,9 @@ describe("Inventory routes file endpoints", async () => {
   describe("GET on /inventory/list endpoint", () => {
     describe("User session inactive", async () => {
       const response = await app.handle(
-        new Request(`${baseUrl}/inventory/list`, {
-          method: "GET",
-          headers: {
-            Cookie: loggedInCookie
-          }
-        }),
+          new Request(`${baseUrl}/inventory/list`),
       );
-
+      
       test("Returns 401 status code", () => {
         expect(response.status).toBe(401);
       });
@@ -102,8 +99,13 @@ describe("Inventory routes file endpoints", async () => {
     describe("User session active", () => {
       describe("Non-admin user", async () => {
         const response = await app.handle(
-          new Request(`${baseUrl}/inventory/list`),
-        );
+          new Request(`${baseUrl}/inventory/list`, {
+            method: "GET",
+            headers: {
+              Cookie: loggedInCookie
+            }
+          }),
+        );  
 
         test("Returns 403 status code", () => {
           expect(response.status).toBe(403);

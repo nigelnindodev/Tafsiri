@@ -51,7 +51,7 @@ const orderSchema = {
 export const orderRoutes = (dataSource: DataSource) => {
   const app = new Elysia({ prefix: "/orders" });
   app
-    .use(authPlugin())
+    //.use(authPlugin())
     .get("/", () =>  OrdersPage, {
       detail: {
         summary: "Get Orders Page",

@@ -17,6 +17,7 @@ import { RootPage } from "./components/pages/root_page";
 import { getConfig, logger } from ".";
 import { usersRoutes } from "./routes/users";
 import { SwaggerTags } from "./services/common/constants";
+import { authPlugin } from "./plugins/auth";
 
 /**
  * We're initializing the application server with the DataSource as a parameter so that we can
@@ -24,7 +25,7 @@ import { SwaggerTags } from "./services/common/constants";
  */
 export const createApplicationServer = (dataSource: DataSource) => {
   const app = new Elysia()
-    .use(cookie())
+    .use(staticPlugin())
     .use(
       // Maybe move the swagger plugin into its own file?
       swagger({
@@ -44,7 +45,7 @@ export const createApplicationServer = (dataSource: DataSource) => {
         },
       }),
     )
-    .use(staticPlugin())
+    .use(cookie())
     .use(
       jwt({
         name: "jwt",
@@ -60,9 +61,11 @@ export const createApplicationServer = (dataSource: DataSource) => {
       );
     })
     .get("/", () => {
+      logger.trace("Called / endpoint");
       return RootPage();
     })
     .get("/root", async (ctx) => {
+      logger.trace("Called /root endpoint");
       logger.trace("Application context on root path", ctx);
       const { auth } = ctx.cookie;
       if (!auth) {
@@ -85,6 +88,7 @@ export const createApplicationServer = (dataSource: DataSource) => {
       }
     })
     .use(authRoutes(dataSource))
+    //.use(authPlugin())
     .use(inventoryRoutes(dataSource))
     .use(orderRoutes(dataSource))
     .use(paymentRoutes(dataSource))

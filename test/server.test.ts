@@ -5,13 +5,14 @@ import { createApplicationServer } from "../src/server.ts";
 import { PostgresDataSourceSingleton } from "../src/postgres/index.ts";
 import { ServerHxTriggerEvents } from "../src/services/common/constants.ts";
 import { HtmxTargets } from "../src/components/common/constants.ts";
-import { getTestBaseUrl, loginTestUser } from "./test_utils.ts";
+import { getTestBaseUrl, loginUser } from "./test_utils.ts";
+import { testUser } from "./test_constants.ts";
 
 describe("Main routes file endpoints", async () => {
   const dataSource = await PostgresDataSourceSingleton.getInstance();
   const app = createApplicationServer(dataSource);
   const baseUrl = getTestBaseUrl(app);
-  const loggedInCookie = await loginTestUser(app);
+  const loggedInCookie = await loginUser(app, testUser);
 
   describe("GET on / endpoint", async () => {
     const response = await app.handle(new Request(baseUrl));

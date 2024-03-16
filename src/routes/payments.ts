@@ -2,13 +2,11 @@ import Elysia from "elysia";
 import { DataSource } from "typeorm";
 import { PaymentsPage } from "../components/pages/payments";
 import { listPayments } from "../services/payments";
-import { authPlugin } from "../plugins/auth";
 import { SwaggerTags } from "../services/common/constants";
 
 export const paymentRoutes = (dataSource: DataSource) => {
   const app = new Elysia({ prefix: "/payments" });
   app
-    .use(authPlugin())
     .get("/", () => PaymentsPage, {
       detail: {
         summary: "Get Payments Page",

@@ -525,3 +525,14 @@ export const toggleUserActiveState = async (dataSource: DataSource, userId: numb
     .where("users.id = :id", {id: userId})
     .execute();
 };
+
+export const upgradeUserToAdmin = async(
+  dataSource: DataSource,
+  username: string):
+Promise<UpdateResult> => {
+  return await dataSource.createQueryBuilder()
+    .update(UsersEntity)
+    .set({is_admin: true})
+    .where("users.username = :username", { username: username })
+    .execute();
+}
