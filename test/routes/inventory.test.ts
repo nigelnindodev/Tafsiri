@@ -279,7 +279,7 @@ describe("Inventory routes file endpoints", async () => {
 
       describe("Admin user and search term in inventory items", async () => {
         /**
-         * Use on of the rows from the already inserted inventory items to public get a positive
+         * Use one of the rows from the already inserted inventory items to public get a positive
          * search result.
          }
           */
@@ -561,14 +561,120 @@ describe("Inventory routes file endpoints", async () => {
   });
 
   describe("POST on /inventory/edit/:inventoryId endpoint", () => {
-    describe("User session inactive", () => {});
+    describe("User session inactive", async () => {
+      const response = await app.handle(
+        new Request(`${baseUrl}/inventory/edit/1`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            name: "Some item",
+            price: 50
+          })
+        })
+      );
+
+      test("Returns 401 status code", () => {
+        expect(response.status).toBe(401);
+      });
+    });
 
     describe("User session active", () => {
-      describe("Non-admin user", () => {
+      describe("Non-admin user", async () => {
+        const response = await app.handle(
+          new Request(`${baseUrl}/inventory/edit/1`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Cookie: loggedInCookie
+            },
+            body: JSON.stringify({
+              name: "Some item",
+              price: 50
+            })
+          })
+        );
 
+        test("Returns 403 status code", () => {
+          expect(response.status).toBe(403);
+        });
       });
-      describe("Admin user", () => {
 
+      describe("Admin user", async () => {
+        const changeInventoryNameTo = "Edited Inventory Item";
+        const searchInventoryItemResponse = await app.handle(
+          new Request(`${baseUrl}/inventory/list/search?search=${inventoryItems[0].name}`, {
+            method: "GET",
+            headers: {
+              Cookie: loggedInCookieAdmin
+            }
+          }),
+        );
+
+        const $ = cheerio.load(await searchInventoryItemResponse.text());
+        const editButton = $('button[hx-get^="/inventory/edit"]');
+        expect(editButton.length).toBe(1);
+
+        const hxGetValue = editButton.attr("hx-get");
+
+        // We we use the same URL for GET to match the POST request
+        // So fine to use the hx-get value on post here
+        const editInventoryItemResponse = await app.handle(
+          new Request(`${baseUrl}${hxGetValue}`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Cookie: loggedInCookieAdmin
+            },
+            body: JSON.stringify({
+              name: changeInventoryNameTo, 
+              price: 100
+            })
+          })
+        );
+
+        test("Returns 200 status code", () => {
+          expect(editInventoryItemResponse.status).toBe(200);
+        });
+
+        test("No results using pre-update value as inventory search term", async () => {
+          const searchInventoryItemResponse = await app.handle(
+            new Request(`${baseUrl}/inventory/list/search?search=${inventoryItems[0].name}`, {
+              method: "GET",
+              headers: {
+                Cookie: loggedInCookieAdmin
+              }
+            }),
+          );
+
+          const $ = cheerio.load(await searchInventoryItemResponse.text());
+          expect($.text()).toInclude("No inventory items match search criteria");
+        });
+
+        test("Results found using post update value as search term", async () => {
+          const searchInventoryItemResponse = await app.handle(
+            new Request(`${baseUrl}/inventory/list/search?search=${changeInventoryNameTo}`, {
+              method: "GET",
+              headers: {
+                Cookie: loggedInCookieAdmin
+              }
+            }),
+          );
+
+          const $ = cheerio.load(await searchInventoryItemResponse.text());
+          const rows = $("tbody tr");
+
+          expect(rows.length).toBe(1);
+          expect(rows.first().text()).toContain(changeInventoryNameTo.toUpperCase());
+        });
+
+        describe("HTMX markup response", async() => {
+          const responseText = await editInventoryItemResponse.text();
+          test("No htmx markup, but updated confirm", () => {
+            expect(responseText).toBe("Updated");
+          });
+        });
       });
     });
   });
