@@ -15,7 +15,7 @@ export const IndexComponent = (user: UsersEntity) => {
                     <li>Business Name</li>
                 </ul>
                 <ul>
-                    <li>{user.username}</li>
+                    <li safe>{user.username}</li>
                     <li><a hx-post="/auth/logout">logout</a></li>
                 </ul>
             </nav>
@@ -30,7 +30,7 @@ export const IndexComponent = (user: UsersEntity) => {
                             /**
                              * The following sections are blocked from access in the UI.
                              *
-                             * TODO: These endpoints also need to be API restriced only to Admin users.
+                             * TODO: These endpoints also need to be API restricted only to Admin users.
                              */
                             user.is_admin ?
                                 <div>

@@ -1,29 +1,40 @@
 import Elysia from "elysia";
-import { testUser } from "./test_constants";
+import { DataSource } from "typeorm";
+
+import {TestUser} from "./test_constants.ts";
+import { upgradeUserToAdmin } from "../src/postgres/queries";
+
+export const getTestBaseUrl = (app: Elysia): string => {
+  return `http://${app.server?.hostname || "localhost"}:${app.server?.port || 3000}`;
+};
 
 /**
  * Logs in the test user and returns a the cookie value as a string
  * to be added in requests.
  */
-export const loginTestUser = async (app: Elysia): Promise<string> => {
+export const loginUser = async (
+  app: Elysia,
+  user: { username: string; password: string },
+): Promise<string> => {
+  const baseUrl = getTestBaseUrl(app);
   // Fine if fails because test user is already created
   await app.handle(
-    new Request("http://localhost:3000/auth/user/create", {
+    new Request(`${baseUrl}/auth/user/create`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(testUser),
+      body: JSON.stringify(user),
     }),
   );
 
   const loginResponse = await app.handle(
-    new Request("http://localhost:3000/auth/login", {
+    new Request(`${baseUrl}/auth/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(testUser),
+      body: JSON.stringify(user),
     }),
   );
 
@@ -42,4 +53,14 @@ export const loginTestUser = async (app: Elysia): Promise<string> => {
   }
 
   return cookieValue;
+};
+
+export const loginUserAdmin = async (
+  dataSource: DataSource,
+  app: Elysia,
+  user: TestUser,
+): Promise<string> => {
+  const result = await loginUser(app, user);
+  await upgradeUserToAdmin(dataSource, user.username); 
+  return result;
 };

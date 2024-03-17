@@ -1,22 +1,23 @@
 import { describe, expect, test } from "bun:test";
 import * as cheerio from "cheerio";
-import "reflect-metadata"; // required for TypeORM
 
 import { createApplicationServer } from "../src/server.ts";
 import { PostgresDataSourceSingleton } from "../src/postgres/index.ts";
 import { ServerHxTriggerEvents } from "../src/services/common/constants.ts";
 import { HtmxTargets } from "../src/components/common/constants.ts";
-import { loginTestUser } from "./test_utils.ts";
+import { getTestBaseUrl, loginUser } from "./test_utils.ts";
+import { testUser } from "./test_constants.ts";
 
-describe("Root server", async () => {
+describe("Main routes file endpoints", async () => {
   const dataSource = await PostgresDataSourceSingleton.getInstance();
   const app = createApplicationServer(dataSource);
-  const loggedInCookie = await loginTestUser(app);
+  const baseUrl = getTestBaseUrl(app);
+  const loggedInCookie = await loginUser(app, testUser);
 
   describe("GET on / endpoint", async () => {
-    const response = await app.handle(new Request("http://localhost:3000"));
+    const response = await app.handle(new Request(baseUrl));
 
-    test("Returns 200 response", () => {
+    test("Returns 200 status code", () => {
       expect(response.status).toBe(200);
     });
 
@@ -24,7 +25,7 @@ describe("Root server", async () => {
       expect(response.headers.get("content-type")).toInclude("text/html");
     });
 
-    describe("GET on / HTMX markup response", async () => {
+    describe("HTMX markup response", async () => {
       const $ = cheerio.load(await response.text());
       const elementsWithHxGet = $("div[hx-get]");
 
@@ -33,7 +34,7 @@ describe("Root server", async () => {
         expect(hxGetValue).toBe("/root");
       });
 
-      test("GET request on /root endpoint is made on content load & login status change HTMX event", () => {
+      test("GET on /root endpoint is made on content load & login status change HTMX event", () => {
         const hxTriggerValue = $(elementsWithHxGet.first()).attr("hx-trigger");
         expect(hxTriggerValue).toInclude("load");
         expect(hxTriggerValue).toInclude(
@@ -41,7 +42,7 @@ describe("Root server", async () => {
         );
       });
 
-      test("GET request on /root endpoint targets the root-div", () => {
+      test("GET request on /root endpoint has correct hx-target", () => {
         const hxTargetValue = $(elementsWithHxGet.first()).attr("hx-target");
         expect(hxTargetValue).toInclude(HtmxTargets.ROOT_DIV);
       });
@@ -55,25 +56,24 @@ describe("Root server", async () => {
    * Simply ensure correct view are called for logged in and out states.
    */
   describe("GET on /root endpoint", () => {
-    describe("When logged out", async () => {
-      const response = await app.handle(
-        new Request("http://localhost:3000/root"),
-      );
+    describe("User session inactive", async () => {
+      const response = await app.handle(new Request(`${baseUrl}/root`));
 
-      test("Returns a 200 response", () => {
+      test("Returns a 200 status code", () => {
         expect(response.status).toBe(200);
       });
 
-      describe("GET on /root HTMX markup response", async () => {
+      describe("HTMX markup response", () => {
         test("Returns the login markup", async () => {
-          expect(await response.text()).toInclude("Log in to get started");
+          const responseText = await response.text();
+          expect(responseText).toInclude("Log in to get started");
         });
       });
     });
 
-    describe("When logged in", async () => {
+    describe("User session active", async () => {
       const response = await app.handle(
-        new Request("http://localhost:3000/root", {
+        new Request(`${baseUrl}/root`, {
           method: "GET",
           headers: {
             Cookie: loggedInCookie,
@@ -81,11 +81,11 @@ describe("Root server", async () => {
         }),
       );
 
-      test("Returns a 200 response", () => {
+      test("Returns a 200 status code", () => {
         expect(response.status).toBe(200);
       });
 
-      describe("GET on /root HTMX markup response", async () => {
+      describe("HTMX markup response", () => {
         test("Returns the main application markup", async () => {
           const $ = cheerio.load(await response.text());
           const mainSectionDiv = $(`#${HtmxTargets.MAIN_SECTION}`);

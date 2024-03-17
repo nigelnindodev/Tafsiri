@@ -18,7 +18,6 @@ import {
   ServerHxTriggerEvents,
   SwaggerTags,
 } from "../services/common/constants";
-import { authPlugin } from "../plugins/auth";
 import { logger } from "..";
 
 const orderSchema = {
@@ -51,7 +50,7 @@ const orderSchema = {
 export const orderRoutes = (dataSource: DataSource) => {
   const app = new Elysia({ prefix: "/orders" });
   app
-    .use(authPlugin())
+    //.use(authPlugin())
     .get("/", () =>  OrdersPage, {
       detail: {
         summary: "Get Orders Page",

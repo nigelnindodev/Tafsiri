@@ -1,7 +1,6 @@
 import { Elysia, t } from "elysia";
 import { DataSource } from "typeorm";
 
-import { authPlugin } from "../plugins/auth";
 import { getUser, listUsers, toggleUserActiveState } from "../services/users";
 import { UsersPage } from "../components/pages/users";
 import { logger } from "..";
@@ -19,7 +18,6 @@ const usersSchema = {
 export const usersRoutes = (dataSource: DataSource) => {
   const app = new Elysia({ prefix: "/users" });
   app
-    .use(authPlugin())
     .get("/", () => UsersPage, {
       detail: {
         summary: "Get Users Page",

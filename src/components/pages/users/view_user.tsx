@@ -47,10 +47,10 @@ export const ViewUserComponent = (userEntity: UsersEntity) => {
 			<div class="center">
 				<div class="grid">
 					<div>
-						<h2>Username: {userEntity.username}</h2>
+						<h2 safe>Username: {userEntity.username}</h2>
 					</div>
 					<div>
-						<h4>Last Update: {moment(userEntity.updated_at).fromNow()}</h4>
+						<h4 safe>Last Update: {moment(userEntity.updated_at).fromNow()}</h4>
 					</div>
 				</div>
 			</div>
