@@ -7,6 +7,7 @@ import { getTestBaseUrl, loginUser, loginUserAdmin } from "../test_utils";
 import { HtmxTargets } from "../../src/components/common/constants";
 import { testAdminUser, testUser } from "../test_constants";
 import { createInventoryItems, generateInventoryItems } from "../fixtures";
+import { Cookie } from "elysia";
 
 describe("Inventory routes file endpoints", async () => {
   const dataSource = await PostgresDataSourceSingleton.getInstance();
@@ -367,13 +368,8 @@ describe("Inventory routes file endpoints", async () => {
         });
 
         describe("HTMX markup response", async() => {
-          console.log("response Text",  await response.text());
           const $ = cheerio.load(await response.text());
 
-          // Should we also check for:
-          // - Correct input attributes, to ensure HTMX is sending the correct data to the backend? I think so.
-          // - Ensure we're opening with create view and not update? We already do this by verifying hx-post attribute
-          // - Loading succes and failure views? Not too bothered with this as this is an area we'll be improving on later
           test("Contains navigation to go back to main inventory screen with corret hx-target", () => {
             const targetElement = $('[hx-get="/inventory/list"]');
             const hxTargetValue = targetElement.attr("hx-target");
@@ -477,14 +473,89 @@ describe("Inventory routes file endpoints", async () => {
   });
 
   describe("POST on /inventory/create endpoint", () => {
-    describe("User session inactive", () => {});
+    describe("User session inactive", async () => {
+      const response = await app.handle(
+        new Request(`${baseUrl}/inventory/create`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            name: "Some item",
+            price: 50
+          })
+        }) 
+      );
+
+      test("Returns 401 status code", () => {
+        expect(response.status).toBe(401);
+      });
+    });
 
     describe("User session active", () => {
-      describe("Non-admin user", () => {
+      describe("Non-admin user", async () => {
+        const response = await app.handle(
+          new Request(`${baseUrl}/inventory/create`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Cookie: loggedInCookie
+            },
+            body: JSON.stringify({
+              name: "Some item",
+              price: 50
+            })
+          }) 
+        );
 
+        test("Returns 403 status code", () => {
+          expect(response.status).toBe(403);
+        });
       });
-      describe("Admin user", () => {
 
+      describe("Admin user", async () => {
+        const response = await app.handle(
+          new Request(`${baseUrl}/inventory/create`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Cookie: loggedInCookieAdmin
+            },
+            body: JSON.stringify({
+              name: "Some item",
+              price: 50
+            })
+          }) 
+        );
+
+        test("Returns 201 status code", () => {
+          // TODO: return 200 for now https://github.com/nigelnindodev/BunHtmxFullStack/issues/44
+          expect(response.status).toBe(200);
+        });
+
+        test("Creates new inventory item", async () => {
+          // we should now have numInitialInventoryItems + 1 items 
+          const response = await app.handle(
+            new Request(`${baseUrl}/inventory/list/all`, {
+              method: "GET",
+              headers: {
+                Cookie: loggedInCookieAdmin
+              }
+            }),
+          );
+
+          const $ = cheerio.load(await response.text());
+          const rows = $("tbody tr");
+          expect(rows.length).toBe(numInitialInventoryItems+1);
+        });
+
+        describe("HTMX markup response", async () => {
+          const $ = cheerio.load(await response.text());
+
+          test("Indicates inventory item added", () => {
+            expect($.text()).toInclude("Added");
+          })
+        });
       });
     });
   });

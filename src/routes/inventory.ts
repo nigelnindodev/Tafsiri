@@ -140,11 +140,12 @@ export const inventoryRoutes = (dataSource: DataSource) => {
         .post(
           "/create",
           async (ctx) => {
-            return await createInventoryItem(
+            const result = await createInventoryItem(
               dataSource,
               ctx.body.name,
               ctx.body.price,
             );
+            return result;
           },
           {
             body: inventorySchemas.createInventoryItemBody,
