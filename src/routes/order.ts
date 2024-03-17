@@ -18,7 +18,6 @@ import {
   ServerHxTriggerEvents,
   SwaggerTags,
 } from "../services/common/constants";
-import { authPlugin } from "../plugins/auth";
 import { logger } from "..";
 
 const orderSchema = {

@@ -20,30 +20,6 @@ export const deriveUserId = (options: AuthVaules = { userId: undefined }) => {
         secret: getConfig().jwtSecret,
       }),
     )
-    /*.onBeforeHandle(async (ctx) => {
-      logger.trace("onBeforeHandle Called");
-      const { auth } = ctx.cookie;
-      const authValue = await ctx.jwt.verify(auth);
-
-      if (!authValue) {
-        throw new ServerAuthenticationError();
-      } else {
-        ctx.setCookie(
-          "auth",
-          await ctx.jwt.sign({
-            username: authValue.username,
-            userId: authValue.userId,
-          }),
-          {
-            httpOnly: true,
-            maxAge: CookieConstansts.maxAge,
-            path: CookieConstansts.path,
-          },
-        );
-        logger.trace("authValueUserId", authValue.userId);
-        app.state("userId", authValue.userId);
-      }
-    })*/
     .derive(async (ctx) => {
       const { auth } = ctx.cookie;
       const authValue = await ctx.jwt.verify(auth);

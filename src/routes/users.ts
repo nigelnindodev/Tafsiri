@@ -18,7 +18,6 @@ const usersSchema = {
 export const usersRoutes = (dataSource: DataSource) => {
   const app = new Elysia({ prefix: "/users" });
   app
-    //.use(authPlugin())
     .get("/", () => UsersPage, {
       detail: {
         summary: "Get Users Page",
