@@ -13,7 +13,7 @@ describe("Inventory routes file endpoints", async () => {
     const app = createApplicationServer(dataSource);
     const baseUrl = getTestBaseUrl(app);
 
-    // Create an admin and non-admin users
+    // Create an admin and non-admin user
     const loggedInCookie = await loginUser(app, testUser);
     const loggedInCookieAdmin = await loginUserAdmin(
         dataSource,
@@ -41,7 +41,6 @@ describe("Inventory routes file endpoints", async () => {
             describe("Non-admin user", async () => {
                 const response = await app.handle(
                     new Request(`${baseUrl}/inventory`, {
-                        method: "GET",
                         headers: {
                             Cookie: loggedInCookie,
                         },
@@ -56,7 +55,6 @@ describe("Inventory routes file endpoints", async () => {
             describe("Admin user", async () => {
                 const response = await app.handle(
                     new Request(`${baseUrl}/inventory`, {
-                        method: "GET",
                         headers: {
                             Cookie: loggedInCookieAdmin,
                         },
@@ -116,7 +114,6 @@ describe("Inventory routes file endpoints", async () => {
             describe("Non-admin user", async () => {
                 const response = await app.handle(
                     new Request(`${baseUrl}/inventory/list`, {
-                        method: "GET",
                         headers: {
                             Cookie: loggedInCookie,
                         },
@@ -130,7 +127,6 @@ describe("Inventory routes file endpoints", async () => {
             describe("Admin user", async () => {
                 const response = await app.handle(
                     new Request(`${baseUrl}/inventory/list`, {
-                        method: "GET",
                         headers: {
                             Cookie: loggedInCookieAdmin,
                         },
@@ -218,7 +214,6 @@ describe("Inventory routes file endpoints", async () => {
             describe("Non-admin user", async () => {
                 const response = await app.handle(
                     new Request(`${baseUrl}/inventory/list/all`, {
-                        method: "GET",
                         headers: {
                             Cookie: loggedInCookie,
                         },
@@ -233,7 +228,6 @@ describe("Inventory routes file endpoints", async () => {
             describe("Admin user", async () => {
                 const response = await app.handle(
                     new Request(`${baseUrl}/inventory/list/all`, {
-                        method: "GET",
                         headers: {
                             Cookie: loggedInCookieAdmin,
                         },
@@ -298,7 +292,6 @@ describe("Inventory routes file endpoints", async () => {
                     new Request(
                         `${baseUrl}/inventory/list/search?search="searchTerm`,
                         {
-                            method: "GET",
                             headers: {
                                 Cookie: loggedInCookie,
                             },
@@ -321,7 +314,6 @@ describe("Inventory routes file endpoints", async () => {
                     new Request(
                         `${baseUrl}/inventory/list/search?search=${inventoryItems[0].name}`,
                         {
-                            method: "GET",
                             headers: {
                                 Cookie: loggedInCookieAdmin,
                             },
@@ -349,7 +341,6 @@ describe("Inventory routes file endpoints", async () => {
             describe("Admin user and empty string as search term", async () => {
                 const response = await app.handle(
                     new Request(`${baseUrl}/inventory/list/search?search=`, {
-                        method: "GET",
                         headers: {
                             Cookie: loggedInCookieAdmin,
                         },
@@ -386,7 +377,6 @@ describe("Inventory routes file endpoints", async () => {
             describe("Non-admin user", async () => {
                 const response = await app.handle(
                     new Request(`${baseUrl}/inventory/create`, {
-                        method: "GET",
                         headers: {
                             Cookie: loggedInCookie,
                         },
@@ -400,7 +390,6 @@ describe("Inventory routes file endpoints", async () => {
             describe("Admin user", async () => {
                 const response = await app.handle(
                     new Request(`${baseUrl}/inventory/create`, {
-                        method: "GET",
                         headers: {
                             Cookie: loggedInCookieAdmin,
                         },
@@ -457,7 +446,6 @@ describe("Inventory routes file endpoints", async () => {
             describe("Non-admin user", async () => {
                 const response = await app.handle(
                     new Request(`${baseUrl}/inventory/edit/1`, {
-                        method: "GET",
                         headers: {
                             Cookie: loggedInCookie,
                         },
@@ -474,7 +462,6 @@ describe("Inventory routes file endpoints", async () => {
                     new Request(
                         `${baseUrl}/inventory/list/search?search=${inventoryItems[0].name}`,
                         {
-                            method: "GET",
                             headers: {
                                 Cookie: loggedInCookieAdmin,
                             },
@@ -491,7 +478,6 @@ describe("Inventory routes file endpoints", async () => {
                 const hxGetValue = editButton.attr("hx-get");
                 const getEditInventoryItemResponse = await app.handle(
                     new Request(`${baseUrl}${hxGetValue}`, {
-                        method: "GET",
                         headers: {
                             Cookie: loggedInCookieAdmin,
                         },
@@ -601,7 +587,6 @@ describe("Inventory routes file endpoints", async () => {
                     // we should now have numInitialInventoryItems + 1 items
                     const response = await app.handle(
                         new Request(`${baseUrl}/inventory/list/all`, {
-                            method: "GET",
                             headers: {
                                 Cookie: loggedInCookieAdmin,
                             },
@@ -671,7 +656,6 @@ describe("Inventory routes file endpoints", async () => {
                     new Request(
                         `${baseUrl}/inventory/list/search?search=${inventoryItems[0].name}`,
                         {
-                            method: "GET",
                             headers: {
                                 Cookie: loggedInCookieAdmin,
                             },
@@ -712,7 +696,6 @@ describe("Inventory routes file endpoints", async () => {
                         new Request(
                             `${baseUrl}/inventory/list/search?search=${inventoryItems[0].name}`,
                             {
-                                method: "GET",
                                 headers: {
                                     Cookie: loggedInCookieAdmin,
                                 },
@@ -733,7 +716,6 @@ describe("Inventory routes file endpoints", async () => {
                         new Request(
                             `${baseUrl}/inventory/list/search?search=${changeInventoryNameTo}`,
                             {
-                                method: "GET",
                                 headers: {
                                     Cookie: loggedInCookieAdmin,
                                 },
