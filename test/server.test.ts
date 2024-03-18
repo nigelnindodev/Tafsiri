@@ -78,7 +78,6 @@ describe("Main routes file endpoints", async () => {
         describe("User session active", async () => {
             const response = await app.handle(
                 new Request(`${baseUrl}/root`, {
-                    method: "GET",
                     headers: {
                         Cookie: loggedInCookie,
                     },

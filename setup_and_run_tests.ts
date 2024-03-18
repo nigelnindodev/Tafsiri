@@ -1,6 +1,9 @@
 import { $ } from "bun";
 import { setTimeout } from "timers/promises";
 
+//purge any docker volumes that may exists i.e due to failed tests
+await $`docker compose down --volumes`;
+
 // Use docker compose to set up a postgres database as specified in compose.yaml
 await $`docker compose up -d`;
 
