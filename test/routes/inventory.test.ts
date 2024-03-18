@@ -69,7 +69,7 @@ describe("Inventory routes file endpoints", async () => {
                     const $ = cheerio.load(await response.text());
                     const elementsWithHxGet = $("div[hx-get]");
 
-                    test("Returns the main inventory page", async () => {
+                    test("Returns the main inventory page", () => {
                         const inventoryPageIdentifierDiv = $(
                             `#${HtmxTargets.INVENTORY_SECTION}`
                         );
@@ -247,7 +247,7 @@ describe("Inventory routes file endpoints", async () => {
                         expect(rows.length).toBe(numInitialInventoryItems);
                     });
 
-                    test("Row can get inventory item orders via GET  with correct hx-target value", () => {
+                    test("Row can get inventory item orders via GET with correct hx-target value", () => {
                         const targetElement = firstRow.find(
                             '[hx-get="/inventory/orders/1"]'
                         );
