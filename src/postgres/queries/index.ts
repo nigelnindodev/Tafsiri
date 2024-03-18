@@ -1,4 +1,4 @@
-import { DataSource, InsertResult, UpdateResult } from "typeorm"
+import { DataSource, InsertResult, UpdateResult } from "typeorm";
 import {
     InventoryEntity,
     OrdersEntity,
@@ -6,20 +6,20 @@ import {
     PaymentEntity,
     UsersEntity,
     OrderPriceEntity,
-} from "../entities"
+} from "../entities";
 import {
     OrderStatus,
     PaymentStatus,
     PaymentTypes,
     TableNames,
-} from "../common/constants"
-import { logger } from "../.."
+} from "../common/constants";
+import { logger } from "../..";
 
 export const insertInventoryItem = async (
     dataSource: DataSource,
     data: {
-        name: string
-        price: number
+        name: string;
+        price: number;
     }
 ): Promise<InsertResult> => {
     return await dataSource
@@ -31,15 +31,15 @@ export const insertInventoryItem = async (
             price: data.price,
             active: true, // one creation an inventory item is automatically active
         })
-        .execute()
-}
+        .execute();
+};
 
 export const updateInventoryItem = async (
     dataSource: DataSource,
     inventoryId: number,
     data: {
-        name: string
-        price: number
+        name: string;
+        price: number;
     }
 ): Promise<UpdateResult> => {
     return await dataSource
@@ -50,8 +50,8 @@ export const updateInventoryItem = async (
             price: data.price,
         })
         .where("inventory.id = :id", { id: inventoryId })
-        .execute()
-}
+        .execute();
+};
 
 export const getInventoryItems = async (
     dataSource: DataSource
@@ -63,9 +63,9 @@ export const getInventoryItems = async (
         .from(InventoryEntity, TableNames.INVENTORY)
         .where("active = :state", { state: true })
         .orderBy({ "inventory.id": "ASC" })
-        .getMany()
-    return data
-}
+        .getMany();
+    return data;
+};
 
 export const getInventoryItemById = async (
     dataSource: DataSource,
@@ -76,8 +76,8 @@ export const getInventoryItemById = async (
         .select(TableNames.INVENTORY)
         .from(InventoryEntity, TableNames.INVENTORY)
         .where("id = :id", { id: inventoryId })
-        .getOne()
-}
+        .getOne();
+};
 
 /**
  * Query is used to populate the drop-down of inventory items in the create order section of
@@ -96,9 +96,9 @@ export const getInventoryItemsOrderByName = async (
         .from(InventoryEntity, TableNames.INVENTORY)
         .where("active = :state", { state: true })
         .orderBy({ "inventory.name": "ASC" })
-        .getMany()
-    return data
-}
+        .getMany();
+    return data;
+};
 
 /**
  * Possibility of SQL injection here in the like part of the query?
@@ -117,13 +117,13 @@ export const getInventoryItemsByName = async (
             .where(`name like '%${name.toUpperCase()}%'`)
             .andWhere("active = :state", { state: true })
             .orderBy({ "inventory.id": "ASC" })
-            .getMany()
-        return data
+            .getMany();
+        return data;
     } catch (e) {
-        logger.error(e)
-        return []
+        logger.error(e);
+        return [];
     }
-}
+};
 
 export const initializeOrder = async (
     dataSource: DataSource,
@@ -137,8 +137,8 @@ export const initializeOrder = async (
             status: OrderStatus.INITIALIZED,
             users: userId,
         })
-        .execute()
-}
+        .execute();
+};
 
 export const completeOrder = async (
     dataSource: DataSource,
@@ -152,8 +152,8 @@ export const completeOrder = async (
             updated_at: new Date(),
         })
         .where("orders.id = :id", { id: orderId })
-        .execute()
-}
+        .execute();
+};
 
 export const updateOrderOwner = async (
     dataSource: DataSource,
@@ -168,8 +168,8 @@ export const updateOrderOwner = async (
             updated_at: new Date(),
         })
         .where("orders.id = :id", { id: orderId })
-        .execute()
-}
+        .execute();
+};
 
 export const getOrderById = async (
     dataSource: DataSource,
@@ -180,8 +180,8 @@ export const getOrderById = async (
         .select(TableNames.ORDERS)
         .from(OrdersEntity, TableNames.ORDERS)
         .where("orders.id = :id", { id: id })
-        .getOne()
-}
+        .getOne();
+};
 
 /**
  * TODO: Might we need some limit on this. Definitely in the future we'll also require offsets
@@ -195,8 +195,8 @@ export const getOrders = async (
         .select(TableNames.ORDERS)
         .from(OrdersEntity, TableNames.ORDERS)
         .orderBy({ "orders.id": "DESC" })
-        .getMany()
-}
+        .getMany();
+};
 
 /**
  * Fetches all the inventory items in a particular order.
@@ -215,8 +215,8 @@ export const getOrderItemsInOrder = async (
         )
         .where("order_item.ordersId = :orderId", { orderId })
         .orderBy({ "order_item.id": "DESC" })
-        .getMany()
-}
+        .getMany();
+};
 
 /**
  * Fetches latest unfinished orders togerther with its order items, limiting to the last 10 items.
@@ -239,8 +239,8 @@ export const getUnfinishedOrderItems = async (
         })
         .orderBy({ "orders.id": "DESC" })
         //.limit(10)
-        .getMany()
-}
+        .getMany();
+};
 
 /**
  * Fetches all completed orders with all its details (Order Items, Inventory Details, Payment Details)
@@ -264,8 +264,8 @@ export const getCompletedOrders = async (
         })
         .orderBy({ "payment.updated_at": "DESC" }) // TODO: maybe change order criteria i.e when payment was completed?
         //.limit(50)
-        .getMany()
-}
+        .getMany();
+};
 
 /**
  * Fetches completed orders containing inventory items within the specified ids.
@@ -293,8 +293,8 @@ export const getCompleteOrdersWithInventoryItems = async (
         .andWhere("inventory.id IN(:...ids)", { ids: inventoryIds })
         .orderBy({ "payment.updated_at": "DESC" }) // TODO: maybe change order criteria i.e when payment was completed?
         //.limit(50)
-        .getMany()
-}
+        .getMany();
+};
 
 /**
  * Get order item using its auto incrementing id.
@@ -309,8 +309,8 @@ export const getOrderItemById = async (
         .select(TableNames.ORDER_ITEM)
         .from(OrderItemEntity, TableNames.ORDER_ITEM)
         .where("order_item.id = :id", { id: itemId })
-        .getOne()
-}
+        .getOne();
+};
 
 /**
  * Fetches an inventory item for a specific order given its inventoryId.
@@ -328,8 +328,8 @@ export const getOrderItemByInventoryId = async (
         .andWhere("order_item.inventoryId = :inventoryId", {
             inventoryId: inventoryId,
         })
-        .getOne()
-}
+        .getOne();
+};
 
 /**
  * Toggles active state of an order item.
@@ -346,8 +346,8 @@ export const toggleOrderItem = async (
             active: active,
         })
         .where("order_item.id = :id", { id: itemId })
-        .execute()
-}
+        .execute();
+};
 
 export const updateOrderItemCount = async (
     dataSource: DataSource,
@@ -361,8 +361,8 @@ export const updateOrderItemCount = async (
             quantity: quantity,
         })
         .where("order_item.id = :id", { id: itemId })
-        .execute()
-}
+        .execute();
+};
 
 /**
  * Adds a new inventory item to an order.
@@ -386,12 +386,12 @@ export const insertOrderitem = async (
                 quantity: 1,
                 active: true,
             })
-            .execute()
+            .execute();
     } catch (e) {
-        logger.error(e)
-        throw e
+        logger.error(e);
+        throw e;
     }
-}
+};
 
 /**
  * Use this method to get the immutable price of an order item.
@@ -400,7 +400,7 @@ export const getOrderPrice = async (
     dataSource: DataSource,
     orderItemId: number
 ): Promise<OrderPriceEntity | null> => {
-    logger.trace("Calling getOrderPrice method")
+    logger.trace("Calling getOrderPrice method");
     return await dataSource
         .createQueryBuilder()
         .select(TableNames.ORDER_ITEM_PRICE)
@@ -408,8 +408,8 @@ export const getOrderPrice = async (
         .where("order_item_price.orderItemId = :orderItemId", {
             orderItemId: orderItemId,
         })
-        .getOne()
-}
+        .getOne();
+};
 
 /**
  * Inserting price separately with the inventoty item and order relation
@@ -429,12 +429,12 @@ export const insertOrderPrice = async (
                 order_item: orderItemId,
                 price: price,
             })
-            .execute()
+            .execute();
     } catch (e) {
-        logger.error(e)
-        throw e
+        logger.error(e);
+        throw e;
     }
-}
+};
 
 export const initializePayment = async (
     dataSource: DataSource,
@@ -450,8 +450,8 @@ export const initializePayment = async (
             payment_type: PaymentTypes.CASH, // initialize payemnts with cash
             payment_status: PaymentStatus.INITIALIZED,
         })
-        .execute()
-}
+        .execute();
+};
 
 export const getPaymentById = async (
     dataSource: DataSource,
@@ -462,8 +462,8 @@ export const getPaymentById = async (
         .select(TableNames.PAYMENT)
         .from(PaymentEntity, TableNames.PAYMENT)
         .where("payment.id = id", { id: id })
-        .getOne()
-}
+        .getOne();
+};
 
 export const completePayment = async (
     dataSource: DataSource,
@@ -479,8 +479,8 @@ export const completePayment = async (
             updated_at: new Date(),
         })
         .where("payment.id = :id", { id: paymentId })
-        .execute()
-}
+        .execute();
+};
 
 export const getPaymentByOrderId = async (
     dataSource: DataSource,
@@ -491,8 +491,8 @@ export const getPaymentByOrderId = async (
         .select(TableNames.PAYMENT)
         .from(PaymentEntity, TableNames.PAYMENT)
         .where("payment.orderRefId = :orderId", { orderId: orderId })
-        .getOne()
-}
+        .getOne();
+};
 
 export const updatePaymentType = async (
     dataSource: DataSource,
@@ -504,8 +504,8 @@ export const updatePaymentType = async (
         .update(PaymentEntity)
         .set({ payment_type: paymentType })
         .where("payment.id = :id", { id: paymentId })
-        .execute()
-}
+        .execute();
+};
 
 export const getAllUsers = async (
     dataSource: DataSource
@@ -515,8 +515,8 @@ export const getAllUsers = async (
         .select(TableNames.USERS)
         .from(UsersEntity, TableNames.USERS)
         .orderBy({ "users.id": "ASC" })
-        .getMany()
-}
+        .getMany();
+};
 
 /**
  * Fetches a user using their database id. Does not return encrypted user credentials.
@@ -530,8 +530,8 @@ export const getUserById = async (
         .select(TableNames.USERS)
         .from(UsersEntity, TableNames.USERS)
         .where("users.id = :id", { id: userId })
-        .getOne()
-}
+        .getOne();
+};
 
 /**
  * Fetches user detials by using their username. returns the user's encrypted credentials. Useful
@@ -549,8 +549,8 @@ export const getUserByUsernameWithCredentials = async (
             TableNames.USER_CREDENTIALS
         )
         .where("users.username = :username", { username: username })
-        .getOne()
-}
+        .getOne();
+};
 
 /**
  * Creates a new user. By defualt, all users are non-admin.
@@ -568,8 +568,8 @@ export const createNewUser = async (
             is_admin: false,
             is_active: true,
         })
-        .execute()
-}
+        .execute();
+};
 
 export const createUserCredentials = async (
     dataSource: DataSource,
@@ -584,8 +584,8 @@ export const createUserCredentials = async (
             user_ref: userId,
             encrypted_password: encryptedPassword,
         })
-        .execute()
-}
+        .execute();
+};
 
 export const toggleUserActiveState = async (
     dataSource: DataSource,
@@ -600,8 +600,8 @@ export const toggleUserActiveState = async (
             updated_at: new Date(),
         })
         .where("users.id = :id", { id: userId })
-        .execute()
-}
+        .execute();
+};
 
 export const upgradeUserToAdmin = async (
     dataSource: DataSource,
@@ -612,5 +612,5 @@ export const upgradeUserToAdmin = async (
         .update(UsersEntity)
         .set({ is_admin: true })
         .where("users.username = :username", { username: username })
-        .execute()
-}
+        .execute();
+};

@@ -1,4 +1,4 @@
-import { HtmxTargets } from "../../common/constants"
+import { HtmxTargets } from "../../common/constants";
 
 export const UserUpdateResultComponent = () => {
     return (
@@ -9,5 +9,5 @@ export const UserUpdateResultComponent = () => {
         >
             <ins>User updated.</ins>
         </div>
-    )
-}
+    );
+};

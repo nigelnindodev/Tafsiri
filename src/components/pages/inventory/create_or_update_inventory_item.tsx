@@ -1,5 +1,5 @@
-import { InventoryEntity } from "../../../postgres/entities"
-import { HtmxTargets } from "../../common/constants"
+import { InventoryEntity } from "../../../postgres/entities";
+import { HtmxTargets } from "../../common/constants";
 
 export const CreateOrUpdateInventoryComponent = (
     inventoryItem?: InventoryEntity
@@ -67,5 +67,5 @@ export const CreateOrUpdateInventoryComponent = (
                 </button>
             </form>
         </div>
-    )
-}
+    );
+};

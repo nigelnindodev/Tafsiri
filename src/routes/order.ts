@@ -1,7 +1,7 @@
-import { Elysia, t } from "elysia"
+import { Elysia, t } from "elysia";
 
-import { DataSource } from "typeorm"
-import { OrdersPage } from "../components/pages/orders"
+import { DataSource } from "typeorm";
+import { OrdersPage } from "../components/pages/orders";
 import {
     activeOrders,
     addOrRemoveOrderItem,
@@ -11,14 +11,14 @@ import {
     resumeOrder,
     updateItemCounter,
     updatePaymentTypeForOrder,
-} from "../services/orders"
-import { ViewOrdersSection } from "../components/pages/orders/orders"
-import { PaymentTypes } from "../postgres/common/constants"
+} from "../services/orders";
+import { ViewOrdersSection } from "../components/pages/orders/orders";
+import { PaymentTypes } from "../postgres/common/constants";
 import {
     ServerHxTriggerEvents,
     SwaggerTags,
-} from "../services/common/constants"
-import { logger } from ".."
+} from "../services/common/constants";
+import { logger } from "..";
 
 const orderSchema = {
     activeOrdersParams: t.Object({
@@ -45,10 +45,10 @@ const orderSchema = {
     updatePaymentTypeForOrderParams: t.Object({
         paymentId: t.Numeric(),
     }),
-}
+};
 
 export const orderRoutes = (dataSource: DataSource) => {
-    const app = new Elysia({ prefix: "/orders" })
+    const app = new Elysia({ prefix: "/orders" });
     app
         //.use(authPlugin())
         .get("/", () => OrdersPage, {
@@ -62,7 +62,7 @@ export const orderRoutes = (dataSource: DataSource) => {
         .get(
             "/active/:orderId",
             async (ctx) => {
-                return await activeOrders(dataSource, ctx.params.orderId)
+                return await activeOrders(dataSource, ctx.params.orderId);
             },
             {
                 params: orderSchema.activeOrdersParams,
@@ -76,19 +76,19 @@ export const orderRoutes = (dataSource: DataSource) => {
         .get(
             "/create",
             async (ctx) => {
-                logger.trace("Create order ctx", ctx)
+                logger.trace("Create order ctx", ctx);
                 /**
                  * If userId is in the ctx, it should be a number.
                  * If type guard fails, then throw an error.
                  */
                 if ("userId" in ctx) {
-                    const { userId } = ctx
-                    return await createOrder(dataSource, userId as number)
+                    const { userId } = ctx;
+                    return await createOrder(dataSource, userId as number);
                 } else {
                     const message =
-                        "Failed to get userId of currently logged in user"
-                    logger.error(message)
-                    throw new Error(message)
+                        "Failed to get userId of currently logged in user";
+                    logger.error(message);
+                    throw new Error(message);
                 }
             },
             {
@@ -103,7 +103,7 @@ export const orderRoutes = (dataSource: DataSource) => {
         .get(
             "/list",
             () => {
-                return ViewOrdersSection
+                return ViewOrdersSection;
             },
             {
                 detail: {
@@ -117,7 +117,7 @@ export const orderRoutes = (dataSource: DataSource) => {
         .get(
             "/list/all",
             async () => {
-                return await listUnfinishedOrders(dataSource)
+                return await listUnfinishedOrders(dataSource);
             },
             {
                 detail: {
@@ -132,17 +132,17 @@ export const orderRoutes = (dataSource: DataSource) => {
             "/resume/:orderId",
             async (ctx) => {
                 if ("userId" in ctx) {
-                    const { userId } = ctx
+                    const { userId } = ctx;
                     return await resumeOrder(
                         dataSource,
                         ctx.params.orderId,
                         userId as number
-                    )
+                    );
                 } else {
                     const message =
-                        "Failed to get userId of currently logged in user"
-                    logger.error(message)
-                    throw new Error(message)
+                        "Failed to get userId of currently logged in user";
+                    logger.error(message);
+                    throw new Error(message);
                 }
             },
             {
@@ -162,7 +162,7 @@ export const orderRoutes = (dataSource: DataSource) => {
                     dataSource,
                     ctx.params.orderId,
                     ctx.params.paymentId
-                )
+                );
             },
             {
                 params: orderSchema.confirmOrderParams,
@@ -181,10 +181,10 @@ export const orderRoutes = (dataSource: DataSource) => {
                     dataSource,
                     ctx.params.itemId,
                     ctx.params.updateType
-                )
+                );
                 ctx.set.headers["HX-Trigger"] =
-                    ServerHxTriggerEvents.REFRESH_ORDER
-                return result
+                    ServerHxTriggerEvents.REFRESH_ORDER;
+                return result;
             },
             {
                 params: orderSchema.updateItemCounterParams,
@@ -203,10 +203,10 @@ export const orderRoutes = (dataSource: DataSource) => {
                     dataSource,
                     ctx.params.orderId,
                     ctx.params.inventoryId
-                )
+                );
                 ctx.set.headers["HX-Trigger"] =
-                    ServerHxTriggerEvents.REFRESH_ORDER
-                return result
+                    ServerHxTriggerEvents.REFRESH_ORDER;
+                return result;
             },
             {
                 params: orderSchema.addOrRemoveItemParams,
@@ -225,10 +225,10 @@ export const orderRoutes = (dataSource: DataSource) => {
                     dataSource,
                     ctx.params.paymentId,
                     ctx.body.paymentType as PaymentTypes // TODO: Get rid of this type coercion before merging
-                )
+                );
                 ctx.set.headers["HX-Trigger"] =
-                    ServerHxTriggerEvents.REFRESH_ORDER
-                return result
+                    ServerHxTriggerEvents.REFRESH_ORDER;
+                return result;
             },
             {
                 body: orderSchema.updatePaymentTypeForOrderBody,
@@ -240,6 +240,6 @@ export const orderRoutes = (dataSource: DataSource) => {
                     tags: [SwaggerTags.Orders.name],
                 },
             }
-        )
-    return app
-}
+        );
+    return app;
+};

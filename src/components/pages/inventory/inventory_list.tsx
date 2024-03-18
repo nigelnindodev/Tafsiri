@@ -1,5 +1,5 @@
-import { InventoryEntity } from "../../../postgres/entities"
-import { HtmxTargets } from "../../common/constants"
+import { InventoryEntity } from "../../../postgres/entities";
+import { HtmxTargets } from "../../common/constants";
 
 export const inventoryList = (inventoryItems: InventoryEntity[]) => {
     return (
@@ -44,10 +44,10 @@ export const inventoryList = (inventoryItems: InventoryEntity[]) => {
                                     </button>
                                 </td>
                             </tr>
-                        )
+                        );
                     })}
                 </tbody>
             </table>
         </div>
-    )
-}
+    );
+};

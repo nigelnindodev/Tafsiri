@@ -1,7 +1,7 @@
-import moment from "moment"
+import moment from "moment";
 
-import { UsersEntity } from "../../../postgres/entities"
-import { HtmxTargets } from "../../common/constants"
+import { UsersEntity } from "../../../postgres/entities";
+import { HtmxTargets } from "../../common/constants";
 
 export const ViewUserComponent = (userEntity: UsersEntity) => {
     return (
@@ -104,5 +104,5 @@ export const ViewUserComponent = (userEntity: UsersEntity) => {
                 </button>
             )}
         </div>
-    )
-}
+    );
+};

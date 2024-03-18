@@ -1,7 +1,7 @@
-import { InventoryEntity, OrderItemEntity } from "../../../postgres/entities"
-import { ServerHxTriggerEvents } from "../../../services/common/constants"
-import { HtmxTargets } from "../../common/constants"
-import { InventoryItemSelectDuringOrder } from "./inventory_item_select_during_order"
+import { InventoryEntity, OrderItemEntity } from "../../../postgres/entities";
+import { ServerHxTriggerEvents } from "../../../services/common/constants";
+import { HtmxTargets } from "../../common/constants";
+import { InventoryItemSelectDuringOrder } from "./inventory_item_select_during_order";
 
 export const CreateOrUpdateOrderSection = (
     orderId: number,
@@ -41,5 +41,5 @@ export const CreateOrUpdateOrderSection = (
                 />
             </div>
         </div>
-    )
-}
+    );
+};

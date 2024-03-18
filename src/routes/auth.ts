@@ -1,16 +1,19 @@
-import { Elysia, t } from "elysia"
-import { DataSource } from "typeorm"
-import { cookie } from "@elysiajs/cookie"
-import { jwt } from "@elysiajs/jwt"
+import { Elysia, t } from "elysia";
+import { DataSource } from "typeorm";
+import { cookie } from "@elysiajs/cookie";
+import { jwt } from "@elysiajs/jwt";
 
-import { processCreateUserRequest, processLoginRequest } from "../services/auth"
-import { MarkedInfoWrapperComponent } from "../components/common/marked_info_wrapper"
+import {
+    processCreateUserRequest,
+    processLoginRequest,
+} from "../services/auth";
+import { MarkedInfoWrapperComponent } from "../components/common/marked_info_wrapper";
 import {
     CookieConstansts,
     ServerHxTriggerEvents,
     SwaggerTags,
-} from "../services/common/constants"
-import { getConfig, logger } from ".."
+} from "../services/common/constants";
+import { getConfig, logger } from "..";
 
 const authSchemas = {
     processLoginRequestSchema: t.Object({
@@ -21,14 +24,14 @@ const authSchemas = {
         username: t.String(),
         password: t.String(),
     }),
-}
+};
 
 /**
  * There's some code duplication with adding JWT middleware in here and in the main server.js file,
  * currently happening to get the Typescript compiler to be happy.
  **/
 export const authRoutes = (dataSource: DataSource) => {
-    const app = new Elysia({ prefix: "/auth" })
+    const app = new Elysia({ prefix: "/auth" });
     app.use(cookie())
         .use(
             jwt({
@@ -43,11 +46,11 @@ export const authRoutes = (dataSource: DataSource) => {
                     dataSource,
                     ctx.body.username,
                     ctx.body.password
-                )
+                );
                 if (result.userEntity === undefined) {
-                    return MarkedInfoWrapperComponent(result.errorMessage)
+                    return MarkedInfoWrapperComponent(result.errorMessage);
                 } else {
-                    logger.trace(ctx)
+                    logger.trace(ctx);
                     // TODO: If in production, should also set up the secure attribute
                     ctx.setCookie(
                         "auth",
@@ -60,10 +63,10 @@ export const authRoutes = (dataSource: DataSource) => {
                             maxAge: CookieConstansts.maxAge,
                             path: CookieConstansts.path,
                         }
-                    )
+                    );
                     ctx.set.headers["HX-Trigger"] =
-                        ServerHxTriggerEvents.LOGIN_STATUS_CHANGE
-                    return ""
+                        ServerHxTriggerEvents.LOGIN_STATUS_CHANGE;
+                    return "";
                 }
             },
             {
@@ -82,10 +85,10 @@ export const authRoutes = (dataSource: DataSource) => {
                     httpOnly: true,
                     maxAge: 0,
                     path: CookieConstansts.path,
-                })
+                });
                 ctx.set.headers["HX-Trigger"] =
-                    ServerHxTriggerEvents.LOGIN_STATUS_CHANGE
-                return ""
+                    ServerHxTriggerEvents.LOGIN_STATUS_CHANGE;
+                return "";
             },
             {
                 detail: {
@@ -104,7 +107,7 @@ export const authRoutes = (dataSource: DataSource) => {
                     dataSource,
                     ctx.body.username,
                     ctx.body.password
-                )
+                );
             },
             {
                 body: authSchemas.processCreateuserRequestSchema,
@@ -115,6 +118,6 @@ export const authRoutes = (dataSource: DataSource) => {
                     tags: [SwaggerTags.Auth.name],
                 },
             }
-        )
-    return app
-}
+        );
+    return app;
+};

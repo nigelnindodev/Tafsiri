@@ -8,25 +8,25 @@ import {
     PrimaryGeneratedColumn,
     Index,
     type Relation,
-} from "typeorm"
+} from "typeorm";
 import {
     TableNames,
     OrderStatus,
     PaymentStatus,
     PaymentTypes,
-} from "../common/constants"
+} from "../common/constants";
 
 const generateIndexName = (
     tableName: TableNames,
     columnName: string
 ): string => {
-    return `${tableName}_${columnName}_idx`
-}
+    return `${tableName}_${columnName}_idx`;
+};
 
 @Entity({ name: TableNames.SCAFFOLD })
 export class ScaffoldEntity {
     @PrimaryGeneratedColumn()
-    id: number
+    id: number;
 }
 
 /**
@@ -43,34 +43,34 @@ export class ScaffoldEntity {
 @Entity({ name: TableNames.INVENTORY })
 export class InventoryEntity {
     @PrimaryGeneratedColumn()
-    id: number
+    id: number;
 
     @Index(generateIndexName(TableNames.INVENTORY, "name"), { unique: true })
     @Column("varchar", { length: 100, nullable: false })
-    name: string
+    name: string;
 
     @Index(generateIndexName(TableNames.INVENTORY, "price"))
     @Column("decimal", { nullable: false })
-    price: number
+    price: number;
 
     @Index(generateIndexName(TableNames.INVENTORY, "active"))
     @Column("boolean", { nullable: false })
-    active: boolean
+    active: boolean;
 
     @OneToMany(() => OrderItemEntity, (orderItem) => orderItem.inventory)
-    order_items: Relation<OrderItemEntity[]>
+    order_items: Relation<OrderItemEntity[]>;
 
     @Column("timestamptz", {
         nullable: false,
         default: () => "CURRENT_TIMESTAMP",
     })
-    created_at: Date
+    created_at: Date;
 
     @Column("timestamptz", {
         nullable: false,
         default: () => "CURRENT_TIMESTAMP",
     })
-    updated_at: Date
+    updated_at: Date;
 }
 
 /**
@@ -85,31 +85,31 @@ export class InventoryEntity {
 @Entity({ name: TableNames.ORDERS })
 export class OrdersEntity {
     @PrimaryGeneratedColumn()
-    id: number
+    id: number;
 
     @OneToOne(() => PaymentEntity, (payment) => payment.order_ref)
-    payment: Relation<PaymentEntity>
+    payment: Relation<PaymentEntity>;
 
     @OneToMany(() => OrderItemEntity, (orderItem) => orderItem.orders)
-    order_items: Relation<OrderItemEntity[]>
+    order_items: Relation<OrderItemEntity[]>;
 
     @ManyToOne(() => UsersEntity, (users) => users.orders, { nullable: true })
-    users: Relation<UsersEntity>
+    users: Relation<UsersEntity>;
 
     @Column("enum", { enum: OrderStatus, nullable: false })
-    status: OrderStatus
+    status: OrderStatus;
 
     @Column("timestamptz", {
         nullable: false,
         default: () => "CURRENT_TIMESTAMP",
     })
-    created_at: Date
+    created_at: Date;
 
     @Column("timestamptz", {
         nullable: false,
         default: () => "CURRENT_TIMESTAMP",
     })
-    updated_at: Date
+    updated_at: Date;
 }
 
 /**
@@ -122,38 +122,38 @@ export class OrdersEntity {
 @Entity({ name: TableNames.ORDER_ITEM })
 export class OrderItemEntity {
     @PrimaryGeneratedColumn()
-    id: number
+    id: number;
 
     @Column("boolean", { nullable: false })
-    active: boolean
+    active: boolean;
 
     @Column("int", { nullable: false })
-    quantity: number
+    quantity: number;
 
     @ManyToOne(() => InventoryEntity, (inventory) => inventory.order_items, {
         nullable: false,
     })
-    inventory: Relation<InventoryEntity>
+    inventory: Relation<InventoryEntity>;
 
     @ManyToOne(() => OrdersEntity, (order) => order.order_items, {
         nullable: false,
     })
-    orders: Relation<OrdersEntity>
+    orders: Relation<OrdersEntity>;
 
     @OneToOne(() => OrderPriceEntity, (orderPrice) => orderPrice.order_item)
-    order_item_price: Relation<OrderPriceEntity>
+    order_item_price: Relation<OrderPriceEntity>;
 
     @Column("timestamptz", {
         nullable: false,
         default: () => "CURRENT_TIMESTAMP",
     })
-    created_at: Date
+    created_at: Date;
 }
 
 @Entity({ name: TableNames.ORDER_ITEM_PRICE })
 export class OrderPriceEntity {
     @PrimaryGeneratedColumn()
-    id: number
+    id: number;
 
     @OneToOne(
         () => OrderItemEntity,
@@ -161,117 +161,117 @@ export class OrderPriceEntity {
         { nullable: false }
     )
     @JoinColumn()
-    order_item: Relation<OrderItemEntity>
+    order_item: Relation<OrderItemEntity>;
 
     @Column("decimal", { nullable: false })
-    price: number
+    price: number;
 
     @Column("timestamptz", {
         nullable: false,
         default: () => "CURRENT_TIMESTAMP",
     })
-    created_at: Date
+    created_at: Date;
 }
 
 @Entity({ name: TableNames.PAYMENT })
 export class PaymentEntity {
     @PrimaryGeneratedColumn()
-    id: number
+    id: number;
 
     @Column("decimal", { nullable: false })
-    amount: number
+    amount: number;
 
     // A reference that can be added for payment of the order, such as an Mpesa reference message
     @Column("varchar", { length: 100, nullable: true })
-    reference: string
+    reference: string;
 
     @OneToOne(() => OrdersEntity, (order) => order.payment, { nullable: false })
     @JoinColumn()
-    order_ref: Relation<OrdersEntity>
+    order_ref: Relation<OrdersEntity>;
 
     @Index(generateIndexName(TableNames.PAYMENT, "payment_status"))
     @Column("enum", { enum: PaymentStatus, nullable: false })
-    payment_status: PaymentStatus
+    payment_status: PaymentStatus;
 
     @Index(generateIndexName(TableNames.PAYMENT, "payment_type"))
     @Column("enum", { enum: PaymentTypes, nullable: false })
-    payment_type: PaymentTypes
+    payment_type: PaymentTypes;
 
     @Column("timestamptz", {
         nullable: false,
         default: () => "CURRENT_TIMESTAMP",
     })
-    created_at: Date
+    created_at: Date;
 
     @Column("timestamptz", {
         nullable: false,
         default: () => "CURRENT_TIMESTAMP",
     })
-    updated_at: Date
+    updated_at: Date;
 }
 
 @Entity({ name: TableNames.USERS })
 export class UsersEntity {
     @PrimaryGeneratedColumn()
-    id: number
+    id: number;
 
     @OneToOne(
         () => UserCredentialsEntity,
         (userCredentials) => userCredentials.user_ref
     )
-    user_credentials: Relation<UserCredentialsEntity>
+    user_credentials: Relation<UserCredentialsEntity>;
 
     @OneToMany(() => OrdersEntity, (orders) => orders.users)
-    orders: Relation<OrdersEntity[]>
+    orders: Relation<OrdersEntity[]>;
 
     @Index(generateIndexName(TableNames.USERS, "username"), { unique: true })
     @Column("varchar", { length: 100, nullable: false })
-    username: string
+    username: string;
 
     @Index(generateIndexName(TableNames.USERS, "is_active"))
     @Column("boolean", { nullable: false, default: true })
-    is_active: boolean
+    is_active: boolean;
 
     @Index(generateIndexName(TableNames.USERS, "is_admin"))
     @Column("boolean", { nullable: false })
-    is_admin: boolean
+    is_admin: boolean;
 
     @Column("timestamptz", {
         nullable: false,
         default: () => "CURRENT_TIMESTAMP",
     })
-    created_at: Date
+    created_at: Date;
 
     @Column("timestamptz", {
         nullable: false,
         default: () => "CURRENT_TIMESTAMP",
     })
-    updated_at: Date
+    updated_at: Date;
 }
 
 @Entity({ name: TableNames.USER_CREDENTIALS })
 export class UserCredentialsEntity {
     @PrimaryGeneratedColumn()
-    id: number
+    id: number;
 
     @OneToOne(() => UsersEntity, (users) => users.user_credentials, {
         nullable: false,
     })
     @JoinColumn()
-    user_ref: Relation<UsersEntity>
+    user_ref: Relation<UsersEntity>;
 
     @Column("varchar")
-    encrypted_password: string
+    encrypted_password: string;
 
     @Column("timestamptz", {
         nullable: false,
         default: () => "CURRENT_TIMESTAMP",
     })
-    created_at: Date
+    created_at: Date;
 
     @Column("timestamptz", {
         nullable: false,
         default: () => "CURRENT_TIMESTAMP",
     })
-    updated_at: Date
+    updated_at: Date;
 }

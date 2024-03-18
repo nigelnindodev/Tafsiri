@@ -1,4 +1,4 @@
-import { HtmxTargets } from "../../common/constants"
+import { HtmxTargets } from "../../common/constants";
 
 export const ViewInventoryComponent = () => {
     return (
@@ -37,5 +37,5 @@ export const ViewInventoryComponent = () => {
                 hx-trigger="load"
             />
         </div>
-    )
-}
+    );
+};

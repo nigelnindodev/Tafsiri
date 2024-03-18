@@ -1,5 +1,5 @@
-import { getConfig } from "../../.."
-import { HtmxTargets } from "../../common/constants"
+import { getConfig } from "../../..";
+import { HtmxTargets } from "../../common/constants";
 
 export const LoginComponent = () => {
     return (
@@ -56,5 +56,5 @@ export const LoginComponent = () => {
                 </form>
             </main>
         </div>
-    )
-}
+    );
+};
