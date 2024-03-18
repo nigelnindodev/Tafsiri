@@ -30,6 +30,7 @@
     "@types/bun": "^1.0.3",
     "autoprefixer": "^10.4.17",
     "bun-types": "latest",
+    "prettier": "^3.2.5",
     "typescript": "^5.4.2",
     "vite": "^5.1.4"
   },
