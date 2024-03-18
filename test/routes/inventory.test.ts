@@ -306,10 +306,9 @@ describe("Inventory routes file endpoints", async () => {
 
             describe("Admin user and search term in inventory items", async () => {
                 /**
-         * Use one of the rows from the already inserted inventory items to public get a positive
-         * search result.
-         }
-          */
+                 * Use one of the rows from the already inserted inventory items to public get a positive
+                 * search result.
+                 */
                 const response = await app.handle(
                     new Request(
                         `${baseUrl}/inventory/list/search?search=${inventoryItems[0].name}`,
@@ -403,7 +402,7 @@ describe("Inventory routes file endpoints", async () => {
                 describe("HTMX markup response", async () => {
                     const $ = cheerio.load(await response.text());
 
-                    test("Contains navigation to go back to main inventory screen with corret hx-target", () => {
+                    test("Contains navigation to go back to main inventory page with corret hx-target", () => {
                         const targetElement = $('[hx-get="/inventory/list"]');
                         const hxTargetValue = targetElement.attr("hx-target");
                         expect(targetElement.length).toBe(1);
@@ -457,7 +456,7 @@ describe("Inventory routes file endpoints", async () => {
                 });
             });
             describe("Admin user", async () => {
-                //first search for a specific item to run tests on
+                // First search for a specific item to run tests on
                 const searchInventoryItemResponse = await app.handle(
                     new Request(
                         `${baseUrl}/inventory/list/search?search=${inventoryItems[0].name}`,

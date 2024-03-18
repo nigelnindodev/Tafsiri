@@ -68,7 +68,8 @@ export const orderRoutes = (dataSource: DataSource) => {
                 params: orderSchema.activeOrdersParams,
                 detail: {
                     summary: "Get Active Order Component",
-                    description: "TBA",
+                    description:
+                        "Returns HTMX with markup for active order items",
                     tags: [SwaggerTags.Orders.name],
                 },
             }
@@ -219,6 +220,10 @@ export const orderRoutes = (dataSource: DataSource) => {
             }
         )
         .post(
+            /**
+             * :paymentId not necessary here, only used as extra guarantee that the
+             * front end is attributing the right order.
+             */
             "/payment/updateType/:paymentId",
             async (ctx) => {
                 const result = await updatePaymentTypeForOrder(
