@@ -6,6 +6,7 @@ import { getTestBaseUrl, loginUser } from "../test_utils";
 import { testUser } from "../test_constants";
 import { PostgresDataSourceSingleton } from "../../src/postgres";
 import { HtmxTargets } from "../../src/components/common/constants";
+import { createUnfinisheOrder } from "../fixtures";
 
 describe("Order routes file endpoints", async () => {
     const dataSource = await PostgresDataSourceSingleton.getInstance();
@@ -14,6 +15,10 @@ describe("Order routes file endpoints", async () => {
 
     // Create an admin and non-admin user
     const loggedInCookie = await loginUser(app, testUser);
+
+    // Create some unfinished orders
+    await createUnfinisheOrder(app, loggedInCookie);
+    await createUnfinisheOrder(app, loggedInCookie);
 
     describe("GET on /orders endpoint", () => {
         describe("User session inactive", async () => {
@@ -25,40 +30,45 @@ describe("Order routes file endpoints", async () => {
         });
 
         describe("User session active", async () => {
-            const response = await app.handle(new Request(`${baseUrl}/orders`, {
-                headers: {
-                    Cookie: loggedInCookie 
-                }
-            }));
+            const response = await app.handle(
+                new Request(`${baseUrl}/orders`, {
+                    headers: {
+                        Cookie: loggedInCookie,
+                    },
+                })
+            );
 
             test("Returns 200 status code", () => {
                 expect(response.status).toBe(200);
             });
 
             describe("HTMX markup response", async () => {
-                const responseText = await response.text();
-                const $ = cheerio.load(responseText);
+                const $ = cheerio.load(await response.text());
                 const elementsWithHxGet = $("div[hx-get]");
-                
-                console.log("responseText", responseText);
 
                 test("Returns the main orders page", () => {
                     const ordersPageIdentifierDiv = $(
                         `#${HtmxTargets.ORDERS_SECTION}`
                     );
                     expect(ordersPageIdentifierDiv.length).toBe(1);
-                })
+                });
 
                 test("GET on /orders/list is made on content load only", () => {
-                    const hxGetValue = $(elementsWithHxGet.first()).attr("hx-get");
-                    const hxTriggerValue = $(elementsWithHxGet.first()).attr("hx-trigger");
+                    const hxGetValue = $(elementsWithHxGet.first()).attr(
+                        "hx-get"
+                    );
+                    const hxTriggerValue = $(elementsWithHxGet.first()).attr(
+                        "hx-trigger"
+                    );
 
                     expect(hxGetValue).toBe("/orders/list");
                     expect(hxTriggerValue).toBe("load");
                 });
 
                 test("GET on /orders/list has not hx-target (targets innerHTML of containing div)", () => {
-                    const hxTargetValue = $(elementsWithHxGet.first()).attr("hx-target");
+                    const hxTargetValue = $(elementsWithHxGet.first()).attr(
+                        "hx-target"
+                    );
                     expect(hxTargetValue).toBeUndefined();
                 });
             });
@@ -80,8 +90,8 @@ describe("Order routes file endpoints", async () => {
             const response = await app.handle(
                 new Request(`${baseUrl}/orders/list`, {
                     headers: {
-                        Cookie: loggedInCookie
-                    }
+                        Cookie: loggedInCookie,
+                    },
                 })
             );
 
@@ -89,18 +99,17 @@ describe("Order routes file endpoints", async () => {
                 expect(response.status).toBe(200);
             });
 
-            describe("HTMX markup response",async () => {
-                const responseText = await response.text();
-                const $ = cheerio.load(responseText)
-                console.log("responseText", responseText);
+            describe("HTMX markup response", async () => {
+                const $ = cheerio.load(await response.text());
 
                 test("Can create a new order via GET /orders/create with correct hx-target", () => {
                     const targetElement = $('[hx-get="/orders/create"]');
                     const hxTargetValue = targetElement.attr("hx-target");
 
                     expect(targetElement.length).toBe(1);
-                    expect(hxTargetValue).toBe(`#${HtmxTargets.ORDERS_SECTION}`);
-
+                    expect(hxTargetValue).toBe(
+                        `#${HtmxTargets.ORDERS_SECTION}`
+                    );
                 });
 
                 test("Calls GET on /orders/todo endpoint on content load only and the target to be its innerHTML", () => {
@@ -127,7 +136,24 @@ describe("Order routes file endpoints", async () => {
             });
         });
 
-        describe("User session active", () => {});
+        describe("User session active", async () => {
+            const response = await app.handle(
+                new Request(`${baseUrl}/orders/list/all`, {
+                    headers: {
+                        Cookie: loggedInCookie,
+                    },
+                })
+            );
+
+            test("Returns 200 status code", () => {
+                expect(response.status).toBe(200);
+            });
+
+            describe("HTMX markup response", async () => {
+                const responseText = await response.text();
+                console.log("responseText", responseText);
+            });
+        });
     });
 
     describe("GET on /orders/create endpoint", () => {

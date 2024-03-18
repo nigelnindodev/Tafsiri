@@ -1,4 +1,4 @@
-import Elysia from "elysia";
+import Elysia, { Cookie } from "elysia";
 import { getTestBaseUrl } from "./test_utils";
 const Chance = require("chance");
 const chance = new Chance();
@@ -7,6 +7,12 @@ export interface TestInventoryItem {
     name: string;
     price: number;
 }
+
+export interface TestOrder {}
+
+export interface TestOrderItem {}
+
+export interface TestPayment {}
 
 /**
  * Generate random inventory items.
@@ -52,4 +58,17 @@ export const createInventoryItems = async (
         );
     });
     await Promise.all(results);
+};
+
+export const createUnfinisheOrder = async (
+    app: Elysia,
+    authCookieHeader: string
+): Promise<void> => {
+    await app.handle(
+        new Request(`${getTestBaseUrl(app)}/orders/create`, {
+            headers: {
+                Cookie: authCookieHeader,
+            },
+        })
+    );
 };
