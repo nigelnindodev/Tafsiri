@@ -20,7 +20,7 @@ export const UsersListComponent = (users: UsersEntity[]) => {
                         return (
                             <tr>
                                 <td>{user.id}</td>
-                                <td>{user.username}</td>
+                                <td safe>{user.username}</td>
                                 <td>{user.is_admin ? "✅" : "❌"}</td>
                                 <td>{user.is_active ? "✅" : "❌"}</td>
                                 {

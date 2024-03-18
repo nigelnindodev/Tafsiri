@@ -1,5 +1,5 @@
 export const MarkedInfoWrapperComponent = (text: string) => {
 	return (
-		<mark>{text}</mark>
+		<mark safe>{text}</mark>
 	);
 };

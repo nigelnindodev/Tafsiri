@@ -1,6 +1,6 @@
-import { DataSource } from "typeorm";
-import * as queries from "../../postgres/queries";
-import { UsersEntity } from "../../postgres/entities";
+import { DataSource } from "typeorm"
+import * as queries from "../../postgres/queries"
+import { UsersEntity } from "../../postgres/entities"
 
 /**
  * Processes a login request.
@@ -9,43 +9,43 @@ import { UsersEntity } from "../../postgres/entities";
  * why can be found there.
  */
 export const processLoginRequest = async (
-  dataSource: DataSource,
-  username: string,
-  possiblePassword: string,
+    dataSource: DataSource,
+    username: string,
+    possiblePassword: string
 ): Promise<{ errorMessage: string; userEntity?: UsersEntity }> => {
-  const user = await queries.getUserByUsernameWithCredentials(
-    dataSource,
-    username,
-  );
+    const user = await queries.getUserByUsernameWithCredentials(
+        dataSource,
+        username
+    )
 
-  if (user === null) {
-    // return unknown user error message back to the UI
-    return {
-      errorMessage: `No user exists with username ${username}. Please try again.`,
-    };
-  }
+    if (user === null) {
+        // return unknown user error message back to the UI
+        return {
+            errorMessage: `No user exists with username ${username}. Please try again.`,
+        }
+    }
 
-  if (!user.is_active) {
-    return {
-      errorMessage:
-        "This account is currently inactive. Contact administrator.",
-    };
-  }
+    if (!user.is_active) {
+        return {
+            errorMessage:
+                "This account is currently inactive. Contact administrator.",
+        }
+    }
 
-  const isMatch = await Bun.password.verify(
-    possiblePassword,
-    user.user_credentials.encrypted_password,
-  );
+    const isMatch = await Bun.password.verify(
+        possiblePassword,
+        user.user_credentials.encrypted_password
+    )
 
-  if (isMatch === false) {
-    // return incorrect credentials message back to the user
-    return {
-      errorMessage: `Invalid password entered for user ${username}.`,
-    };
-  }
+    if (isMatch === false) {
+        // return incorrect credentials message back to the user
+        return {
+            errorMessage: `Invalid password entered for user ${username}.`,
+        }
+    }
 
-  return { errorMessage: "", userEntity: user };
-};
+    return { errorMessage: "", userEntity: user }
+}
 
 /**
  * For now, anyone can create a user via the API endpoint :-)
@@ -58,19 +58,19 @@ export const processLoginRequest = async (
  * to update admin credentials as soon as possible.
  */
 export const processCreateUserRequest = async (
-  dataSource: DataSource,
-  newUserUsername: string,
-  newUserPassword: string,
+    dataSource: DataSource,
+    newUserUsername: string,
+    newUserPassword: string
 ) => {
-  const initializeNewUserResult = await queries.createNewUser(
-    dataSource,
-    newUserUsername,
-  );
-  const hashedPassword = await Bun.password.hash(newUserPassword);
-  await queries.createUserCredentials(
-    dataSource,
-    initializeNewUserResult.identifiers[0].id,
-    hashedPassword,
-  );
-  return "User created";
-};
+    const initializeNewUserResult = await queries.createNewUser(
+        dataSource,
+        newUserUsername
+    )
+    const hashedPassword = await Bun.password.hash(newUserPassword)
+    await queries.createUserCredentials(
+        dataSource,
+        initializeNewUserResult.identifiers[0].id,
+        hashedPassword
+    )
+    return "User created"
+}
