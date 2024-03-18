@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 
 import { createApplicationServer } from "../../src/server";
 import { getTestBaseUrl, loginUser, loginUserAdmin } from "../test_utils";
-import { testAdminUser, testUser } from "../test_constants";
+import { testUser } from "../test_constants";
 import { PostgresDataSourceSingleton } from "../../src/postgres";
 
 describe("Order roiutes file endpoints", async () => {
@@ -12,14 +12,15 @@ describe("Order roiutes file endpoints", async () => {
 
     // Create an admin and non-admin user
     const loggedInCookie = await loginUser(app, testUser);
-    const loggedInCookieAdmin = await loginUserAdmin(
-        dataSource,
-        app,
-        testAdminUser
-    );
 
     describe("GET on /orders endpoint", () => {
-        describe("User session inactive", () => {});
+        describe("User session inactive", async () => {
+            const response = await app.handle(new Request(`${baseUrl}/orders`));
+
+            test("Returns 401 status code", () => {
+                expect(response.status).toBe(401);
+            });
+        });
 
         describe("User session active", () => {});
     });
