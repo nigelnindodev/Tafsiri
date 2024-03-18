@@ -26,19 +26,41 @@ describe("Order roiutes file endpoints", async () => {
     });
 
     describe("GET on /orders/list endpoint", () => {
-        describe("User session inactive", () => {});
+        describe("User session inactive", async () => {
+            const response = await app.handle(
+                new Request(`${baseUrl}/orders/list`)
+            );
+
+            test("Returns 401 status code", () => {
+                expect(response.status).toBe(401);
+            });
+        });
 
         describe("User session active", () => {});
     });
 
     describe("GET on /orders/list/all endpoint", () => {
-        describe("User session inactive", () => {});
+        describe("User session inactive", async () => {
+            const response = await app.handle(
+                new Request(`${baseUrl}/orders/list/all`)
+            );
+
+            test("Returns 401 status code", () => {
+                expect(response.status).toBe(401);
+            });
+        });
 
         describe("User session active", () => {});
     });
 
     describe("GET on /orders/create endpoint", () => {
-        describe("User session inactive", () => {});
+        describe("User session inactive", async () => {
+            const response = await app.handle(
+                new Request(`${baseUrl}/orders/create`)
+            );
+
+            expect(response.status).toBe(401);
+        });
 
         describe("User session active", () => {});
     });
@@ -46,13 +68,25 @@ describe("Order roiutes file endpoints", async () => {
     // TODO: Good idea to find a more descriptive url for this endpoint
     // maybe somethinf like /orders/activeItems/:orderId
     describe("GET on /orders/active/:orderId endpoint", () => {
-        describe("User session inactive", () => {});
+        describe("User session inactive", async () => {
+            const response = await app.handle(
+                new Request(`${baseUrl}/orders/active/1`)
+            );
+
+            expect(response.status).toBe(401);
+        });
 
         describe("User session active", () => {});
     });
 
     describe("GET on /orders/resume/:orderId enpoints", () => {
-        describe("User session inactive", () => {});
+        describe("User session inactive", async () => {
+            const response = await app.handle(
+                new Request(`${baseUrl}/orders/resume/1`)
+            );
+
+            expect(response.status).toBe(401);
+        });
 
         describe("User session active", () => {});
     });
