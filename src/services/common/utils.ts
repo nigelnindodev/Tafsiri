@@ -1,7 +1,7 @@
-import { z } from "zod"
+import { z } from "zod";
 
 export const parseNumber = (value: string): number => {
-    const parsedNumberResult = Number(value)
+    const parsedNumberResult = Number(value);
     if (isNaN(parsedNumberResult)) {
         throw new z.ZodError([
             {
@@ -11,8 +11,8 @@ export const parseNumber = (value: string): number => {
                 path: [],
                 message: `Failed to parse [${value}] as a number`,
             },
-        ])
+        ]);
     } else {
-        return parsedNumberResult
+        return parsedNumberResult;
     }
-}
+};

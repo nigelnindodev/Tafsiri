@@ -1,11 +1,11 @@
-import Elysia from "elysia"
-import { DataSource } from "typeorm"
-import { PaymentsPage } from "../components/pages/payments"
-import { listPayments } from "../services/payments"
-import { SwaggerTags } from "../services/common/constants"
+import Elysia from "elysia";
+import { DataSource } from "typeorm";
+import { PaymentsPage } from "../components/pages/payments";
+import { listPayments } from "../services/payments";
+import { SwaggerTags } from "../services/common/constants";
 
 export const paymentRoutes = (dataSource: DataSource) => {
-    const app = new Elysia({ prefix: "/payments" })
+    const app = new Elysia({ prefix: "/payments" });
     app.get("/", () => PaymentsPage, {
         detail: {
             summary: "Get Payments Page",
@@ -16,7 +16,7 @@ export const paymentRoutes = (dataSource: DataSource) => {
     }).get(
         "/list",
         async () => {
-            return await listPayments(dataSource)
+            return await listPayments(dataSource);
         },
         {
             detail: {
@@ -26,6 +26,6 @@ export const paymentRoutes = (dataSource: DataSource) => {
                 tags: [SwaggerTags.Payments.name],
             },
         }
-    )
-    return app
-}
+    );
+    return app;
+};

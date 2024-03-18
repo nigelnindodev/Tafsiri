@@ -1,8 +1,8 @@
-import { getConfig } from "../.."
-import { HtmxTargets } from "../../components/common/constants"
-import { ServerHxTriggerEvents } from "../../services/common/constants"
+import { getConfig } from "../..";
+import { HtmxTargets } from "../../components/common/constants";
+import { ServerHxTriggerEvents } from "../../services/common/constants";
 
-const config = getConfig()
+const config = getConfig();
 
 /**
  * Root page of the application. It's responsible for:
@@ -43,5 +43,5 @@ export const RootPage = () => {
                 />
             </body>
         </html>
-    )
-}
+    );
+};

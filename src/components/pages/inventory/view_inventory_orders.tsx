@@ -1,10 +1,13 @@
-import { InventoryEntity, OrdersEntity } from "../../../postgres/entities/index"
+import {
+    InventoryEntity,
+    OrdersEntity,
+} from "../../../postgres/entities/index";
 import {
     createOrderItemsDescription,
     getTotalOrderCost,
-} from "../../../services/common"
-import { HtmxTargets } from "../../common/constants"
-import { InfoWrapper } from "../../common/info_wrapper"
+} from "../../../services/common";
+import { HtmxTargets } from "../../common/constants";
+import { InfoWrapper } from "../../common/info_wrapper";
 
 export const ViewInventoryItemOrdersComponent = (
     inventoryItem: InventoryEntity,
@@ -54,11 +57,11 @@ export const ViewInventoryItemOrdersComponent = (
                                     </td>
                                     <td>{order.payment.updated_at}</td>
                                 </tr>
-                            )
+                            );
                         })}
                     </tbody>
                 </table>
             )}
         </div>
-    )
-}
+    );
+};

@@ -1,4 +1,4 @@
-import { HtmxTargets } from "../../common/constants"
+import { HtmxTargets } from "../../common/constants";
 
 export const orderCreateSuccess = () => {
     return (
@@ -9,5 +9,5 @@ export const orderCreateSuccess = () => {
         >
             <ins>Order Created successfully.</ins>
         </div>
-    )
-}
+    );
+};

@@ -1,18 +1,18 @@
-import { OrdersEntity, OrderItemEntity } from "../../../postgres/entities"
+import { OrdersEntity, OrderItemEntity } from "../../../postgres/entities";
 import {
     createOrderItemsDescription,
     filterOrderItemsForActiveItems,
     getTotalOrderCost,
-} from "../../../services/common"
-import { HtmxTargets } from "../../common/constants"
+} from "../../../services/common";
+import { HtmxTargets } from "../../common/constants";
 
 const unfinishedItemRowDescription = (
     orderItems: OrderItemEntity[]
 ): string => {
     // We should have some active items due to 'getUnfinishedOrderItems' query
-    const activeOrderItems = filterOrderItemsForActiveItems(orderItems)
-    return createOrderItemsDescription(activeOrderItems)
-}
+    const activeOrderItems = filterOrderItemsForActiveItems(orderItems);
+    return createOrderItemsDescription(activeOrderItems);
+};
 
 export const UnfinishedOrdersComponent = (
     unfinishedOrderitems: OrdersEntity[]
@@ -56,10 +56,10 @@ export const UnfinishedOrdersComponent = (
                                     </button>
                                 </td>
                             </tr>
-                        )
+                        );
                     })}
                 </tbody>
             </table>
         </div>
-    )
-}
+    );
+};

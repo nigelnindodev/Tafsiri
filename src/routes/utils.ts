@@ -1,9 +1,9 @@
-import { DataSource } from "typeorm"
-import { getUserById } from "../postgres/queries"
+import { DataSource } from "typeorm";
+import { getUserById } from "../postgres/queries";
 import {
     ServerAuthenticationError,
     ServerForbiddenError,
-} from "../services/common/constants"
+} from "../services/common/constants";
 
 /**
  * Throws forbidden error on a route if the user is not an
@@ -17,22 +17,22 @@ export const forbidIfNotAdmin = async (
     ctx: any
 ): Promise<void> => {
     if ("userId" in ctx) {
-        const user = await getUserById(dataSource, ctx.userId as number)
+        const user = await getUserById(dataSource, ctx.userId as number);
         if (user === null || !user.is_admin) {
-            throw new ServerForbiddenError()
+            throw new ServerForbiddenError();
         }
     } else {
-        throw new ServerForbiddenError()
+        throw new ServerForbiddenError();
     }
-}
+};
 
 export const unauthorizedIfNotLoggedIn = (ctx: any): void => {
     // Any way to use negative type guard?
     if ("userId" in ctx) {
         if (ctx.userId === undefined) {
-            throw new ServerAuthenticationError()
+            throw new ServerAuthenticationError();
         }
     } else {
-        throw new ServerAuthenticationError()
+        throw new ServerAuthenticationError();
     }
-}
+};

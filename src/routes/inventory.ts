@@ -1,8 +1,8 @@
-import { Elysia, t } from "elysia"
+import { Elysia, t } from "elysia";
 
-import { CreateOrUpdateInventoryComponent } from "../components/pages/inventory/create_or_update_inventory_item"
-import { ViewInventoryComponent } from "../components/pages/inventory/inventory"
-import { DataSource } from "typeorm"
+import { CreateOrUpdateInventoryComponent } from "../components/pages/inventory/create_or_update_inventory_item";
+import { ViewInventoryComponent } from "../components/pages/inventory/inventory";
+import { DataSource } from "typeorm";
 import {
     createInventoryItem,
     getInventoryItemForUpdate,
@@ -10,10 +10,10 @@ import {
     listInventoryItems,
     searchInventoryItems,
     updateInventoryItem,
-} from "../services/inventory"
-import { InventoryPage } from "../components/pages/inventory"
-import { SwaggerTags } from "../services/common/constants"
-import { forbidIfNotAdmin, unauthorizedIfNotLoggedIn } from "./utils"
+} from "../services/inventory";
+import { InventoryPage } from "../components/pages/inventory";
+import { SwaggerTags } from "../services/common/constants";
+import { forbidIfNotAdmin, unauthorizedIfNotLoggedIn } from "./utils";
 
 const inventorySchemas = {
     searchInventoryItemsQuery: t.Object({
@@ -27,15 +27,15 @@ const inventorySchemas = {
         name: t.String(),
         price: t.Numeric(),
     }),
-}
+};
 
 export const inventoryRoutes = (dataSource: DataSource) => {
-    const app = new Elysia({ prefix: "/inventory" })
+    const app = new Elysia({ prefix: "/inventory" });
     app.guard(
         {
             beforeHandle: async (ctx) => {
-                unauthorizedIfNotLoggedIn(ctx)
-                await forbidIfNotAdmin(dataSource, ctx)
+                unauthorizedIfNotLoggedIn(ctx);
+                await forbidIfNotAdmin(dataSource, ctx);
             },
         },
         (app) =>
@@ -62,7 +62,7 @@ export const inventoryRoutes = (dataSource: DataSource) => {
                         return await getInventoryItemForUpdate(
                             dataSource,
                             ctx.params.inventoryId
-                        )
+                        );
                     },
                     {
                         params: t.Object({
@@ -87,7 +87,7 @@ export const inventoryRoutes = (dataSource: DataSource) => {
                 .get(
                     "/list/all",
                     async () => {
-                        return await listInventoryItems(dataSource)
+                        return await listInventoryItems(dataSource);
                     },
                     {
                         detail: {
@@ -102,12 +102,12 @@ export const inventoryRoutes = (dataSource: DataSource) => {
                     "/list/search",
                     async (ctx) => {
                         if (ctx.query.search === "") {
-                            return await listInventoryItems(dataSource)
+                            return await listInventoryItems(dataSource);
                         } else {
                             return await searchInventoryItems(
                                 dataSource,
                                 ctx.query.search
-                            )
+                            );
                         }
                     },
                     {
@@ -126,7 +126,7 @@ export const inventoryRoutes = (dataSource: DataSource) => {
                         return await listInventoryItemOrders(
                             dataSource,
                             ctx.params.inventoryId
-                        )
+                        );
                     },
                     {
                         params: t.Object({
@@ -147,8 +147,8 @@ export const inventoryRoutes = (dataSource: DataSource) => {
                             dataSource,
                             ctx.body.name,
                             ctx.body.price
-                        )
-                        return result
+                        );
+                        return result;
                     },
                     {
                         body: inventorySchemas.createInventoryItemBody,
@@ -168,7 +168,7 @@ export const inventoryRoutes = (dataSource: DataSource) => {
                             ctx.params.inventoryId,
                             ctx.body.name,
                             ctx.body.price
-                        )
+                        );
                     },
                     {
                         body: inventorySchemas.updateInventoryItemBody,
@@ -183,6 +183,6 @@ export const inventoryRoutes = (dataSource: DataSource) => {
                         },
                     }
                 )
-    )
-    return app
-}
+    );
+    return app;
+};

@@ -1,4 +1,4 @@
-import { HtmxTargets } from "../../common/constants"
+import { HtmxTargets } from "../../common/constants";
 
 export const UsersPage = () => {
     return (
@@ -14,5 +14,5 @@ export const UsersPage = () => {
                 />
             </body>
         </article>
-    )
-}
+    );
+};

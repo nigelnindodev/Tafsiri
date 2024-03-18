@@ -1,4 +1,4 @@
-import { HtmxTargets } from "../../common/constants"
+import { HtmxTargets } from "../../common/constants";
 
 export const ViewOrdersSection = () => {
     return (
@@ -19,5 +19,5 @@ export const ViewOrdersSection = () => {
             </div>
             <div id="orders-data" hx-get="/orders/list/all" hx-trigger="load" />
         </div>
-    )
-}
+    );
+};

@@ -1,23 +1,23 @@
-import { z } from "zod"
-import { parseNumber } from "./utils"
+import { z } from "zod";
+import { parseNumber } from "./utils";
 
 export class ServerAuthenticationError extends Error {
-    code: string
-    status: number
+    code: string;
+    status: number;
     constructor(message?: string) {
-        super(message)
-        this.code = "Unauthorized"
-        this.status = 401
+        super(message);
+        this.code = "Unauthorized";
+        this.status = 401;
     }
 }
 
 export class ServerForbiddenError extends Error {
-    code: string
-    status: number
+    code: string;
+    status: number;
     constructor(message?: string) {
-        super(message)
-        this.code = "Forbidden"
-        this.status = 403
+        super(message);
+        this.code = "Forbidden";
+        this.status = 403;
     }
 }
 
@@ -33,9 +33,9 @@ export enum ServerHxTriggerEvents {
 export const CookieConstansts = {
     maxAge: 60 * 3,
     path: "/;/auth;/root;/orders;/payments;/inventory",
-} as const
+} as const;
 
-export const RequestNumberSchema = z.string().transform(parseNumber)
+export const RequestNumberSchema = z.string().transform(parseNumber);
 
 export const SwaggerTags = {
     Auth: { name: "Auth", description: "Authentication Endpoints" },
@@ -43,4 +43,4 @@ export const SwaggerTags = {
     Orders: { name: "Orders", description: "Orders Endpoints" },
     Payments: { name: "Payments", description: "Payments Endpoints" },
     Users: { name: "Users", description: "Users Endpoints" },
-} as const
+} as const;

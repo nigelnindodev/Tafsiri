@@ -1,6 +1,6 @@
-import { getConfig } from "../.."
-import { UsersEntity } from "../../postgres/entities"
-import { HtmxTargets } from "../common/constants"
+import { getConfig } from "../..";
+import { UsersEntity } from "../../postgres/entities";
+import { HtmxTargets } from "../common/constants";
 
 export const IndexComponent = (user: UsersEntity) => {
     return (
@@ -91,5 +91,5 @@ export const IndexComponent = (user: UsersEntity) => {
                 />
             </main>
         </div>
-    )
-}
+    );
+};

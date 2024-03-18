@@ -1,4 +1,4 @@
-import { InventoryEntity, OrderItemEntity } from "../../../postgres/entities"
+import { InventoryEntity, OrderItemEntity } from "../../../postgres/entities";
 
 const isOrderItemInOrderV2 = (
     inventoryId: number,
@@ -7,15 +7,15 @@ const isOrderItemInOrderV2 = (
     return (
         orderItemIds.find((orderItemId) => orderItemId === inventoryId) !==
         undefined
-    )
-}
+    );
+};
 
 export const InventoryItemSelectDuringOrder = (
     orderId: number,
     inventoryItems: InventoryEntity[],
     orderItemsInOrder: OrderItemEntity[]
 ) => {
-    const orderItemIds = orderItemsInOrder.map((item) => item.inventory.id)
+    const orderItemIds = orderItemsInOrder.map((item) => item.inventory.id);
     return (
         <details role="list">
             <summary aria-haspopup="listbox">Select Order Items</summary>
@@ -44,9 +44,9 @@ export const InventoryItemSelectDuringOrder = (
                                 {inventoryItem.name}
                             </label>
                         </li>
-                    )
+                    );
                 })}
             </ul>
         </details>
-    )
-}
+    );
+};

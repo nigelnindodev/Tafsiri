@@ -1,10 +1,10 @@
-import { Elysia, t } from "elysia"
-import { DataSource } from "typeorm"
+import { Elysia, t } from "elysia";
+import { DataSource } from "typeorm";
 
-import { getUser, listUsers, toggleUserActiveState } from "../services/users"
-import { UsersPage } from "../components/pages/users"
-import { logger } from ".."
-import { SwaggerTags } from "../services/common/constants"
+import { getUser, listUsers, toggleUserActiveState } from "../services/users";
+import { UsersPage } from "../components/pages/users";
+import { logger } from "..";
+import { SwaggerTags } from "../services/common/constants";
 
 const usersSchema = {
     getuserParams: t.Object({
@@ -13,10 +13,10 @@ const usersSchema = {
     toggleUserActiveStateParams: t.Object({
         userId: t.Numeric(),
     }),
-}
+};
 
 export const usersRoutes = (dataSource: DataSource) => {
-    const app = new Elysia({ prefix: "/users" })
+    const app = new Elysia({ prefix: "/users" });
     app.get("/", () => UsersPage, {
         detail: {
             summary: "Get Users Page",
@@ -28,7 +28,7 @@ export const usersRoutes = (dataSource: DataSource) => {
         .get(
             "/list",
             async () => {
-                return await listUsers(dataSource)
+                return await listUsers(dataSource);
             },
             {
                 detail: {
@@ -42,8 +42,8 @@ export const usersRoutes = (dataSource: DataSource) => {
         .get(
             "/:userId",
             async (ctx) => {
-                logger.trace("Get user by id endpoint called")
-                return await getUser(dataSource, ctx.params.userId)
+                logger.trace("Get user by id endpoint called");
+                return await getUser(dataSource, ctx.params.userId);
             },
             {
                 params: usersSchema.getuserParams,
@@ -61,7 +61,7 @@ export const usersRoutes = (dataSource: DataSource) => {
                 return await toggleUserActiveState(
                     dataSource,
                     ctx.params.userId
-                )
+                );
             },
             {
                 params: usersSchema.toggleUserActiveStateParams,
@@ -72,6 +72,6 @@ export const usersRoutes = (dataSource: DataSource) => {
                     tags: [SwaggerTags.Users.name],
                 },
             }
-        )
-    return app
-}
+        );
+    return app;
+};

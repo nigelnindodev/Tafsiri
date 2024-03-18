@@ -1,11 +1,11 @@
-import Elysia from "elysia"
-import { getTestBaseUrl } from "./test_utils"
-const Chance = require("chance")
-const chance = new Chance()
+import Elysia from "elysia";
+import { getTestBaseUrl } from "./test_utils";
+const Chance = require("chance");
+const chance = new Chance();
 
 export interface TestInventoryItem {
-    name: string
-    price: number
+    name: string;
+    price: number;
 }
 
 /**
@@ -21,15 +21,15 @@ export interface TestInventoryItem {
 export const generateInventoryItems = (
     numItems: number
 ): TestInventoryItem[] => {
-    let items: TestInventoryItem[] = []
+    let items: TestInventoryItem[] = [];
     for (let i = 0; i < numItems; i++) {
         items.push({
             name: chance.name({ middle_initial: true }),
             price: chance.integer({ min: 10, max: 5000 }),
-        })
+        });
     }
-    return items
-}
+    return items;
+};
 
 /**
  * Sends API requests to create each inventory item.
@@ -49,7 +49,7 @@ export const createInventoryItems = async (
                 },
                 body: JSON.stringify(inventoryItem),
             })
-        )
-    })
-    await Promise.all(results)
-}
+        );
+    });
+    await Promise.all(results);
+};

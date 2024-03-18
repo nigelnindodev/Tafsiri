@@ -1,7 +1,7 @@
-import { PaymentTypes } from "../../../postgres/common/constants"
-import { OrderItemEntity, PaymentEntity } from "../../../postgres/entities"
-import { getTotalOrderCost } from "../../../services/common"
-import { HtmxTargets } from "../../common/constants"
+import { PaymentTypes } from "../../../postgres/common/constants";
+import { OrderItemEntity, PaymentEntity } from "../../../postgres/entities";
+import { getTotalOrderCost } from "../../../services/common";
+import { HtmxTargets } from "../../common/constants";
 
 export const ActiveOrderItems = (
     orderId: number,
@@ -47,7 +47,7 @@ export const ActiveOrderItems = (
                                 </div>
                             </div>
                         </blockquote>
-                    )
+                    );
                 })
             )}
             <blockquote>
@@ -130,5 +130,5 @@ export const ActiveOrderItems = (
                 </button>
             )}
         </details>
-    )
-}
+    );
+};

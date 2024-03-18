@@ -1,5 +1,5 @@
-import { UsersEntity } from "../../../postgres/entities"
-import { HtmxTargets } from "../../common/constants"
+import { UsersEntity } from "../../../postgres/entities";
+import { HtmxTargets } from "../../common/constants";
 
 export const UsersListComponent = (users: UsersEntity[]) => {
     return (
@@ -48,10 +48,10 @@ export const UsersListComponent = (users: UsersEntity[]) => {
                                     </td>
                                 )}
                             </tr>
-                        )
+                        );
                     })}
                 </tbody>
             </table>
         </div>
-    )
-}
+    );
+};

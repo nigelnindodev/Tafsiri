@@ -1,17 +1,17 @@
-import cookie from "@elysiajs/cookie"
-import jwt from "@elysiajs/jwt"
-import { Elysia } from "elysia"
+import cookie from "@elysiajs/cookie";
+import jwt from "@elysiajs/jwt";
+import { Elysia } from "elysia";
 
-import { getConfig } from ".."
+import { getConfig } from "..";
 
 export interface AuthVaules {
-    userId: number | undefined
+    userId: number | undefined;
 }
 
 export const deriveUserId = (options: AuthVaules = { userId: undefined }) => {
     const app = new Elysia({
         seed: options,
-    })
+    });
     app.use(cookie())
         .use(
             jwt({
@@ -20,17 +20,17 @@ export const deriveUserId = (options: AuthVaules = { userId: undefined }) => {
             })
         )
         .derive(async (ctx) => {
-            const { auth } = ctx.cookie
-            const authValue = await ctx.jwt.verify(auth)
+            const { auth } = ctx.cookie;
+            const authValue = await ctx.jwt.verify(auth);
             if (!authValue) {
                 return {
                     userId: undefined,
-                }
+                };
             } else {
                 return {
                     userId: authValue.userId,
-                }
+                };
             }
-        })
-    return app
-}
+        });
+    return app;
+};
