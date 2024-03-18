@@ -1,14 +1,22 @@
-import { OrdersEntity, OrderItemEntity } from "../../../postgres/entities";
-import { createOrderItemsDescription, filterOrderItemsForActiveItems, getTotalOrderCost } from "../../../services/common";
-import { HtmxTargets } from "../../common/constants";
+import { OrdersEntity, OrderItemEntity } from "../../../postgres/entities"
+import {
+    createOrderItemsDescription,
+    filterOrderItemsForActiveItems,
+    getTotalOrderCost,
+} from "../../../services/common"
+import { HtmxTargets } from "../../common/constants"
 
-const unfinishedItemRowDescription = (orderItems: OrderItemEntity[]): string => {
+const unfinishedItemRowDescription = (
+    orderItems: OrderItemEntity[]
+): string => {
     // We should have some active items due to 'getUnfinishedOrderItems' query
-    const activeOrderItems = filterOrderItemsForActiveItems(orderItems);
-    return createOrderItemsDescription(activeOrderItems);
-};
+    const activeOrderItems = filterOrderItemsForActiveItems(orderItems)
+    return createOrderItemsDescription(activeOrderItems)
+}
 
-export const UnfinishedOrdersComponent = (unfinishedOrderitems: OrdersEntity[]) => {
+export const UnfinishedOrdersComponent = (
+    unfinishedOrderitems: OrdersEntity[]
+) => {
     return (
         <div>
             <h6>Latest Unfished Orders</h6>
@@ -19,17 +27,39 @@ export const UnfinishedOrdersComponent = (unfinishedOrderitems: OrdersEntity[]) 
                     <th>Actions</th>
                 </thead>
                 <tbody>
-                    {unfinishedOrderitems.map(item => {
+                    {unfinishedOrderitems.map((item) => {
                         return (
                             <tr>
-                                <td>{unfinishedItemRowDescription(item.order_items)}</td>
-                                <td><strong>{getTotalOrderCost(filterOrderItemsForActiveItems(item.order_items))}.00 KES</strong></td>
-                                <td><button role="button" class="secondary outline" hx-get={`/orders/resume/${item.id}`} hx-target={`#${HtmxTargets.ORDERS_SECTION}`}>Resume</button></td>
+                                <td>
+                                    {unfinishedItemRowDescription(
+                                        item.order_items
+                                    )}
+                                </td>
+                                <td>
+                                    <strong>
+                                        {getTotalOrderCost(
+                                            filterOrderItemsForActiveItems(
+                                                item.order_items
+                                            )
+                                        )}
+                                        .00 KES
+                                    </strong>
+                                </td>
+                                <td>
+                                    <button
+                                        role="button"
+                                        class="secondary outline"
+                                        hx-get={`/orders/resume/${item.id}`}
+                                        hx-target={`#${HtmxTargets.ORDERS_SECTION}`}
+                                    >
+                                        Resume
+                                    </button>
+                                </td>
                             </tr>
                         )
                     })}
                 </tbody>
             </table>
         </div>
-    );
-};
+    )
+}
