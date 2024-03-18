@@ -7,7 +7,6 @@ import { getTestBaseUrl, loginUser, loginUserAdmin } from "../test_utils";
 import { HtmxTargets } from "../../src/components/common/constants";
 import { testAdminUser, testUser } from "../test_constants";
 import { createInventoryItems, generateInventoryItems } from "../fixtures";
-import { Cookie } from "elysia";
 
 describe("Inventory routes file endpoints", async () => {
     const dataSource = await PostgresDataSourceSingleton.getInstance();
