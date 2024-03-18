@@ -1,5 +1,5 @@
-import { UsersEntity } from "../../../postgres/entities";
-import { HtmxTargets } from "../../common/constants";
+import { UsersEntity } from "../../../postgres/entities"
+import { HtmxTargets } from "../../common/constants"
 
 export const UsersListComponent = (users: UsersEntity[]) => {
     return (
@@ -16,23 +16,42 @@ export const UsersListComponent = (users: UsersEntity[]) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {users.map(user => {
+                    {users.map((user) => {
                         return (
                             <tr>
                                 <td>{user.id}</td>
                                 <td safe>{user.username}</td>
                                 <td>{user.is_admin ? "✅" : "❌"}</td>
                                 <td>{user.is_active ? "✅" : "❌"}</td>
-                                {
-                                    user.is_admin ?
-                                        <td><button disabled role="button" class="secondary outline" hx-get={`/users/${user.id}`} hx-target={`#${HtmxTargets.USERS_SECTION}`}>Edit</button></td> :
-                                        <td><button role="button" class="secondary outline" hx-get={`/users/${user.id}`} hx-target={`#${HtmxTargets.USERS_SECTION}`}>Edit</button></td>
-                                }
+                                {user.is_admin ? (
+                                    <td>
+                                        <button
+                                            disabled
+                                            role="button"
+                                            class="secondary outline"
+                                            hx-get={`/users/${user.id}`}
+                                            hx-target={`#${HtmxTargets.USERS_SECTION}`}
+                                        >
+                                            Edit
+                                        </button>
+                                    </td>
+                                ) : (
+                                    <td>
+                                        <button
+                                            role="button"
+                                            class="secondary outline"
+                                            hx-get={`/users/${user.id}`}
+                                            hx-target={`#${HtmxTargets.USERS_SECTION}`}
+                                        >
+                                            Edit
+                                        </button>
+                                    </td>
+                                )}
                             </tr>
                         )
                     })}
                 </tbody>
             </table>
         </div>
-    );
-};
+    )
+}

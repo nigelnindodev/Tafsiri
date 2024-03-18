@@ -1,20 +1,20 @@
-name: Run Server Tests 
+name: Run Server Tests
 
 on:
-  push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+    push:
+        branches: ["master"]
+    pull_request:
+        branches: ["master"]
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - uses: oven-sh/setup-bun@v1
-      with:
-        bun-version: 1.0.30 
-    - name: bun install
-      run: bun install
-    - name: bun run setup-run-test 
-      run: bun run setup-run-test 
+    test:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: oven-sh/setup-bun@v1
+              with:
+                  bun-version: 1.0.30
+            - name: bun install
+              run: bun install
+            - name: bun run setup-run-test
+              run: bun run setup-run-test
