@@ -29,16 +29,16 @@ export const InventoryItemSelectDuringOrder = (
                                     orderItemIds
                                 ) ? (
                                     <input
-                                        type="checkbox"
                                         hx-post={`/orders/item/change/${orderId}/${inventoryItem.id}`}
                                         hx-trigger="change"
+                                        type="checkbox"
                                         checked
                                     />
                                 ) : (
                                     <input
-                                        type="checkbox"
                                         hx-post={`/orders/item/change/${orderId}/${inventoryItem.id}`}
                                         hx-trigger="change"
+                                        type="checkbox"
                                     />
                                 )}
                                 {inventoryItem.name}

@@ -16,11 +16,14 @@ export const getTestBaseUrl = (app: Elysia): string => {
  *
  * Bun also doesn't have great regex support, so we'll have to come up with our own implementation
  * to resolve getting the hx-post value.
+ *
+ * TODO: Rename mthod to be more descriptive of its expanded scope.
  */
-export const getHxPostValueInput = (markup: string): string | undefined => {
+export const getHxPostValueInput = (markup: string, value: string): string | undefined => {
+    console.log("testMarkup:",markup);
     const splitMarkup = markup.split(" ");
     const hxPostSection = splitMarkup.filter((section) => {
-        return section.startsWith("hx-post");
+        return section.startsWith(value);
     });
 
     if (hxPostSection.length === 1) {

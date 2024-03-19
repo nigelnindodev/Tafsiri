@@ -175,7 +175,7 @@ describe("Order routes file endpoints", async () => {
             // Add at least one item to order to populate orders list
             const $ = cheerio.load(createOrderResponse);
             const firstInventoryItem = $("details ul li:nth-of-type(1)");
-            const hxPostValue = getHxPostValueInput(firstInventoryItem.text());
+            const hxPostValue = getHxPostValueInput(firstInventoryItem.text(), "hx-post");
             const addInventoryItemResponse = await app.handle(
                 new Request(`${baseUrl}${hxPostValue}`, {
                     method: "POST",
@@ -224,7 +224,52 @@ describe("Order routes file endpoints", async () => {
             expect(response.status).toBe(401);
         });
 
-        describe("User session active", () => {});
+        describe("User session active", async () => {
+            const response = await app.handle(
+                new Request(`${baseUrl}/orders/create`, {
+                    headers: {
+                        Cookie: loggedInCookie
+                    }
+                })
+            );
+
+            test("Returns 200 status code", () => {
+                expect(response.status).toBe(200);
+            });
+
+            describe("HTMX markup response", async () => {
+                const responseText = await response.text();
+                console.log("responseText", responseText);
+                const $ = cheerio.load(responseText);
+
+                test("Contains navigation to go back to main orders page with correct hx-target", () => {
+                    const targetElement = $('[hx-get="/orders/list"]');
+                    const hxTargetValue = targetElement.attr("hx-target");
+
+                    expect(targetElement.length).toBe(1);
+                    expect(hxTargetValue).toBe(`#${HtmxTargets.ORDERS_SECTION}`);
+                });
+
+                test("Contains a listing of inventory items", () => {
+                    /**
+                     * Avoiding giving partiular details of the inventory items
+                     * because other tests (especially in the inventory routes
+                     * suite) might create unrelated inventory items, which is 
+                     * a recipe for race conditions and thus flaky tests.
+                     */
+                    const inventoryItems = $("details ul li");
+                    expect(inventoryItems.length).toBeGreaterThanOrEqual(1);
+                });
+
+                test("Inventory Item rows can be activated/deactivated with POST to /orders/item/change/:orderId endpoint on change to checkbox state", () => {
+                    const firstInventoryItem = $("details ul li:nth-of-type(1)") ;
+                    console.log("firstInventoryItem", firstInventoryItem);
+
+                    expect(getHxPostValueInput(firstInventoryItem.text(), "hx-post")).toInclude("/orders/item/change");
+                    expect(getHxPostValueInput(firstInventoryItem.text(), "hx-trigger")).toBe("change");
+                });
+            });
+        });
     });
 
     // TODO: Good idea to find a more descriptive url for this endpoint
