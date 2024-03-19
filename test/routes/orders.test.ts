@@ -166,25 +166,27 @@ describe("Order routes file endpoints", async () => {
                 expect(response.status).toBe(200);
             });
 
-            test("Returns markup showing no active orders for a blank slate", () => {});
+            test("Returns markup showing no active orders for a blank slate", async () => {
+                expect(await response.text()).toContain(
+                    "No recent unfinished orders."
+                );
+            });
+
+            // Add at least one item to order to populate orders list
+            const $ = cheerio.load(createOrderResponse);
+            const firstInventoryItem = $("details ul li:nth-of-type(1)");
+            const hxPostValue = getHxPostValueInput(firstInventoryItem.text());
+            const addInventoryItemResponse = await app.handle(
+                new Request(`${baseUrl}${hxPostValue}`, {
+                    method: "POST",
+                    headers: {
+                        Cookie: loggedInCookie,
+                    },
+                })
+            );
+            expect(addInventoryItemResponse.status).toBe(200);
 
             describe("HTMX markup response", async () => {
-                // Add at least one item to order to populate orders list
-                const $ = cheerio.load(createOrderResponse);
-                const firstInventoryItem = $("details ul li:nth-of-type(1)");
-                const hxPostValue = getHxPostValueInput(
-                    firstInventoryItem.text()
-                );
-                const addInventoryItemResponse = await app.handle(
-                    new Request(`${baseUrl}${hxPostValue}`, {
-                        method: "POST",
-                        headers: {
-                            Cookie: loggedInCookie,
-                        },
-                    })
-                );
-                expect(addInventoryItemResponse.status).toBe(200);
-
                 const response = await app.handle(
                     new Request(`${baseUrl}/orders/list/all`, {
                         headers: {
@@ -192,8 +194,23 @@ describe("Order routes file endpoints", async () => {
                         },
                     })
                 );
+                const $ = cheerio.load(await response.text());
+                const rows = $("tbody tr");
+                const firstRow = rows.first();
 
-                test("Shows unfinshed orders", async () => {});
+                test("Shows unfinshed orders", async () => {
+                    expect(firstRow.length).toBe(1);
+                });
+
+                test("Row can resume order via GET with correct hx-target value", () => {
+                    const targetElement = firstRow.find('[hx-get^="/orders/resume"]');
+                    const hxTargetValue = targetElement.attr("hx-target");
+
+                    expect(targetElement.length).toBe(1);
+                    expect(hxTargetValue).toBe(
+                        `#${HtmxTargets.ORDERS_SECTION}`
+                    );
+                });
             });
         });
     });

@@ -252,6 +252,7 @@ describe("Inventory routes file endpoints", async () => {
                             '[hx-get="/inventory/orders/1"]'
                         );
                         const hxTargetValue = targetElement.attr("hx-target");
+
                         expect(targetElement.length).toBe(1);
                         expect(hxTargetValue).toBe(
                             `#${HtmxTargets.INVENTORY_SECTION}`
@@ -263,6 +264,7 @@ describe("Inventory routes file endpoints", async () => {
                             '[hx-get="/inventory/edit/1"]'
                         );
                         const hxTargetValue = targetElement.attr("hx-target");
+
                         expect(targetElement.length).toBe(1);
                         expect(hxTargetValue).toBe(
                             `#${HtmxTargets.INVENTORY_SECTION}`
@@ -405,6 +407,7 @@ describe("Inventory routes file endpoints", async () => {
                     test("Contains navigation to go back to main inventory page with corret hx-target", () => {
                         const targetElement = $('[hx-get="/inventory/list"]');
                         const hxTargetValue = targetElement.attr("hx-target");
+
                         expect(targetElement.length).toBe(1);
                         expect(hxTargetValue).toBe(
                             `#${HtmxTargets.INVENTORY_SECTION}`
@@ -421,6 +424,7 @@ describe("Inventory routes file endpoints", async () => {
                     test("Input and Price initially empty with correct name attributes for HTMX POST request", () => {
                         const nameInputValue = $('input[name="name"]');
                         const priceInputValue = $('input[name="price"]');
+
                         // expected this to be empty string, but it's actually undefined for empty inputs
                         expect(nameInputValue.val()).toBeUndefined();
                         expect(priceInputValue.val()).toBeUndefined();
@@ -495,6 +499,7 @@ describe("Inventory routes file endpoints", async () => {
                     test("Contains navigation to go back to main inventory screen with corret hx-target", () => {
                         const targetElement = $('[hx-get="/inventory/list"]');
                         const hxTargetValue = targetElement.attr("hx-target");
+
                         expect(targetElement.length).toBe(1);
                         expect(hxTargetValue).toBe(
                             `#${HtmxTargets.INVENTORY_SECTION}`
@@ -509,6 +514,7 @@ describe("Inventory routes file endpoints", async () => {
                     test("Input and Price pre-populated with existing values with correct name attributes for HTMX POST request", () => {
                         const nameInputValue = $('input[name="name"]');
                         const priceInputValue = $('input[name="price"]');
+
                         expect(nameInputValue.val()).toBe(
                             inventoryItems[0].name.toUpperCase()
                         );
@@ -594,6 +600,7 @@ describe("Inventory routes file endpoints", async () => {
 
                     const $ = cheerio.load(await response.text());
                     const rows = $("tbody tr");
+
                     expect(rows.length).toBe(numInitialInventoryItems + 1);
                 });
 
