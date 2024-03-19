@@ -2,11 +2,20 @@ import { describe, expect, test } from "bun:test";
 import * as cheerio from "cheerio";
 
 import { createApplicationServer } from "../../src/server";
-import { getTestBaseUrl, loginUser } from "../test_utils";
-import { testUser } from "../test_constants";
+import {
+    getHxPostValueInput,
+    getTestBaseUrl,
+    loginUser,
+    loginUserAdmin,
+} from "../test_utils";
+import { testUser, testAdminUser } from "../test_constants";
 import { PostgresDataSourceSingleton } from "../../src/postgres";
 import { HtmxTargets } from "../../src/components/common/constants";
-import { createUnfinisheOrder } from "../fixtures";
+import {
+    createInventoryItems,
+    createUnfinisheOrder,
+    generateInventoryItems,
+} from "../fixtures";
 
 describe("Order routes file endpoints", async () => {
     const dataSource = await PostgresDataSourceSingleton.getInstance();
@@ -15,10 +24,18 @@ describe("Order routes file endpoints", async () => {
 
     // Create an admin and non-admin user
     const loggedInCookie = await loginUser(app, testUser);
+    const loggedInCookieAdmin = await loginUserAdmin(
+        dataSource,
+        app,
+        testAdminUser
+    );
+
+    // Add some inventory items
+    const inventoryItems = generateInventoryItems(5);
+    await createInventoryItems(app, inventoryItems, loggedInCookieAdmin);
 
     // Create some unfinished orders
-    await createUnfinisheOrder(app, loggedInCookie);
-    await createUnfinisheOrder(app, loggedInCookie);
+    const createOrderResponse = await createUnfinisheOrder(app, loggedInCookie);
 
     describe("GET on /orders endpoint", () => {
         describe("User session inactive", async () => {
@@ -149,9 +166,34 @@ describe("Order routes file endpoints", async () => {
                 expect(response.status).toBe(200);
             });
 
+            test("Returns markup showing no active orders for a blank slate", () => {});
+
             describe("HTMX markup response", async () => {
-                const responseText = await response.text();
-                console.log("responseText", responseText);
+                // Add at least one item to order to populate orders list
+                const $ = cheerio.load(createOrderResponse);
+                const firstInventoryItem = $("details ul li:nth-of-type(1)");
+                const hxPostValue = getHxPostValueInput(
+                    firstInventoryItem.text()
+                );
+                const addInventoryItemResponse = await app.handle(
+                    new Request(`${baseUrl}${hxPostValue}`, {
+                        method: "POST",
+                        headers: {
+                            Cookie: loggedInCookie,
+                        },
+                    })
+                );
+                expect(addInventoryItemResponse.status).toBe(200);
+
+                const response = await app.handle(
+                    new Request(`${baseUrl}/orders/list/all`, {
+                        headers: {
+                            Cookie: loggedInCookie,
+                        },
+                    })
+                );
+
+                test("Shows unfinshed orders", async () => {});
             });
         });
     });

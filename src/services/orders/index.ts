@@ -34,6 +34,7 @@ export const createOrder = async (dataSource: DataSource, userId: number) => {
     );
     const inventoryItems =
         await queries.getInventoryItemsOrderByName(dataSource);
+    logger.trace("Fetched inventory items:", inventoryItems);
     // Return empty array for orderItemsInOrder since their order was just created.
     return CreateOrUpdateOrderSection(
         initializeOrderResult.identifiers[0].id,

@@ -9,6 +9,35 @@ export const getTestBaseUrl = (app: Elysia): string => {
 };
 
 /**
+ * This function handles an edge case where cheerio is failing to get the hx-post
+ * value from some input elements.
+ *
+ * Cannot use DOMParser as this is not supported in Bun: https://github.com/oven-sh/bun/discussions/1522
+ *
+ * Bun also doesn't have great regex support, so we'll have to come up with our own implementation
+ * to resolve getting the hx-post value.
+ */
+export const getHxPostValueInput = (markup: string): string | undefined => {
+    const splitMarkup = markup.split(" ");
+    const hxPostSection = splitMarkup.filter((section) => {
+        return section.startsWith("hx-post");
+    });
+
+    if (hxPostSection.length === 1) {
+        /**
+         * We should now have a value like 'hx-post="{target_value}"'
+         *
+         * Split the string by equals sign then slice to remove the double quotes
+         */
+        const result = hxPostSection[0].split("=")[1].slice(1, -1);
+        return result;
+    } else {
+        // no hx-post found, or more than one found
+        return undefined;
+    }
+};
+
+/**
  * Logs in the test user and returns a the cookie value as a string
  * to be added in requests.
  */

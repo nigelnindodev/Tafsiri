@@ -63,12 +63,13 @@ export const createInventoryItems = async (
 export const createUnfinisheOrder = async (
     app: Elysia,
     authCookieHeader: string
-): Promise<void> => {
-    await app.handle(
+): Promise<string> => {
+    const response = await app.handle(
         new Request(`${getTestBaseUrl(app)}/orders/create`, {
             headers: {
                 Cookie: authCookieHeader,
             },
         })
     );
+    return await response.text();
 };

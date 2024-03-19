@@ -23,7 +23,7 @@ export const InventoryItemSelectDuringOrder = (
                 {inventoryItems.map((inventoryItem) => {
                     return (
                         <li>
-                            <label>
+                            <label safe>
                                 {isOrderItemInOrderV2(
                                     inventoryItem.id,
                                     orderItemIds
