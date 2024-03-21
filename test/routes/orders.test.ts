@@ -329,9 +329,15 @@ describe("Order routes file endpoints", async () => {
                 const responseText = await response.text();
                 const $ = cheerio.load(responseText);
 
-                test("Can increment quantiy of an item", () => {});
+                test("Can increment quantiy of an item", () => {
+                    const targetElement = $('button[hx-post*="/INC"]');
+                    expect(targetElement.length).toBe(1);
+                });
 
-                test("Can decrement quantity of an item", () => {});
+                test("Can decrement quantity of an item", () => {
+                    const targetElement = $('button[hx-post*="/DEC"]');
+                    expect(targetElement.length).toBe(1);
+                });
 
                 test("Correctly sums up total cost of items", () => {
                     const items: { name: string; price: number }[] = [];
