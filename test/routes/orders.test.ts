@@ -316,6 +316,7 @@ describe("Order routes file endpoints", async () => {
             describe("HTMX markup response", async () => {
                 const responseText = await response.text();
                 console.log("responseText", responseText);
+                const $ = cheerio.load(responseText);
 
                 test("Can increment quantiy of an item", () => {
 
@@ -330,15 +331,32 @@ describe("Order routes file endpoints", async () => {
                 });
 
                 test("Can change payment type via POST to /orders/payment/updateType/ with cash and mpesa as options", () => {
-
+                    const fieldSet = $("fieldset");
+                    const radioButtons = $(fieldSet).find('input[type="radio"]');
+                    const radioValues: Array<string|undefined> = [];
+                    radioButtons.each((_,element) => {
+                        const hxPostValue = $(element).attr("hx-post");
+                        expect(hxPostValue).toStartWith("/orders/payment/updateType");
+                        radioValues.push($(element).attr("value"));
+                    });
+                    expect(radioValues.length).toBe(2);
+                    expect(radioValues.join(",")).toInclude("cash");
+                    expect(radioValues.join(",")).toInclude("mpesa");
                 });
 
                 test("Can submit order via POST to /orders/confirm/:orderId/:paymentId with correct hx-target and progress indicator", () => {
+                    const targetElement = $('button[hx-post^="/orders/confirm"]');
+                    const hxTargetValue = targetElement.attr("hx-target");
+                    const hxIndicatorValue = targetElement.attr("hx-indicator");
 
+                    expect(targetElement.length).toBe(1);
+                    expect(hxTargetValue).toBe(`#${HtmxTargets.CREATE_ORDER_SECTION}`);
+                    expect(hxIndicatorValue).toBe("#confirm-progress-indicator");
                 });
 
                 test("has progress indicator for POST to /orders/confirm/:orderId/:paymentId", () => {
-
+                    const targetElement = $("#confirm-progress-indicator");
+                    expect(targetElement.length).toBe(1);
                 });
             });
         });
