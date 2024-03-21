@@ -327,7 +327,6 @@ describe("Order routes file endpoints", async () => {
 
             describe("HTMX markup response", async () => {
                 const responseText = await response.text();
-                console.log("responseText", responseText);
                 const $ = cheerio.load(responseText);
 
                 test("Can increment quantiy of an item", () => {});
@@ -351,20 +350,25 @@ describe("Order routes file endpoints", async () => {
                                     .replace("KES", "")
                             );
 
-                            items.push({ name: itemName, price: itemPrice });
+                            // query markup above also fetches the final total cost
+                            // so we need to ensure its not added to the items array
+                            // the total cost will not have an item name
+                            if (itemName !== "") {
+                                items.push({ name: itemName, price: itemPrice });
+                            }
                         }
                     );
 
-                    const totalCost = parseFloat(
-                        $("details blockquote:last-child mark")
-                            .text()
+                    const totalCost = $("div.grid h3.text-green-500").parent().next().text().trim();
+                    const totalCostNum = parseFloat(
+                        totalCost
                             .replace("KES", "")
                     );
                     let totalCostFromItems = 0;
-
+                    
                     items.forEach((item) => (totalCostFromItems += item.price));
 
-                    expect(totalCostFromItems).toBe(totalCost);
+                    expect(totalCostFromItems).toBe(totalCostNum);
                 });
 
                 test("Can change payment type via POST to /orders/payment/updateType/ with cash and mpesa as options", () => {
