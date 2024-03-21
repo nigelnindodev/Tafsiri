@@ -17,7 +17,10 @@ export const getTestBaseUrl = (app: Elysia): string => {
  * Bun also doesn't have great regex support, so we'll have to come up with our own implementation
  * to resolve getting the hx-post value.
  *
- * TODO: Rename mthod to be more descriptive of its expanded scope.
+ * TODO: Rename method to be more descriptive of its expanded scope.
+ * UPDATE: Not using this method anymore as we narrowed down as to why we needed it in
+ * the first place. Leaving it here temporarily unti all tests are complete. We might
+ * need it again.
  */
 export const getHxPostValueInput = (
     markup: string,

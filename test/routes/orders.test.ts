@@ -3,7 +3,6 @@ import * as cheerio from "cheerio";
 
 import { createApplicationServer } from "../../src/server";
 import {
-    //getHxPostValueInput,
     getTestBaseUrl,
     loginUser,
     loginUserAdmin,
