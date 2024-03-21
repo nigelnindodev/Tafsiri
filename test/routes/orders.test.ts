@@ -325,8 +325,7 @@ describe("Order routes file endpoints", async () => {
             });
 
             describe("HTMX markup response", async () => {
-                const responseText = await response.text();
-                const $ = cheerio.load(responseText);
+                const $ = cheerio.load(await response.text());
 
                 test("Can increment quantiy of an item", () => {
                     const targetElement = $('button[hx-post*="/INC"]');
@@ -427,7 +426,24 @@ describe("Order routes file endpoints", async () => {
             expect(response.status).toBe(401);
         });
 
-        describe("User session active", () => {});
+        describe("User session active", async () => {
+            const response = await app.handle(
+                new Request(`${baseUrl}/orders/resume/1`, {
+                    headers: {
+                        Cookie: loggedInCookie
+                    }
+                })
+            );
+
+            test("Returns 200 status code", () => {
+                expect(response.status).toBe(200);
+            });
+
+            test("HTMX markup response", async () => {
+                const responseText = await response.text();                
+                console.log("responseText", responseText);
+            });
+        });
     });
 
     describe("POST on /orders/confirm/:orderId/:paymentId endpoint", () => {
@@ -442,7 +458,7 @@ describe("Order routes file endpoints", async () => {
         describe("User session active", () => {});
     });
 
-    // TODO: Another candidate for changing the url. Chane to toggleActive
+    // TODO: Another candidate for changing the url. Change to toggleActive
     describe("POST on /orders/item/change/:orderId/:inventoryId endpoint", () => {
         describe("User session inactive", () => {});
 
