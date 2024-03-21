@@ -495,16 +495,192 @@ describe("Order routes file endpoints", async () => {
     });
 
     describe("POST on /orders/item/updateQuanity/:itemId/:updateType endpoint", () => {
-        describe("User session inactive", () => {});
+        describe("User session inactive", async () => {
+            const response = await app.handle(
+                new Request(`${baseUrl}/orders/item/updateQuantity/1/INC`, {
+                    method: "POST",
+                })
+            );
 
-        describe("User session active", () => {});
+            test("Returns 401 status code", () => {
+                expect(response.status).toBe(401);
+            });
+        });
+
+        describe("User session active", async () => {
+            const getLiveOrderResponseText = await app
+                .handle(
+                    new Request(`${baseUrl}/orders/active/1`, {
+                        headers: {
+                            Cookie: loggedInCookie,
+                        },
+                    })
+                )
+                .then((result) => result.text());
+
+            const $ = cheerio.load(getLiveOrderResponseText);
+            const incrementItemUrl = $('button[hx-post*="/INC"]').attr(
+                "hx-post"
+            );
+            const decrementItemUrl = $('button[hx-post*="/DEC"]').attr(
+                "hx-post"
+            );
+
+            describe("Increment", async () => {
+                console.log("incrementItemUrl", incrementItemUrl);
+                const response = await app.handle(
+                    new Request(`${baseUrl}${incrementItemUrl}`, {
+                        method: "POST",
+                        headers: {
+                            Cookie: loggedInCookie,
+                        },
+                    })
+                );
+
+                const responseText = await app
+                    .handle(
+                        new Request(`${baseUrl}/orders/active/1`, {
+                            headers: {
+                                Cookie: loggedInCookie,
+                            },
+                        })
+                    )
+                    .then((result) => result.text());
+
+                test("Returns 200 status code and correct HTMX server trigger event", () => {
+                    expect(response.status).toBe(200);
+                    expect(response.headers.get("hx-trigger")).toBe(
+                        ServerHxTriggerEvents.REFRESH_ORDER
+                    );
+                });
+
+                test("Increses quantity of selected item", async () => {
+                    //TODO: Check number of items equals 2
+                    console.log("responseTextInc", responseText);
+                });
+            });
+
+            describe("Decrement", async () => {
+                const response = await app.handle(
+                    new Request(`${baseUrl}${decrementItemUrl}`, {
+                        method: "POST",
+                        headers: {
+                            Cookie: loggedInCookie,
+                        },
+                    })
+                );
+
+                const responseText = await app
+                    .handle(
+                        new Request(`${baseUrl}/orders/active/1`, {
+                            headers: {
+                                Cookie: loggedInCookie,
+                            },
+                        })
+                    )
+                    .then((result) => result.text());
+
+                test("Returns 200 status code and correct HTMX server trigger event", () => {
+                    expect(response.status).toBe(200);
+                    expect(response.headers.get("hx-trigger")).toBe(
+                        ServerHxTriggerEvents.REFRESH_ORDER
+                    );
+                });
+
+                test("Decreases quantity of the selected item", () => {
+                    // TODO: Check number if items equals 1
+                    console.log("responseTextDec", responseText);
+                });
+            });
+        });
     });
 
     // TODO: Another candidate for changing the url. Change to toggleActive
-    describe("POST on /orders/item/change/:orderId/:inventoryId endpoint", () => {
-        describe("User session inactive", () => {});
+    describe("POST on /orders/item/change/:orderId/:inventoryId endpoint", async () => {
+        const targetResponseText = await app
+            .handle(
+                new Request(`${baseUrl}/orders/active/1`, {
+                    headers: {
+                        Cookie: loggedInCookie,
+                    },
+                })
+            )
+            .then((result) => result.text());
+        console.log("targetResponseTextA", targetResponseText);
 
-        describe("User session active", () => {});
+        describe("User session inactive", async () => {
+            const responseStatus = await app
+                .handle(
+                    new Request(`${baseUrl}/orders/item/change/1/1`, {
+                        method: "POST",
+                    })
+                )
+                .then((result) => result.status);
+
+            test("Returns 401 status code", () => {
+                expect(responseStatus).toBe(401);
+            });
+        });
+
+        describe("User session active", async () => {
+            const response = await app.handle(
+                new Request(`${baseUrl}/orders/item/change/1/1`, {
+                    method: "POST",
+                    headers: {
+                        Cookie: loggedInCookie,
+                    },
+                })
+            );
+
+            const targetResponseText = await app
+                .handle(
+                    new Request(`${baseUrl}/orders/active/1`, {
+                        headers: {
+                            Cookie: loggedInCookie,
+                        },
+                    })
+                )
+                .then((result) => result.text());
+            console.log("targetResponseTextB", targetResponseText);
+
+            test("Returns 200 status code and correct HTMX server trigger event", () => {
+                expect(response.status).toBe(200);
+                expect(response.headers.get("hx-trigger")).toBe(
+                    ServerHxTriggerEvents.REFRESH_ORDER
+                );
+            });
+
+            test("Adds an item from the inventory to the order", async () => {
+                const $ = cheerio.load(targetResponseText);
+
+                expect($('button[hx-post*="/INC"]').length).toBe(2);
+                expect($('button[hx-post*="/DEC"]').length).toBe(2);
+            });
+
+            test("On calling endpoint again, removes the added item from the order", async () => {
+                await app.handle(
+                    new Request(`${baseUrl}/orders/item/change/1/1`, {
+                        method: "POST",
+                        headers: {
+                            Cookie: loggedInCookie,
+                        },
+                    })
+                );
+
+                const response = await app.handle(
+                    new Request(`${baseUrl}/orders/active/1`, {
+                        headers: {
+                            Cookie: loggedInCookie,
+                        },
+                    })
+                );
+
+                const $ = cheerio.load(await response.text());
+
+                expect($('button[hx-post*="/INC"]').length).toBe(1);
+                expect($('button[hx-post*="/DEC"]').length).toBe(1);
+            });
+        });
     });
 
     // TODO: Change this as well from updateType to paymentType
