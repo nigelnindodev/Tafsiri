@@ -441,9 +441,55 @@ describe("Order routes file endpoints", async () => {
                 expect(response.status).toBe(200);
             });
 
-            test("HTMX markup response", async () => {
+            describe("HTMX markup response", async () => {
                 const responseText = await response.text();
-                console.log("responseText", responseText);
+                const $ = cheerio.load(responseText);
+
+                test("Contains navigation to go back to main orders page with correct hx-target", () => {
+                    const targetElement = $('[hx-get="/orders/list"]');
+                    const hxTargetValue = targetElement.attr("hx-target");
+
+                    expect(targetElement.length).toBe(1);
+                    expect(hxTargetValue).toBe(
+                        `#${HtmxTargets.ORDERS_SECTION}`
+                    );
+                });
+
+                test("Contains a listing of inventory items", () => {
+                    /**
+                     * Avoiding giving partiular details of the inventory items
+                     * because other tests (especially in the inventory routes
+                     * suite) might create unrelated inventory items, which is
+                     * a recipe for race conditions and thus flaky tests.
+                     */
+                    const inventoryItems = $("details ul li");
+                    expect(inventoryItems.length).toBeGreaterThanOrEqual(1);
+                });
+
+                test("Inventory Item rows can be activated/deactivated with POST to /orders/item/change/:orderId endpoint on change to checkbox state", () => {
+                    const firstInventoryItemInput = $(
+                        "details ul li:nth-of-type(1)"
+                    ).find("label input");
+
+                    const hxPostValue = firstInventoryItemInput.attr("hx-post");
+                    const hxTriggerValue =
+                        firstInventoryItemInput.attr("hx-trigger");
+
+                    expect(hxPostValue).toInclude("/orders/item/change");
+                    expect(hxTriggerValue).toBe("change");
+                });
+
+                test("Fetches current order details via GET /orders/active/:orderId on load and on server Hx-Trigger response header", () => {
+                    const targetElement = $('[hx-get^="/orders/active/"]');
+                    const hxTriggerValue = targetElement.attr("hx-trigger");
+
+                    expect(targetElement.length).toBe(1);
+                    expect(hxTriggerValue).toInclude("load");
+                    expect(hxTriggerValue).toInclude(
+                        `${ServerHxTriggerEvents.REFRESH_ORDER}`
+                    );
+                    expect(hxTriggerValue).toInclude("from:body");
+                });
             });
         });
     });
