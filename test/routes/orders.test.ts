@@ -16,6 +16,8 @@ import {
     createUnfinisheOrder,
     generateInventoryItems,
 } from "../fixtures";
+import { ServerHxTriggerEvents } from "../../src/services/common/constants";
+import { Cookie } from "elysia";
 
 describe("Order routes file endpoints", async () => {
     const dataSource = await PostgresDataSourceSingleton.getInstance();
@@ -239,7 +241,6 @@ describe("Order routes file endpoints", async () => {
 
             describe("HTMX markup response", async () => {
                 const responseText = await response.text();
-                console.log("responseText", responseText);
                 const $ = cheerio.load(responseText);
 
                 test("Contains navigation to go back to main orders page with correct hx-target", () => {
@@ -263,17 +264,33 @@ describe("Order routes file endpoints", async () => {
 
                 test("Inventory Item rows can be activated/deactivated with POST to /orders/item/change/:orderId endpoint on change to checkbox state", () => {
                     const firstInventoryItem = $("details ul li:nth-of-type(1)") ;
-                    console.log("firstInventoryItem", firstInventoryItem);
 
                     expect(getHxPostValueInput(firstInventoryItem.text(), "hx-post")).toInclude("/orders/item/change");
                     expect(getHxPostValueInput(firstInventoryItem.text(), "hx-trigger")).toBe("change");
+                });
+
+                test("Fetches current order details via GET /orders/active/:orderId on load and on server Hx-Trigger response header", () => {
+                    const targetElement = $('[hx-get^="/orders/active/"]');
+                    const hxTriggerValue = targetElement.attr("hx-trigger");
+
+                    expect(targetElement.length).toBe(1);
+                    expect(hxTriggerValue).toInclude("load");
+                    expect(hxTriggerValue).toInclude(`${ServerHxTriggerEvents.REFRESH_ORDER}`);
+                    expect(hxTriggerValue).toInclude("from:body");
                 });
             });
         });
     });
 
     // TODO: Good idea to find a more descriptive url for this endpoint
-    // maybe somethinf like /orders/activeItems/:orderId
+    // maybe something like /orders/live/:orderId
+    //
+    // For speed, this test will rely on the previously created order
+    // i.e {baseUrl}/orders/active/1
+    //
+    // But this should be changed as soon as possible, the test should
+    // create and fetch its own order. This hard coding will eventaully
+    // lead to flaky tests.
     describe("GET on /orders/active/:orderId endpoint", () => {
         describe("User session inactive", async () => {
             const response = await app.handle(
@@ -283,7 +300,48 @@ describe("Order routes file endpoints", async () => {
             expect(response.status).toBe(401);
         });
 
-        describe("User session active", () => {});
+        describe("User session active", async () => {
+            const response = await app.handle(
+                new Request(`${baseUrl}/orders/active/1`, {
+                    headers: {
+                        Cookie: loggedInCookie
+                    }
+                })
+            );
+
+            test("Returns 200 status code", () => {
+                expect(response.status).toBe(200);
+            });
+
+            describe("HTMX markup response", async () => {
+                const responseText = await response.text();
+                console.log("responseText", responseText);
+
+                test("Can increment quantiy of an item", () => {
+
+                });
+
+                test("Can decrement quantity of an item", () => {
+
+                });
+
+                test("Correctly sums up total cost of items", () => {
+
+                });
+
+                test("Can change payment type via POST to /orders/payment/updateType/ with cash and mpesa as options", () => {
+
+                });
+
+                test("Can submit order via POST to /orders/confirm/:orderId/:paymentId with correct hx-target and progress indicator", () => {
+
+                });
+
+                test("has progress indicator for POST to /orders/confirm/:orderId/:paymentId", () => {
+
+                });
+            });
+        });
     });
 
     describe("GET on /orders/resume/:orderId enpoints", () => {
