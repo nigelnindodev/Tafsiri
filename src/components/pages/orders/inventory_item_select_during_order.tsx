@@ -23,7 +23,7 @@ export const InventoryItemSelectDuringOrder = (
                 {inventoryItems.map((inventoryItem) => {
                     return (
                         <li>
-                            <label safe>
+                            <label >
                                 {isOrderItemInOrderV2(
                                     inventoryItem.id,
                                     orderItemIds
@@ -41,7 +41,9 @@ export const InventoryItemSelectDuringOrder = (
                                         type="checkbox"
                                     />
                                 )}
-                                {inventoryItem.name}
+                                <div safe>
+                                    {inventoryItem.name}
+                                </div>
                             </label>
                         </li>
                     );
