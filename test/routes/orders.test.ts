@@ -2,11 +2,7 @@ import { describe, expect, test } from "bun:test";
 import * as cheerio from "cheerio";
 
 import { createApplicationServer } from "../../src/server";
-import {
-    getTestBaseUrl,
-    loginUser,
-    loginUserAdmin,
-} from "../test_utils";
+import { getTestBaseUrl, loginUser, loginUserAdmin } from "../test_utils";
 import { testUser, testAdminUser } from "../test_constants";
 import { PostgresDataSourceSingleton } from "../../src/postgres";
 import { HtmxTargets } from "../../src/components/common/constants";
@@ -358,18 +354,24 @@ describe("Order routes file endpoints", async () => {
                             // so we need to ensure its not added to the items array
                             // the total cost will not have an item name
                             if (itemName !== "") {
-                                items.push({ name: itemName, price: itemPrice });
+                                items.push({
+                                    name: itemName,
+                                    price: itemPrice,
+                                });
                             }
                         }
                     );
 
-                    const totalCost = $("div.grid h3.text-green-500").parent().next().text().trim();
+                    const totalCost = $("div.grid h3.text-green-500")
+                        .parent()
+                        .next()
+                        .text()
+                        .trim();
                     const totalCostNum = parseFloat(
-                        totalCost
-                            .replace("KES", "")
+                        totalCost.replace("KES", "")
                     );
                     let totalCostFromItems = 0;
-                    
+
                     items.forEach((item) => (totalCostFromItems += item.price));
 
                     expect(totalCostFromItems).toBe(totalCostNum);
@@ -430,8 +432,8 @@ describe("Order routes file endpoints", async () => {
             const response = await app.handle(
                 new Request(`${baseUrl}/orders/resume/1`, {
                     headers: {
-                        Cookie: loggedInCookie
-                    }
+                        Cookie: loggedInCookie,
+                    },
                 })
             );
 
@@ -440,16 +442,10 @@ describe("Order routes file endpoints", async () => {
             });
 
             test("HTMX markup response", async () => {
-                const responseText = await response.text();                
+                const responseText = await response.text();
                 console.log("responseText", responseText);
             });
         });
-    });
-
-    describe("POST on /orders/confirm/:orderId/:paymentId endpoint", () => {
-        describe("User session inactive", () => {});
-
-        describe("User session active", () => {});
     });
 
     describe("POST on /orders/item/updateQuanity/:itemId/:updateType endpoint", () => {
@@ -468,6 +464,22 @@ describe("Order routes file endpoints", async () => {
     // TODO: Change this as well from updateType to paymentType
     describe("POST on /orders/payment/updateType/:paymentId", () => {
         describe("User session inactive", () => {});
+
+        describe("User session active", () => {});
+    });
+
+    describe("POST on /orders/confirm/:orderId/:paymentId endpoint", () => {
+        describe("User session inactive", async () => {
+            const response = await app.handle(
+                new Request(`${baseUrl}/orders/confirm/1/1`, {
+                    method: "POST",
+                })
+            );
+
+            test("Returns 401 status code", () => {
+                expect(response.status).toBe(401);
+            });
+        });
 
         describe("User session active", () => {});
     });
