@@ -3,7 +3,7 @@ import * as cheerio from "cheerio";
 
 import { createApplicationServer } from "../../src/server";
 import {
-    getHxPostValueInput,
+    //getHxPostValueInput,
     getTestBaseUrl,
     loginUser,
     loginUserAdmin,
@@ -17,7 +17,6 @@ import {
     generateInventoryItems,
 } from "../fixtures";
 import { ServerHxTriggerEvents } from "../../src/services/common/constants";
-import { Cookie } from "elysia";
 
 describe("Order routes file endpoints", async () => {
     const dataSource = await PostgresDataSourceSingleton.getInstance();
@@ -176,11 +175,9 @@ describe("Order routes file endpoints", async () => {
 
             // Add at least one item to order to populate orders list
             const $ = cheerio.load(createOrderResponse);
-            const firstInventoryItem = $("details ul li:nth-of-type(1)");
-            const hxPostValue = getHxPostValueInput(
-                firstInventoryItem.text(),
-                "hx-post"
-            );
+            const hxPostValue = $("details ul li:nth-of-type(1)")
+                .find("label input")
+                .attr("hx-post");
             const addInventoryItemResponse = await app.handle(
                 new Request(`${baseUrl}${hxPostValue}`, {
                     method: "POST",
@@ -270,22 +267,16 @@ describe("Order routes file endpoints", async () => {
                 });
 
                 test("Inventory Item rows can be activated/deactivated with POST to /orders/item/change/:orderId endpoint on change to checkbox state", () => {
-                    const firstInventoryItem = $(
+                    const firstInventoryItemInput = $(
                         "details ul li:nth-of-type(1)"
-                    );
+                    ).find("label input");
 
-                    expect(
-                        getHxPostValueInput(
-                            firstInventoryItem.text(),
-                            "hx-post"
-                        )
-                    ).toInclude("/orders/item/change");
-                    expect(
-                        getHxPostValueInput(
-                            firstInventoryItem.text(),
-                            "hx-trigger"
-                        )
-                    ).toBe("change");
+                    const hxPostValue = firstInventoryItemInput.attr("hx-post");
+                    const hxTriggerValue =
+                        firstInventoryItemInput.attr("hx-trigger");
+
+                    expect(hxPostValue).toInclude("/orders/item/change");
+                    expect(hxTriggerValue).toBe("change");
                 });
 
                 test("Fetches current order details via GET /orders/active/:orderId on load and on server Hx-Trigger response header", () => {
@@ -343,7 +334,38 @@ describe("Order routes file endpoints", async () => {
 
                 test("Can decrement quantity of an item", () => {});
 
-                test("Correctly sums up total cost of items", () => {});
+                test("Correctly sums up total cost of items", () => {
+                    const items: { name: string; price: number }[] = [];
+
+                    $("details > blockquote > div.grid").each(
+                        function (_, element) {
+                            const itemName = $(element)
+                                .find("h4")
+                                .text()
+                                .trim();
+
+                            const itemPrice = parseFloat(
+                                $(element)
+                                    .find("mark")
+                                    .text()
+                                    .replace("KES", "")
+                            );
+
+                            items.push({ name: itemName, price: itemPrice });
+                        }
+                    );
+
+                    const totalCost = parseFloat(
+                        $("details blockquote:last-child mark")
+                            .text()
+                            .replace("KES", "")
+                    );
+                    let totalCostFromItems = 0;
+
+                    items.forEach((item) => (totalCostFromItems += item.price));
+
+                    expect(totalCostFromItems).toBe(totalCost);
+                });
 
                 test("Can change payment type via POST to /orders/payment/updateType/ with cash and mpesa as options", () => {
                     const fieldSet = $("fieldset");
