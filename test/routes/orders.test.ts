@@ -177,7 +177,10 @@ describe("Order routes file endpoints", async () => {
             // Add at least one item to order to populate orders list
             const $ = cheerio.load(createOrderResponse);
             const firstInventoryItem = $("details ul li:nth-of-type(1)");
-            const hxPostValue = getHxPostValueInput(firstInventoryItem.text(), "hx-post");
+            const hxPostValue = getHxPostValueInput(
+                firstInventoryItem.text(),
+                "hx-post"
+            );
             const addInventoryItemResponse = await app.handle(
                 new Request(`${baseUrl}${hxPostValue}`, {
                     method: "POST",
@@ -205,7 +208,9 @@ describe("Order routes file endpoints", async () => {
                 });
 
                 test("Row can resume order via GET with correct hx-target value", () => {
-                    const targetElement = firstRow.find('[hx-get^="/orders/resume"]');
+                    const targetElement = firstRow.find(
+                        '[hx-get^="/orders/resume"]'
+                    );
                     const hxTargetValue = targetElement.attr("hx-target");
 
                     expect(targetElement.length).toBe(1);
@@ -230,8 +235,8 @@ describe("Order routes file endpoints", async () => {
             const response = await app.handle(
                 new Request(`${baseUrl}/orders/create`, {
                     headers: {
-                        Cookie: loggedInCookie
-                    }
+                        Cookie: loggedInCookie,
+                    },
                 })
             );
 
@@ -248,14 +253,16 @@ describe("Order routes file endpoints", async () => {
                     const hxTargetValue = targetElement.attr("hx-target");
 
                     expect(targetElement.length).toBe(1);
-                    expect(hxTargetValue).toBe(`#${HtmxTargets.ORDERS_SECTION}`);
+                    expect(hxTargetValue).toBe(
+                        `#${HtmxTargets.ORDERS_SECTION}`
+                    );
                 });
 
                 test("Contains a listing of inventory items", () => {
                     /**
                      * Avoiding giving partiular details of the inventory items
                      * because other tests (especially in the inventory routes
-                     * suite) might create unrelated inventory items, which is 
+                     * suite) might create unrelated inventory items, which is
                      * a recipe for race conditions and thus flaky tests.
                      */
                     const inventoryItems = $("details ul li");
@@ -263,10 +270,22 @@ describe("Order routes file endpoints", async () => {
                 });
 
                 test("Inventory Item rows can be activated/deactivated with POST to /orders/item/change/:orderId endpoint on change to checkbox state", () => {
-                    const firstInventoryItem = $("details ul li:nth-of-type(1)") ;
+                    const firstInventoryItem = $(
+                        "details ul li:nth-of-type(1)"
+                    );
 
-                    expect(getHxPostValueInput(firstInventoryItem.text(), "hx-post")).toInclude("/orders/item/change");
-                    expect(getHxPostValueInput(firstInventoryItem.text(), "hx-trigger")).toBe("change");
+                    expect(
+                        getHxPostValueInput(
+                            firstInventoryItem.text(),
+                            "hx-post"
+                        )
+                    ).toInclude("/orders/item/change");
+                    expect(
+                        getHxPostValueInput(
+                            firstInventoryItem.text(),
+                            "hx-trigger"
+                        )
+                    ).toBe("change");
                 });
 
                 test("Fetches current order details via GET /orders/active/:orderId on load and on server Hx-Trigger response header", () => {
@@ -275,7 +294,9 @@ describe("Order routes file endpoints", async () => {
 
                     expect(targetElement.length).toBe(1);
                     expect(hxTriggerValue).toInclude("load");
-                    expect(hxTriggerValue).toInclude(`${ServerHxTriggerEvents.REFRESH_ORDER}`);
+                    expect(hxTriggerValue).toInclude(
+                        `${ServerHxTriggerEvents.REFRESH_ORDER}`
+                    );
                     expect(hxTriggerValue).toInclude("from:body");
                 });
             });
@@ -304,8 +325,8 @@ describe("Order routes file endpoints", async () => {
             const response = await app.handle(
                 new Request(`${baseUrl}/orders/active/1`, {
                     headers: {
-                        Cookie: loggedInCookie
-                    }
+                        Cookie: loggedInCookie,
+                    },
                 })
             );
 
@@ -318,25 +339,23 @@ describe("Order routes file endpoints", async () => {
                 console.log("responseText", responseText);
                 const $ = cheerio.load(responseText);
 
-                test("Can increment quantiy of an item", () => {
+                test("Can increment quantiy of an item", () => {});
 
-                });
+                test("Can decrement quantity of an item", () => {});
 
-                test("Can decrement quantity of an item", () => {
-
-                });
-
-                test("Correctly sums up total cost of items", () => {
-
-                });
+                test("Correctly sums up total cost of items", () => {});
 
                 test("Can change payment type via POST to /orders/payment/updateType/ with cash and mpesa as options", () => {
                     const fieldSet = $("fieldset");
-                    const radioButtons = $(fieldSet).find('input[type="radio"]');
-                    const radioValues: Array<string|undefined> = [];
-                    radioButtons.each((_,element) => {
+                    const radioButtons = $(fieldSet).find(
+                        'input[type="radio"]'
+                    );
+                    const radioValues: Array<string | undefined> = [];
+                    radioButtons.each((_, element) => {
                         const hxPostValue = $(element).attr("hx-post");
-                        expect(hxPostValue).toStartWith("/orders/payment/updateType");
+                        expect(hxPostValue).toStartWith(
+                            "/orders/payment/updateType"
+                        );
                         radioValues.push($(element).attr("value"));
                     });
                     expect(radioValues.length).toBe(2);
@@ -345,13 +364,19 @@ describe("Order routes file endpoints", async () => {
                 });
 
                 test("Can submit order via POST to /orders/confirm/:orderId/:paymentId with correct hx-target and progress indicator", () => {
-                    const targetElement = $('button[hx-post^="/orders/confirm"]');
+                    const targetElement = $(
+                        'button[hx-post^="/orders/confirm"]'
+                    );
                     const hxTargetValue = targetElement.attr("hx-target");
                     const hxIndicatorValue = targetElement.attr("hx-indicator");
 
                     expect(targetElement.length).toBe(1);
-                    expect(hxTargetValue).toBe(`#${HtmxTargets.CREATE_ORDER_SECTION}`);
-                    expect(hxIndicatorValue).toBe("#confirm-progress-indicator");
+                    expect(hxTargetValue).toBe(
+                        `#${HtmxTargets.CREATE_ORDER_SECTION}`
+                    );
+                    expect(hxIndicatorValue).toBe(
+                        "#confirm-progress-indicator"
+                    );
                 });
 
                 test("has progress indicator for POST to /orders/confirm/:orderId/:paymentId", () => {

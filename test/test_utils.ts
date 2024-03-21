@@ -19,8 +19,11 @@ export const getTestBaseUrl = (app: Elysia): string => {
  *
  * TODO: Rename mthod to be more descriptive of its expanded scope.
  */
-export const getHxPostValueInput = (markup: string, value: string): string | undefined => {
-    console.log("testMarkup:",markup);
+export const getHxPostValueInput = (
+    markup: string,
+    value: string
+): string | undefined => {
+    console.log("testMarkup:", markup);
     const splitMarkup = markup.split(" ");
     const hxPostSection = splitMarkup.filter((section) => {
         return section.startsWith(value);
