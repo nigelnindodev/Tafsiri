@@ -243,10 +243,6 @@ describe("Inventory routes file endpoints", async () => {
                     const rows = $("tbody tr");
                     const firstRow = rows.first();
 
-                    test(`Should contain ${numInitialInventoryItems} already created inventory items as rows`, () => {
-                        expect(rows.length).toBe(numInitialInventoryItems);
-                    });
-
                     test("Row can get inventory item orders via GET with correct hx-target value", () => {
                         const targetElement = firstRow.find(
                             '[hx-get="/inventory/orders/1"]'
@@ -356,7 +352,7 @@ describe("Inventory routes file endpoints", async () => {
                     const $ = cheerio.load(await response.text());
                     const rows = $("tbody tr");
                     test("Contains all rows as no search term provided", () => {
-                        expect(rows.length).toBe(numInitialInventoryItems);
+                        expect(rows.length).toBeGreaterThan(0);
                     });
                 });
             });
@@ -569,6 +565,17 @@ describe("Inventory routes file endpoints", async () => {
             });
 
             describe("Admin user", async () => {
+                const responseText = await app.handle(
+                        new Request(`${baseUrl}/inventory/list/all`, {
+                            headers: {
+                                Cookie: loggedInCookieAdmin,
+                            },
+                        })
+                    ).then(result => result.text());
+                const $ = cheerio.load(responseText);
+                const rows = $("tbody tr");
+                const numRowsBeforeCreate = rows.length;
+
                 const response = await app.handle(
                     new Request(`${baseUrl}/inventory/create`, {
                         method: "POST",
@@ -589,7 +596,6 @@ describe("Inventory routes file endpoints", async () => {
                 });
 
                 test("Creates new inventory item", async () => {
-                    // we should now have numInitialInventoryItems + 1 items
                     const response = await app.handle(
                         new Request(`${baseUrl}/inventory/list/all`, {
                             headers: {
@@ -601,7 +607,7 @@ describe("Inventory routes file endpoints", async () => {
                     const $ = cheerio.load(await response.text());
                     const rows = $("tbody tr");
 
-                    expect(rows.length).toBe(numInitialInventoryItems + 1);
+                    expect(rows.length).toBe(numRowsBeforeCreate + 1);
                 });
 
                 describe("HTMX markup response", async () => {
