@@ -12,6 +12,7 @@ import {
     generateInventoryItems,
 } from "../fixtures";
 import { ServerHxTriggerEvents } from "../../src/services/common/constants";
+import { PaymentTypes } from "../../src/postgres/common/constants";
 
 describe("Order routes file endpoints", async () => {
     const dataSource = await PostgresDataSourceSingleton.getInstance();
@@ -555,8 +556,9 @@ describe("Order routes file endpoints", async () => {
                 });
 
                 test("Increses quantity of selected item", async () => {
-                    //TODO: Check number of items equals 2
-                    console.log("responseTextInc", responseText);
+                    const $ = cheerio.load(responseText);
+                    const targetText = $("div.center h5").text();
+                    expect(targetText).toBe("2 item(s)");
                 });
             });
 
@@ -588,8 +590,9 @@ describe("Order routes file endpoints", async () => {
                 });
 
                 test("Decreases quantity of the selected item", () => {
-                    // TODO: Check number if items equals 1
-                    console.log("responseTextDec", responseText);
+                    const $ = cheerio.load(responseText);
+                    const targetText = $("div.center h5").text();
+                    expect(targetText).toBe("1 item(s)");
                 });
             });
         });
@@ -597,17 +600,6 @@ describe("Order routes file endpoints", async () => {
 
     // TODO: Another candidate for changing the url. Change to toggleActive
     describe("POST on /orders/item/change/:orderId/:inventoryId endpoint", async () => {
-        const targetResponseText = await app
-            .handle(
-                new Request(`${baseUrl}/orders/active/1`, {
-                    headers: {
-                        Cookie: loggedInCookie,
-                    },
-                })
-            )
-            .then((result) => result.text());
-        console.log("targetResponseTextA", targetResponseText);
-
         describe("User session inactive", async () => {
             const responseStatus = await app
                 .handle(
@@ -641,7 +633,6 @@ describe("Order routes file endpoints", async () => {
                     })
                 )
                 .then((result) => result.text());
-            console.log("targetResponseTextB", targetResponseText);
 
             test("Returns 200 status code and correct HTMX server trigger event", () => {
                 expect(response.status).toBe(200);
@@ -685,9 +676,60 @@ describe("Order routes file endpoints", async () => {
 
     // TODO: Change this as well from updateType to paymentType
     describe("POST on /orders/payment/updateType/:paymentId", () => {
-        describe("User session inactive", () => {});
+        describe("User session inactive", async () => {
+            const responseStatus = await app
+                .handle(
+                    new Request(`${baseUrl}/orders/payment/updateType/1`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            paymentType: PaymentTypes.CASH,
+                        }),
+                    })
+                )
+                .then((result) => result.status);
 
-        describe("User session active", () => {});
+            test("Returns 401 response", () => {
+                expect(responseStatus).toBe(401);
+            });
+        });
+
+        describe("User session active", async () => {
+            const response = await app.handle(
+                new Request(`${baseUrl}/orders/payment/updateType/1`, {
+                    method: "POST",
+                    headers: {
+                        Cookie: loggedInCookie,
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ paymentType: PaymentTypes.MPESA }),
+                })
+            );
+
+            test("Returns 200 status code and correct HTMX server trigger event", async () => {
+                expect(response.status).toBe(200);
+                expect(response.headers.get("hx-trigger")).toBe(
+                    ServerHxTriggerEvents.REFRESH_ORDER
+                );
+            });
+
+            test("Changes active payment type for order", async () => {
+                const response = await app.handle(
+                    new Request(`${baseUrl}/orders/active/1`, {
+                        headers: {
+                            Cookie: loggedInCookie,
+                        },
+                    })
+                );
+
+                const $ = cheerio.load(await response.text());
+                const isChecked = $("#mpesa").prop("checked");
+
+                expect(isChecked).toBe(true);
+            });
+        });
     });
 
     describe("POST on /orders/confirm/:orderId/:paymentId endpoint", () => {
@@ -703,6 +745,34 @@ describe("Order routes file endpoints", async () => {
             });
         });
 
-        describe("User session active", () => {});
+        describe("User session active", async () => {
+            const response = await app.handle(
+                new Request(`${baseUrl}/orders/confirm/1/1`, {
+                    method: "POST",
+                    headers: {
+                        Cookie: loggedInCookie,
+                    },
+                })
+            );
+
+            // TODO: Should be 201 status code
+            test("Returns 200 status code", () => {
+                expect(response.status).toBe(200);
+            });
+
+            test("After confirmaing order, should be removed from unfinished orders", async () => {
+                const response = await app.handle(
+                    new Request(`${baseUrl}/orders/list/all`, {
+                        headers: {
+                            Cookie: loggedInCookie,
+                        },
+                    })
+                );
+
+                expect(await response.text()).toContain(
+                    "No recent unfinished orders."
+                );
+            });
+        });
     });
 });
