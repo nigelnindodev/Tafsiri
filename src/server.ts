@@ -65,14 +65,11 @@ export const createApplicationServer = (dataSource: DataSource) => {
             return RootPage();
         })
         .get("/root", async (ctx) => {
-            logger.trace("Called /root endpoint");
-            logger.trace("Application context on root path", ctx);
             const { auth } = ctx.cookie;
             if (!auth) {
                 return LoginComponent();
             }
             const authValue = await ctx.jwt.verify(auth);
-            logger.trace("authValue", authValue);
             if (!authValue) {
                 return LoginComponent();
             } else {

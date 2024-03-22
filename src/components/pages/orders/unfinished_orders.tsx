@@ -30,7 +30,7 @@ export const UnfinishedOrdersComponent = (
                     {unfinishedOrderitems.map((item) => {
                         return (
                             <tr>
-                                <td>
+                                <td safe>
                                     {unfinishedItemRowDescription(
                                         item.order_items
                                     )}

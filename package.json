@@ -4,7 +4,7 @@
     "scripts": {
         "build": "tsc",
         "dev": "bun run --watch src/index.ts",
-        "format": "bun run prettier . --write",
+        "format": "cd src && bun run prettier . --write && cd .. && cd test && bun run prettier . --write",
         "setup-run-test": "bun run setup_and_run_tests.ts",
         "test": "source .env.test && bun test",
         "test-run-server": "source .env.test && bun run --watch src/index.ts"
@@ -28,12 +28,14 @@
         "zod": "^3.22.4"
     },
     "devDependencies": {
+        "@babel/eslint-parser": "^7.23.10",
         "@types/bun": "^1.0.3",
         "autoprefixer": "^10.4.17",
         "bun-types": "latest",
+        "eslint": "^8.57.0",
         "prettier": "^3.2.5",
         "typescript": "^5.4.2",
-        "vite": "^5.1.4"
+        "typescript-eslint": "^7.3.0"
     },
     "module": "src/index.ts"
 }

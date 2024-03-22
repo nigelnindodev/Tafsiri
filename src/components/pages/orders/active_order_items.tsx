@@ -19,7 +19,7 @@ export const ActiveOrderItems = (
                         <blockquote>
                             <div class="grid">
                                 <div class="center">
-                                    <h4>{item.inventory.name}</h4>
+                                    <h4 safe>{item.inventory.name}</h4>
                                 </div>
                                 <div class="grid">
                                     <button
