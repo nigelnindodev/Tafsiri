@@ -22,7 +22,7 @@
     <br />
     <a href="https://github.com/othneildrew/Best-README-Template">View Demo</a>
     ·
-    <a href="https://github.com/othneildrew/Best-README-Template/issues">Report Bug</a>
+    <a href="https://github.com/nigelnindodev/Tafsiri/issues">Report Bug</a>
     ·
     <a href="https://github.com/othneildrew/Best-README-Template/issues">Request Feature</a>
   </p>
@@ -88,6 +88,7 @@ This section should list any major frameworks/libraries used to bootstrap your p
 * [![Cheerio][Cheerio]][Cheerio-url]
 * [![Docker][Docker]][Docker-url]
 * [![ElysiaJS][ElysiaJS]][ElysiaJS-url]
+* [![HTMX][HTMX]][HTMX-url]
 * [![TypeORM][TypeORM]][TypeORM-url]
 
 <!-- GETTING STARTED -->
@@ -113,7 +114,7 @@ git clone https://github.com/nigelnindodev/Tafsiri.git
 
 #### Local Installation
 
-A local installation assumes you have a local PostgreSQL Server running, and are running Linux, MacOS or Windows Subsystem for Linux (WSL). 
+A local installation assumes you have a local PostgreSQL Server running, docker installed, and are running Linux, MacOS or Windows Subsystem for Linux (WSL). 
 
 Install the latest version of Bun:
 ```sh
@@ -141,7 +142,37 @@ Run the project in development mode
 ```sh
 bun run dev
 ```
+
+Install project dependencies
+```sh
+bun install --frozen-lockfile
+```
+
+Add a `.env` file with the following properties:
+```sh
+APPLICATION_PORT=3000
+BASE_URL="http://localhost:3000"
+JWT_SECRET="some_jwt_secret"
+POSTGRES_USER="your_local_postgres_user"
+POSTGRES_PASSWORD="your_local_postgres_password"
+POSTGRES_HOST="localhost"
+POSTGRES_PORT="5432"
+POSTGRES_DATABASE_NAME="your_local_postgres_database_name"
+```
+
+Run the project in development mode
+```sh
+bun run dev
+```
 Open http://localhost:3000/ with your browser to see the result.
+
+##### Run Test
+To run tests, use the command from `package.json`:
+```sh
+bun run setup-run-test
+```
+
+That will use the `compose.yaml` file to create a testing PostgreSQL server instance using docker, and ensure it's volume is correctly cleared up after running tests. 
 
 #### Docker Installation
 
@@ -243,8 +274,6 @@ Project Link: [https://github.com/nigelnindodev/Tafsiri](https://github.com/nige
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
 
-Use this space to list resources you find helpful and would like to give credit to. I've included a few of my favorites to kick things off!
-
 * [HTMX for Impatient Devs](https://www.youtube.com/watch?v=TT7SV-bAZyA)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -263,10 +292,11 @@ Use this space to list resources you find helpful and would like to give credit 
 [Bun]: https://img.shields.io/badge/:badgeContent?style=for-the-badge&logo=bun&link=https%3A%2F%2Fbun.sh%2F
 [Bun-url]: https://bun.sh
 [Cheerio]:
-[Cheerio-url]:
 [Docker]: 
-[Docker-url]: 
+[Docker-url]: https://www.docker.com/
 [ElysiaJS]:
-[ElysiaJS-url]:
+[ElysiaJS-url]: https://elysiajs.com/
+[HTMX]:
+[HTMX-url]: https://htmx.org
 [TypeORM]: 
-[TypeORM-url]:
+[TypeORM-url]: https://typeorm.io/
