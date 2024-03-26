@@ -32,7 +32,11 @@
   </p>
 </div>
 
+<div align="center">
 
+*Initial load time to view demo and swagger documentation may take up to one minute due to cold booting.* 
+
+</div>
 
 <!-- TABLE OF CONTENTS -->
 <details>
@@ -297,16 +301,17 @@ Project Link: [https://github.com/nigelnindodev/Tafsiri](https://github.com/nige
 [license-shield]: https://img.shields.io/github/license/nigelnindodev/Tafsiri.svg?style=for-the-badge
 [license-url]: https://github.com/nigelnindodev/Tafsiri/blob/master/LICENSE.txt
 [product-screenshot]: images/screenshot.png
-[Bun]: https://img.shields.io/badge/:badgeContent?style=for-the-badge&logo=bun&link=https%3A%2F%2Fbun.sh%2F
+[Bun]: https://img.shields.io/badge/Bun-35495E?style=for-the-badge&logo=bun&logoColor=4FC08D
 [Bun-url]: https://bun.sh
-[Cheerio]:
-[Docker]: 
+[Cheerio]: https://img.shields.io/badge/Cheerio.js-35495E?style=for-the-badge&logo=cheerio&logoColor=4FC08D
+[Cheerio-url]: https://cheerio.js.org/
+[Docker]: https://img.shields.io/badge/Docker-35495E?style=for-the-badge&logo=docker&logoColor=4FC08D
 [Docker-url]: https://www.docker.com/
-[ElysiaJS]:
+[ElysiaJS]: https://img.shields.io/badge/ElysiaJS-35495E?style=for-the-badge&logo=htmx&logoColor=4FC08D
 [ElysiaJS-url]: https://elysiajs.com/
-[HTMX]:
+[HTMX]: https://img.shields.io/badge/HTMX-35495E?style=for-the-badge&logo=htmx&logoColor=4FC08D
 [HTMX-url]: https://htmx.org
-[PicoCSS]:
+[PicoCSS]: https://img.shields.io/badge/PicoCSS-35495E?style=for-the-badge&logo=css3&logoColor=4FC08D
 [PicoCSS-url]: https://picocss.com/
-[TypeORM]: 
+[TypeORM]: https://img.shields.io/badge/TypeORM-35495E?style=for-the-badge&logo=htmx&logoColor=4FC08D
 [TypeORM-url]: https://typeorm.io/
