@@ -166,31 +166,10 @@ Run the project in development mode
 bun run dev
 ```
 
-Install project dependencies
-```sh
-bun install --frozen-lockfile
-```
-
-Add a `.env` file with the following properties:
-```sh
-APPLICATION_PORT=3000
-BASE_URL="http://localhost:3000"
-JWT_SECRET="some_jwt_secret"
-POSTGRES_USER="your_local_postgres_user"
-POSTGRES_PASSWORD="your_local_postgres_password"
-POSTGRES_HOST="localhost"
-POSTGRES_PORT="5432"
-POSTGRES_DATABASE_NAME="your_local_postgres_database_name"
-```
-
-Run the project in development mode
-```sh
-bun run dev
-```
 Open http://localhost:3000/ with your browser to see the result.
 
 ##### Run Test
-To run tests, use the command from `package.json`:
+To run tests, use the command `setup-run-test` defined in `package.json`:
 ```sh
 bun run setup-run-test
 ```
