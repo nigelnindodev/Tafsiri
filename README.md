@@ -1,34 +1,42 @@
 <a name="readme-top"></a>
+<div align="center">
 
-[![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
 [![MIT License][license-shield]][license-url]
 
+</div>
+
+<div align="center"> 
+
+[![Build][build-shield]][build-url]
+[![Test][test-shield]][test-url]
+
+</div>
 
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/othneildrew/Best-README-Template">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
-  </a>
-
-  <h3 align="center">Best-README-Template</h3>
+  <h3 align="center">Tafsiri</h3>
 
   <p align="center">
-    An awesome README template to jumpstart your projects!
+    Payments and inventory management web platform powered by HTMX. 
     <br />
-    <a href="https://github.com/othneildrew/Best-README-Template"><strong>Explore the docs »</strong></a>
+    <a href="https://bunhtmxfullstack.onrender.com/swagger"><strong>Swagger Documentation »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/othneildrew/Best-README-Template">View Demo</a>
+    <a href="https://bunhtmxfullstack.onrender.com">View Demo</a>
     ·
-    <a href="https://github.com/othneildrew/Best-README-Template/issues">Report Bug</a>
+    <a href="https://github.com/nigelnindodev/Tafsiri/issues">Report Bug</a>
     ·
     <a href="https://github.com/othneildrew/Best-README-Template/issues">Request Feature</a>
   </p>
 </div>
 
+<div align="center">
 
+*Initial load time to view demo and swagger documentation may take up to one minute due to cold booting.* 
+
+</div>
 
 <!-- TABLE OF CONTENTS -->
 <details>
@@ -61,34 +69,50 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
+### Inspiration
 
+Tafsiri in Swahili means to translate, or as more applicable in this context, understand.
 
-Tafsiri in Swahili means to translate, or as more applicable in the context, understand.
+This tackles inefficiencies in manual payment recording observed at a friend's business:
+- Lack of real time sales data for busy owners
+- Difficulty attributing who made a payment recording and when this happened
+- Time consuming manual reconciliation of daily/weekly/monthly payments, especially factoring in extended credit facilities
 
-This project was born from some observations I made when visiting a friend's business establishment:
-- Payments are recorded by hand in a ledger book. This is quite common in Kenya. This has some downsides that I saw:
-    - Sometimes it was difficult to know who made a payment recording. This is was being eye balled using on of the cashier's handwriting at times, and it just turned out two of the cashiers have similar handwriting, leading to confusion.
-    -  
-    
+Tasfiri automates recording of sales & inventory tracking via a web based platform, allowing cashiers to easily start, suspend and resume payment orders with inventory details readily available to them. 
 
-Tafsiri is a web based platform where small and medium sized businesses can keep track of their inventory, incoming payments and track credit extended to customers.
+Most of the work is open sourced under an MIT license, and will be using this as a basis to create a bespoke web platform for use in said business (majorly changing the look from Pico CSS to Tailwind CSS).
 
+### Technical Details
 
+This is a hands on learning project for working with HTMX on real world project. The code is a culmination of improvements/refactors made over time to work better with HTMX. 
+
+Typescript was chosen over Go/Rust because of the ease of working with JSX for templating. This means that there isn't any need to learn any templating language, which I think is a huge productivity boost.
+
+ElysisJS was chosen as the web framework as it is optimized for Bun and out performs Go and Rust frameworks in some benchmarks. Through usage, I've found it's still not as mature, but workable.
+
+TypeORM was used as the database connector (been using it for years), but I would personally recommend replacing TypeORM with [Drizzle](https://orm.drizzle.team/).
+
+### Checking Out The Demo
+
+TBA
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
-
 ### Built With
 
-This section should list any major frameworks/libraries used to bootstrap your project. Leave any add-ons/plugins for the acknowledgements section. Here are a few examples.
+<div align="center">
 
-* [![Bun][Bun]][Bun-url]
-* [![Cheerio][Cheerio]][Cheerio-url]
-* [![Docker][Docker]][Docker-url]
-* [![ElysiaJS][ElysiaJS]][ElysiaJS-url]
-* [![TypeORM][TypeORM]][TypeORM-url]
+[![Bun][Bun]][Bun-url]
+[![Cheerio][Cheerio]][Cheerio-url]
+[![Docker][Docker]][Docker-url]  
+[![ElysiaJS][ElysiaJS]][ElysiaJS-url]
+[![HTMX][HTMX]][HTMX-url]
+[![PicoCSS][PicoCSS]][PicoCSS-url]
+[![TypeORM][TypeORM]][TypeORM-url]
+
+</div>
+
 
 <!-- GETTING STARTED -->
 ## Getting Started
@@ -113,7 +137,7 @@ git clone https://github.com/nigelnindodev/Tafsiri.git
 
 #### Local Installation
 
-A local installation assumes you have a local PostgreSQL Server running, and are running Linux, MacOS or Windows Subsystem for Linux (WSL). 
+A local installation assumes you have a local PostgreSQL Server running, docker installed, and are running Linux, MacOS or Windows Subsystem for Linux (WSL). 
 
 Install the latest version of Bun:
 ```sh
@@ -141,7 +165,37 @@ Run the project in development mode
 ```sh
 bun run dev
 ```
+
+Install project dependencies
+```sh
+bun install --frozen-lockfile
+```
+
+Add a `.env` file with the following properties:
+```sh
+APPLICATION_PORT=3000
+BASE_URL="http://localhost:3000"
+JWT_SECRET="some_jwt_secret"
+POSTGRES_USER="your_local_postgres_user"
+POSTGRES_PASSWORD="your_local_postgres_password"
+POSTGRES_HOST="localhost"
+POSTGRES_PORT="5432"
+POSTGRES_DATABASE_NAME="your_local_postgres_database_name"
+```
+
+Run the project in development mode
+```sh
+bun run dev
+```
 Open http://localhost:3000/ with your browser to see the result.
+
+##### Run Test
+To run tests, use the command from `package.json`:
+```sh
+bun run setup-run-test
+```
+
+That will use the `compose.yaml` file to create a testing PostgreSQL server instance using docker, and ensure it's volume is correctly cleared up after running tests. 
 
 #### Docker Installation
 
@@ -243,8 +297,6 @@ Project Link: [https://github.com/nigelnindodev/Tafsiri](https://github.com/nige
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
 
-Use this space to list resources you find helpful and would like to give credit to. I've included a few of my favorites to kick things off!
-
 * [HTMX for Impatient Devs](https://www.youtube.com/watch?v=TT7SV-bAZyA)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -253,20 +305,26 @@ Use this space to list resources you find helpful and would like to give credit 
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[stars-shield]: https://img.shields.io/github/stars/othneildrew/Best-README-Template.svg?style=for-the-badge
-[stars-url]:https://github.com/nigelnindodev/Tafsiri/stargazers
-[issues-shield]: https://img.shields.io/github/issues/othneildrew/Best-README-Template.svg?style=for-the-badge
-[issues-url]:https://github.com/nigelnindodev/Tafsiri/issues
-[license-shield]: https://img.shields.io/github/license/othneildrew/Best-README-Template.svg?style=for-the-badge
-[license-url]:https://github.com/nigelnindodev/Tafsiri/blob/master/LICENSE.txt
+[build-shield]: https://github.com/nigelnindodev/Tafsiri/actions/workflows/build.yml/badge.svg
+[build-url]: https://github.com/nigelnindodev/Tafsiri/actions/workflows/build.yml
+[test-shield]: https://github.com/nigelnindodev/Tafsiri/actions/workflows/test.yml/badge.svg
+[test-url]: https://github.com/nigelnindodev/Tafsiri/actions/workflows/build.yml
+[issues-shield]: https://img.shields.io/github/issues/nigelnindodev/Tafsiri.svg?style=for-the-badge
+[issues-url]: https://github.com/nigelnindodev/Tafsiri/issues
+[license-shield]: https://img.shields.io/github/license/nigelnindodev/Tafsiri.svg?style=for-the-badge
+[license-url]: https://github.com/nigelnindodev/Tafsiri/blob/master/LICENSE.txt
 [product-screenshot]: images/screenshot.png
-[Bun]: https://img.shields.io/badge/:badgeContent?style=for-the-badge&logo=bun&link=https%3A%2F%2Fbun.sh%2F
+[Bun]: https://img.shields.io/badge/Bun-35495E?style=for-the-badge&logo=bun&logoColor=4FC08D
 [Bun-url]: https://bun.sh
-[Cheerio]:
-[Cheerio-url]:
-[Docker]: 
-[Docker-url]: 
-[ElysiaJS]:
-[ElysiaJS-url]:
-[TypeORM]: 
-[TypeORM-url]:
+[Cheerio]: https://img.shields.io/badge/Cheerio.js-35495E?style=for-the-badge&logo=cheerio&logoColor=4FC08D
+[Cheerio-url]: https://cheerio.js.org/
+[Docker]: https://img.shields.io/badge/Docker-35495E?style=for-the-badge&logo=docker&logoColor=4FC08D
+[Docker-url]: https://www.docker.com/
+[ElysiaJS]: https://img.shields.io/badge/ElysiaJS-35495E?style=for-the-badge
+[ElysiaJS-url]: https://elysiajs.com/
+[HTMX]: https://img.shields.io/badge/HTMX-35495E?style=for-the-badge&logo=htmx&logoColor=4FC08D
+[HTMX-url]: https://htmx.org
+[PicoCSS]: https://img.shields.io/badge/PicoCSS-35495E?style=for-the-badge&logo=css3&logoColor=4FC08D
+[PicoCSS-url]: https://picocss.com/
+[TypeORM]: https://img.shields.io/badge/TypeORM-35495E?style=for-the-badge
+[TypeORM-url]: https://typeorm.io/
