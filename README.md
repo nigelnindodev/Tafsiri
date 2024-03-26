@@ -1,26 +1,30 @@
 <a name="readme-top"></a>
+<div align="center">
 
-[![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
 [![MIT License][license-shield]][license-url]
 
+</div>
+
+<div align="center"> 
+
+[![Build][build-shield]][build-url]
+[![Test][test-shield]][test-url]
+
+</div>
 
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/othneildrew/Best-README-Template">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
-  </a>
-
-  <h3 align="center">Best-README-Template</h3>
+  <h3 align="center">Tafsiri</h3>
 
   <p align="center">
-    An awesome README template to jumpstart your projects!
+    Payments and inventory management web platform powered by HTMX. 
     <br />
-    <a href="https://github.com/othneildrew/Best-README-Template"><strong>Explore the docs »</strong></a>
+    <a href="https://bunhtmxfullstack.onrender.com/swagger"><strong>Swagger Documentation »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/othneildrew/Best-README-Template">View Demo</a>
+    <a href="https://bunhtmxfullstack.onrender.com">View Demo</a>
     ·
     <a href="https://github.com/nigelnindodev/Tafsiri/issues">Report Bug</a>
     ·
@@ -66,15 +70,16 @@
 
 Tafsiri in Swahili means to translate, or as more applicable in the context, understand.
 
-This project was born from some observations I made when visiting a friend's business establishment:
-- Payments are recorded by hand in a ledger book. This is quite common in Kenya. This has some downsides that I saw:
-    - Sometimes it was difficult to know who made a payment recording. This is was being eye balled using on of the cashier's handwriting at times, and it just turned out two of the cashiers have similar handwriting, leading to confusion.
-    -  
-    
+This project was born from some observations I made at a friend's business establishment:
 
-Tafsiri is a web based platform where small and medium sized businesses can keep track of their inventory, incoming payments and track credit extended to customers.
+- Payments are recorded manually in a ledger book. This is quite common in Kenya, though with has some downsides:
+  - Difficult to know who made a payment recording. This was being eye balled using the cashier's handwriting at times, it just turned out two of the cashiers have similar handwriting, leading to confusion.
+- Impossible to know the day's running sales unless the ledger book is reviewed
+- It takes a lot of time to calculate the total sales for an particular day/week/month, as all slaes have to painstakingly be gone through one by one
+  - This is also prone to human error
 
 
+Tasfiri automates recording of sales and keeping track of inventory via a web based platform. Care has been taken to add a good UX and create a flow where there is as little input by cashiers as possible.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -89,6 +94,7 @@ This section should list any major frameworks/libraries used to bootstrap your p
 * [![Docker][Docker]][Docker-url]
 * [![ElysiaJS][ElysiaJS]][ElysiaJS-url]
 * [![HTMX][HTMX]][HTMX-url]
+* [![PicoCSS][PicoCSS]][PicoCSS-url]
 * [![TypeORM][TypeORM]][TypeORM-url]
 
 <!-- GETTING STARTED -->
@@ -282,12 +288,14 @@ Project Link: [https://github.com/nigelnindodev/Tafsiri](https://github.com/nige
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[stars-shield]: https://img.shields.io/github/stars/othneildrew/Best-README-Template.svg?style=for-the-badge
-[stars-url]:https://github.com/nigelnindodev/Tafsiri/stargazers
-[issues-shield]: https://img.shields.io/github/issues/othneildrew/Best-README-Template.svg?style=for-the-badge
-[issues-url]:https://github.com/nigelnindodev/Tafsiri/issues
-[license-shield]: https://img.shields.io/github/license/othneildrew/Best-README-Template.svg?style=for-the-badge
-[license-url]:https://github.com/nigelnindodev/Tafsiri/blob/master/LICENSE.txt
+[build-shield]: https://github.com/nigelnindodev/Tafsiri/actions/workflows/build.yml/badge.svg
+[build-url]: https://github.com/nigelnindodev/Tafsiri/actions/workflows/build.yml
+[test-shield]: https://github.com/nigelnindodev/Tafsiri/actions/workflows/test.yml/badge.svg
+[test-url]: https://github.com/nigelnindodev/Tafsiri/actions/workflows/build.yml
+[issues-shield]: https://img.shields.io/github/issues/nigelnindodev/Tafsiri.svg?style=for-the-badge
+[issues-url]: https://github.com/nigelnindodev/Tafsiri/issues
+[license-shield]: https://img.shields.io/github/license/nigelnindodev/Tafsiri.svg?style=for-the-badge
+[license-url]: https://github.com/nigelnindodev/Tafsiri/blob/master/LICENSE.txt
 [product-screenshot]: images/screenshot.png
 [Bun]: https://img.shields.io/badge/:badgeContent?style=for-the-badge&logo=bun&link=https%3A%2F%2Fbun.sh%2F
 [Bun-url]: https://bun.sh
@@ -298,5 +306,7 @@ Project Link: [https://github.com/nigelnindodev/Tafsiri](https://github.com/nige
 [ElysiaJS-url]: https://elysiajs.com/
 [HTMX]:
 [HTMX-url]: https://htmx.org
+[PicoCSS]:
+[PicoCSS-url]: https://picocss.com/
 [TypeORM]: 
 [TypeORM-url]: https://typeorm.io/
