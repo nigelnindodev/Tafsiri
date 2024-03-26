@@ -69,37 +69,50 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
+### Inspiration
 
+Tafsiri in Swahili means to translate, or as more applicable in this context, understand.
 
-Tafsiri in Swahili means to translate, or as more applicable in the context, understand.
+This tackles inefficiencies in manual payment recording observed at a friend's business:
+- Lack of real time sales data for busy owners
+- Difficulty attributing who made a payment recording and when this happened
+- Time consuming manual reconciliation of daily/weekly/monthly payments, especially factoring in extended credit facilities
 
-This project was born from some observations I made at a friend's business establishment:
+Tasfiri automates recording of sales & inventory tracking via a web based platform, allowing cashiers to easily start, suspend and resume payment orders with inventory details readily available to them. 
 
-- Payments are recorded manually in a ledger book. This is quite common in Kenya, though with has some downsides:
-  - Difficult to know who made a payment recording. This was being eye balled using the cashier's handwriting at times, it just turned out two of the cashiers have similar handwriting, leading to confusion.
-- Impossible to know the day's running sales unless the ledger book is reviewed
-- It takes a lot of time to calculate the total sales for an particular day/week/month, as all slaes have to painstakingly be gone through one by one
-  - This is also prone to human error
+Most of the work is open sourced under an MIT license, and will be using this as a basis to create a bespoke web platform for use in said business (majorly changing the look from Pico CSS to Tailwind CSS).
 
+### Technical Details
 
-Tasfiri automates recording of sales and keeping track of inventory via a web based platform. Care has been taken to add a good UX and create a flow where there is as little input by cashiers as possible.
+This is a hands on learning project for working with HTMX on real world project. The code is a culmination of improvements/refactors made over time to work better with HTMX. 
+
+Typescript was chosen over Go/Rust because of the ease of working with JSX for templating. This means that there isn't any need to learn any templating language, which I think is a huge productivity boost.
+
+ElysisJS was chosen as the web framework as it is optimized for Bun and out performs Go and Rust frameworks in some benchmarks. Through usage, I've found it's still not as mature, but workable.
+
+TypeORM was used as the database connector (been using it for years), but I would personally recommend replacing TypeORM with [Drizzle](https://orm.drizzle.team/).
+
+### Checking Out The Demo
+
+TBA
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
-
 ### Built With
 
-This section should list any major frameworks/libraries used to bootstrap your project. Leave any add-ons/plugins for the acknowledgements section. Here are a few examples.
+<div align="center">
 
-* [![Bun][Bun]][Bun-url]
-* [![Cheerio][Cheerio]][Cheerio-url]
-* [![Docker][Docker]][Docker-url]
-* [![ElysiaJS][ElysiaJS]][ElysiaJS-url]
-* [![HTMX][HTMX]][HTMX-url]
-* [![PicoCSS][PicoCSS]][PicoCSS-url]
-* [![TypeORM][TypeORM]][TypeORM-url]
+[![Bun][Bun]][Bun-url]
+[![Cheerio][Cheerio]][Cheerio-url]
+[![Docker][Docker]][Docker-url]  
+[![ElysiaJS][ElysiaJS]][ElysiaJS-url]
+[![HTMX][HTMX]][HTMX-url]
+[![PicoCSS][PicoCSS]][PicoCSS-url]
+[![TypeORM][TypeORM]][TypeORM-url]
+
+</div>
+
 
 <!-- GETTING STARTED -->
 ## Getting Started
@@ -307,11 +320,11 @@ Project Link: [https://github.com/nigelnindodev/Tafsiri](https://github.com/nige
 [Cheerio-url]: https://cheerio.js.org/
 [Docker]: https://img.shields.io/badge/Docker-35495E?style=for-the-badge&logo=docker&logoColor=4FC08D
 [Docker-url]: https://www.docker.com/
-[ElysiaJS]: https://img.shields.io/badge/ElysiaJS-35495E?style=for-the-badge&logo=htmx&logoColor=4FC08D
+[ElysiaJS]: https://img.shields.io/badge/ElysiaJS-35495E?style=for-the-badge
 [ElysiaJS-url]: https://elysiajs.com/
 [HTMX]: https://img.shields.io/badge/HTMX-35495E?style=for-the-badge&logo=htmx&logoColor=4FC08D
 [HTMX-url]: https://htmx.org
 [PicoCSS]: https://img.shields.io/badge/PicoCSS-35495E?style=for-the-badge&logo=css3&logoColor=4FC08D
 [PicoCSS-url]: https://picocss.com/
-[TypeORM]: https://img.shields.io/badge/TypeORM-35495E?style=for-the-badge&logo=htmx&logoColor=4FC08D
+[TypeORM]: https://img.shields.io/badge/TypeORM-35495E?style=for-the-badge
 [TypeORM-url]: https://typeorm.io/
